@@ -1,0 +1,39 @@
+NEOCURE Vercel Secure QR Redeem - Setup
+
+This package is for a Vercel-hosted NEOCURE HTML app. It uses a Vercel Serverless API
+(/api/redeemCoupon) and Firebase Admin SDK. Do NOT deploy the Firebase Cloud Function
+from the earlier Firebase-only ZIP when using this Vercel package.
+
+1) Upload/deploy the contents of this folder as the Vercel project root.
+2) Vercel > Project > Settings > Environment Variables:
+   FIREBASE_SERVICE_ACCOUNT_JSON = full JSON contents of a Firebase service account key
+   FIREBASE_DATABASE_URL = https://neocure-live-2026-default-rtdb.asia-southeast1.firebasedatabase.app
+   Apply to Production (and Preview only if needed). Keep service account JSON secret;
+   never put it in index.html or any NEXT_PUBLIC/VITE/public variable.
+3) Firebase Console > Project Settings > Service accounts > Generate new private key.
+   Use the key for project neocure-live-2026. Store it only in Vercel Environment Variables.
+4) Publish database.rules.json in Realtime Database > Rules.
+5) Redeploy the Vercel project after adding environment variables.
+6) Test with an active Applicator and one unused test coupon. Confirm:
+   - Coupon status changes to Claimed
+   - claimedBy and claimedAt are set
+   - users/{UID}/rewardBalance increases once
+   - users/{UID}/rewardHistory gets one record
+   - scanning same coupon again does not increase balance.
+
+Security notes:
+- Vercel API verifies the Firebase Auth ID token on every request.
+- Only active worker accounts can claim coupons.
+- Firebase Admin SDK credentials are server-only and bypass RTDB rules, so keep them secret.
+- RTDB rules prevent client-side wallet/rewardHistory writes and restrict coupons to admins.
+- This API code handles duplicate scans/retries idempotently using the coupon code as the
+  rewardHistory key.
+- Existing Vercel deployment settings/framework can affect routing. If the project is already
+  a framework app, place api/redeemCoupon.js in the framework's supported API directory
+  rather than overwriting the existing app root. Merge package.json dependencies if one exists.
+
+Important existing-app note:
+The HTML included here is the secure Dealer/Applicator file from the current working package.
+If your live Vercel project has a newer HTML version with other changes, replace only the
+submitManualCoupon() function with the version in this index.html, or share the current
+deployment source so it can be merged without losing newer changes.

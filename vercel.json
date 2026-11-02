@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/redeemCoupon.js": {
+      "maxDuration": 10
+    }
+  }
+}
