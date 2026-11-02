@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="kn">
 <head>
-<meta charset="utf-8"><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta charset="utf-8"><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging-compat.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>NEOCURE Admin Control</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
@@ -208,6 +208,7 @@ async function adminLogin(){
     $('login1').classList.add('hidden');
     $('dashboard').classList.remove('hidden');
     refreshStats();
+    ncStartDealerRequestWatcher(); ncAskBrowserNotification();
     addAudit('Firebase Admin login');
   }catch(e){adminMessage('Admin Login ವಿಫಲ: '+(e.message||e))}
 }
@@ -223,7 +224,7 @@ adminAuth.onAuthStateChanged(async user=>{
   try{
     const snap=await adminDb.ref('admins/'+user.uid).once('value');
     if(snap.val()===true){
-      $('login1').classList.add('hidden');$('dashboard').classList.remove('hidden');refreshStats();
+      $('login1').classList.add('hidden');$('dashboard').classList.remove('hidden');refreshStats();ncStartDealerRequestWatcher();ncAskBrowserNotification();
     }else{await adminAuth.signOut();}
   }catch(e){await adminAuth.signOut();adminMessage('Admin access check failed: '+e.message)}
 });
@@ -236,6 +237,64 @@ async function refreshStats(){
     $('dealerCount').textContent=dealers;$('appCount').textContent=apps;
   }catch(e){$('dealerCount').textContent='—';$('appCount').textContent='—';console.error('Firebase user count:',e);}
 }
+let ncDealerRequestListener=null;
+let ncKnownDealerIds=new Set();
+let ncDealerRequestBootstrapped=false;
+async function ncStartDealerRequestWatcher(){
+  if(ncDealerRequestListener) ncDealerRequestListener.off();
+  const query=adminDb.ref('users').orderByChild('role').equalTo('dealer');
+  try{const initial=await query.once('value');ncKnownDealerIds=new Set();initial.forEach(c=>ncKnownDealerIds.add(c.key));ncDealerRequestBootstrapped=true;await ncUpdatePendingDealerCount();}catch(e){console.warn('Dealer request initial load:',e.message||e);}
+  ncDealerRequestListener=query;
+  ncDealerRequestListener.on('child_added',snap=>{
+    const u=snap.val()||{}; const uid=snap.key;
+    const pending=u.approved!==true && !['Approved','Active'].includes(String(u.status||''));
+    if(ncDealerRequestBootstrapped && pending && !ncKnownDealerIds.has(uid)){
+      const who=u.profile?.shop||u.shop||u.phone||'ಹೊಸ Dealer';
+      adminMessage('ಹೊಸ Dealer Request ಬಂದಿದೆ: '+who);
+      try{ if('Notification' in window && Notification.permission==='granted') new Notification('NEOCURE – New Dealer Request',{body:who+' · Approval ಬೇಕಾಗಿದೆ'}); }catch(e){}
+      const list=$('firebaseDealerList'); if(list) loadFirebasePeople('dealer','firebaseDealerList');
+    }
+    ncKnownDealerIds.add(uid); ncUpdatePendingDealerCount();
+  });
+  ncDealerRequestListener.on('child_changed',()=>{ncUpdatePendingDealerCount();const list=$('firebaseDealerList');if(list)loadFirebasePeople('dealer','firebaseDealerList');});
+}
+async function ncUpdatePendingDealerCount(){
+  try{const snap=await adminDb.ref('users').orderByChild('role').equalTo('dealer').once('value');let n=0;snap.forEach(c=>{const u=c.val()||{};if(u.approved!==true&&!['Approved','Active'].includes(String(u.status||'')))n++;});const el=$('dealerCount');if(el)el.textContent=String(snap.numChildren());const badge=$('pendingDealerCount');if(badge)badge.textContent=String(n);}
+  catch(e){console.warn('Pending dealer count:',e.message||e);}
+}
+async function ncSetDealerApproval(uid,approved){
+  const status=approved?'Approved':'Rejected';
+  if(!confirm('ಈ Dealer Request ಅನ್ನು '+status+' ಮಾಡಬೇಕೇ?'))return;
+  try{await adminDb.ref('users/'+uid).update({approved:!!approved,status,updatedAt:Date.now(),reviewedAt:Date.now()});addAudit('Dealer '+status+' '+uid);alert('Dealer '+status+' ಆಗಿದೆ.');await ncUpdatePendingDealerCount();await openDealerAdminDetails(uid,activeDealerAdmin.phone,'details');}
+  catch(e){alert('Status save ಆಗಲಿಲ್ಲ: '+(e.message||e)+'\nFirebase Database Rules ಪರಿಶೀಲಿಸಿ.');}
+}
+
+let ncMessaging=null;
+async function ncAskBrowserNotification(){
+  try{
+    if(!('Notification' in window) || !('serviceWorker' in navigator) || !firebase.messaging.isSupported()) return;
+    let permission=Notification.permission;
+    if(permission==='default') permission=await Notification.requestPermission();
+    if(permission!=='granted') return;
+    const registration=await navigator.serviceWorker.register('/firebase-messaging-sw.js',{scope:'/'});
+    ncMessaging=ncMessaging||firebase.messaging();
+    const token=await ncMessaging.getToken({vapidKey:'BK0ouWF8d2qGbofKHuc3NsiXFHfDaOOe3ZU-3-nsIA43MGIrJWlSPrJwcUj3yn8HVoVfWFgLhbNzTqQZ_m3sWUQ',serviceWorkerRegistration:registration});
+    if(!token) throw new Error('FCM token ಸಿಗಲಿಲ್ಲ.');
+    const user=adminAuth.currentUser;if(!user)return;
+    const deviceId=localStorage.getItem('nc_admin_fcm_device')||('device_'+Math.random().toString(36).slice(2)+Date.now().toString(36));
+    localStorage.setItem('nc_admin_fcm_device',deviceId);
+    await adminDb.ref('adminFcmTokens/'+user.uid+'/'+deviceId).set({token,updatedAt:Date.now(),userAgent:navigator.userAgent.slice(0,180)});
+    if(!window.ncFcmForegroundBound){
+      ncMessaging.onMessage(payload=>{
+        const title=payload.notification?.title||'NEOCURE – New Dealer Request';
+        const body=payload.notification?.body||'ಹೊಸ Dealer Request ಬಂದಿದೆ.';
+        try{new Notification(title,{body,icon:'/favicon.ico'});}catch(e){}
+      });
+      window.ncFcmForegroundBound=true;
+    }
+  }catch(e){console.warn('FCM registration failed:',e.message||e);adminMessage('Push Notification setup ಆಗಲಿಲ್ಲ: '+(e.message||e));}
+}
+
 function adminSafeText(v){return esc(v==null?'':v);}
 
 function filterFirebasePeople(inputId, listId){
@@ -352,7 +411,7 @@ async function openDealerAdminDetails(uid,phone,tab){
   const rates=readKey('nc_dealer_rates')||{};
   const money=n=>'₹'+Number(n||0).toFixed(2);
   let content='';
-  if(tab==='details')content=`<h3>Dealer Details – Edit</h3><div class="field"><label>Shop Name</label><input id="admDealerShop" value="${adminSafeText(profile.shop||profile.name||'')}"></div><div class="field"><label>Owner Name</label><input id="admDealerOwner" value="${adminSafeText(profile.owner||'')}"></div><div class="field"><label>Mobile Number</label><input value="${adminSafeText(phone)}" readonly></div><div class="field"><label>Shop Address</label><input id="admDealerAddress" value="${adminSafeText(profile.address||'')}"></div><div class="field"><label>City / Area</label><input id="admDealerCity" value="${adminSafeText(profile.city||'')}"></div><div class="listitem"><b>Account Status</b>${adminSafeText(userData.status||(userData.approved?'Active':'Pending'))}</div><button class="btn" onclick="saveDealerProfileToFirebase('${uid}','${phone}')">Save Dealer Details</button><div id="admDealerProfileNote" class="muted"></div>`;
+  if(tab==='details')content=`<h3>Dealer Details – Edit</h3><div class="field"><label>Shop Name</label><input id="admDealerShop" value="${adminSafeText(profile.shop||profile.name||'')}"></div><div class="field"><label>Owner Name</label><input id="admDealerOwner" value="${adminSafeText(profile.owner||'')}"></div><div class="field"><label>Mobile Number</label><input value="${adminSafeText(phone)}" readonly></div><div class="field"><label>Shop Address</label><input id="admDealerAddress" value="${adminSafeText(profile.address||'')}"></div><div class="field"><label>City / Area</label><input id="admDealerCity" value="${adminSafeText(profile.city||'')}"></div><div class="listitem"><b>Account Status</b> ${adminSafeText(userData.status||(userData.approved?'Active':'Pending'))}</div><div class="person-actions"><button class="btn" onclick="ncSetDealerApproval('${uid}',true)">Approve Dealer</button><button class="btn secondary" onclick="ncSetDealerApproval('${uid}',false)">Reject Request</button></div><button class="btn" onclick="saveDealerProfileToFirebase('${uid}','${phone}')">Save Dealer Details</button><div id="admDealerProfileNote" class="muted"></div>`;
   if(tab==='orders'){
    content=`<h3>Order History</h3><p class="muted">ಈ Dealerನ Orders ವಿವರಗಳು. Status ಬದಲಿಸಿ Update ಒತ್ತಿದರೆ ಇದೇ Dealer accountಗೆ Save ಆಗುತ್ತದೆ.</p>`;
    if(Array.isArray(orders)&&orders.length){
@@ -407,6 +466,8 @@ async function saveDealerCreditLimitToFirebase(uid,phone){
   const updates={};
   updates['appData/'+uid+'/'+encodeURIComponent(profileKey)]=JSON.stringify(profile);
   updates['appData/'+uid+'/'+encodeURIComponent('nc_dealer_credit_limit_'+phone)]=JSON.stringify(creditLimit);
+  // Dealer App listens to users/{uid}.creditLimit for its live account display.
+  updates['users/'+uid+'/creditLimit']=creditLimit;
   await adminDb.ref().update(updates);
   if(note)note.textContent='ಈ Dealerನ Credit Limit Firebaseಗೆ Update ಆಗಿದೆ.';
   addAudit('Updated dealer credit limit '+phone);
@@ -502,7 +563,7 @@ function openCouponGenerator(){
  `<button class="btn" onclick="makeCoupons()">Generate QR Coupons</button><div id="couponResult"></div>`;
 }
 function renderModule(k){let b=$('moduleBody'),a;
-if(k==='dealers'){b.innerHTML='<h3>Firebase Dealer Accounts</h3><div class="dealer-refresh-row"><button class="btn secondary dealer-refresh-btn" onclick="loadFirebasePeople(\'dealer\',\'firebaseDealerList\')">↻ Refresh</button></div><div id="firebaseDealerList"><p class="muted">Firebaseನಿಂದ ಲೋಡ್ ಆಗುತ್ತಿದೆ…</p></div>';loadFirebasePeople('dealer','firebaseDealerList')}
+if(k==='dealers'){b.innerHTML='<h3>Firebase Dealer Accounts · Pending: <span id="pendingDealerCount">0</span></h3><div class="dealer-refresh-row"><button class="btn secondary dealer-refresh-btn" onclick="loadFirebasePeople(\'dealer\',\'firebaseDealerList\')">↻ Refresh</button></div><div id="firebaseDealerList"><p class="muted">Firebaseನಿಂದ ಲೋಡ್ ಆಗುತ್ತಿದೆ…</p></div>';loadFirebasePeople('dealer','firebaseDealerList')}
 else if(k==='applicators'){b.innerHTML='<h3>Firebase Applicator Accounts</h3><button class="btn secondary" onclick="loadFirebasePeople(\'worker\',\'firebasePeopleList\')">Refresh List</button><div id="firebasePeopleList"><p class="muted">Firebaseನಿಂದ ಲೋಡ್ ಆಗುತ್ತಿದೆ…</p></div>';loadFirebasePeople('worker','firebasePeopleList')}
 else if(k==='rates'){b.innerHTML=field('Dealer Mobile','rPhone','Dealer mobile','tel')+field('Epoxy Rate / pack ₹','rEpoxy','0','number')+field('Hardener Rate / pack ₹','rHardener','0','number')+field('Primer Rate / pack ₹','rPrimer','0','number')+field('Flooring Kit Rate / pack ₹','rKit','0','number')+`<button class="btn" onclick="saveRates()">Save Dealer Rates to Firebase</button><div id="rateSaved"></div>`}
 else if(k==='orders'){a=read('orders');b.innerHTML=field('Order ID','oId','Order ID')+`<div class="field"><label>Order Status</label><select id="oStatus"><option>Pending Admin Approval</option><option>Payment Verification Pending</option><option>Approved</option><option>Rejected</option><option>Dispatched</option></select></div><button class="btn" onclick="saveStatus('orders','oId','oStatus')">Update Order Status</button>`+listRows(a,x=>`${x.id} · ${x.status}`)}
