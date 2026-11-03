@@ -338,6 +338,10 @@ async function ncUpdatePendingDealerCount(){
     return null;
   }
 }
+async function ncApproveDealerFromList(uid,phone,name){
+ activeDealerAdmin={uid,phone,name};
+ await ncSetDealerApproval(uid,true);
+}
 async function ncSetDealerApproval(uid,approved){
   const status=approved?'Approved':'Rejected';
   if(!confirm('ಈ Dealer Request ಅನ್ನು '+status+' ಮಾಡಬೇಕೇ?'))return;
@@ -421,7 +425,10 @@ async function loadFirebasePeople(roleName, targetId){
       const photo=photoSrc?`<img src="${photoSrc}" alt="Profile photo" style="width:72px;height:72px;object-fit:cover;border-radius:50%;border:2px solid #38bdf8;float:right;margin:0 0 8px 12px">`:'';
       const searchText=adminSafeText([x.name,phone,x.area,x.owner].filter(Boolean).join(' '));
       if(roleName==='dealer'){
-        return `<button type="button" class="dealer-contact" data-person-card data-search="${searchText}" onclick="openDealerMenu('${x.uid}','${adminSafeText(phone)}','${adminSafeText(x.name)}')"><span>${adminSafeText(x.name)}</span><span class="arrow">›</span></button>`;
+        const pending=ncDealerIsPending(x.u);
+        const status=String(x.u.status||(x.u.approved?'Active':'Pending'));
+        const approveAction=pending?`<button type="button" class="btn" style="width:auto;margin:8px 0 0" onclick="ncApproveDealerFromList('${x.uid}','${adminSafeText(phone)}','${adminSafeText(x.name)}')">Approve Dealer</button>`:'';
+        return `<div class="dealer-contact-wrap" data-person-card data-search="${searchText}"><button type="button" class="dealer-contact" onclick="openDealerMenu('${x.uid}','${adminSafeText(phone)}','${adminSafeText(x.name)}')"><span>${adminSafeText(x.name)}</span><span class="arrow">›</span></button><div class="muted" style="padding:5px 12px">${adminSafeText(phone)} · Status: ${adminSafeText(status)}</div>${approveAction}</div>`;
       }
       return `<div class="listitem person-card" data-person-card data-search="${searchText}">${photo}<b>${adminSafeText(x.name)}</b>${details}<div class="muted">Status: ${adminSafeText(x.u.status|| (x.u.approved?'Active':'Pending'))}</div>${x.error?`<div class="notice">App Data ಓದಲು ಆಗಲಿಲ್ಲ: ${adminSafeText(x.error)}</div>`:''}<div class="person-actions">${whatsapp}</div><div style="clear:both"></div></div>`;
     }).join('')+`<p class="muted">Firebase Accounts: ${rows.length}</p>`;
@@ -462,6 +469,7 @@ function openDealerMenu(uid,phone,name){
   <button class="btn secondary" onclick="openDealerAdminDetails('${uid}','${phone}','orders')"><span class="menu-icon">📦</span>Orders</button>
  </div>`;
  adminDb.ref('users/'+uid).once('value').then(snap=>{
+   if(!activeDealerAdmin||activeDealerAdmin.uid!==uid)return;
    const u=snap.val()||{};const el=$('dealerMenuApprovalStatus');if(!el)return;
    const pending=ncDealerIsPending(u);
    el.textContent='Account Status: '+String(u.status||(u.approved?'Active':'Pending'))+(pending?' · Approval ಬೇಕಾಗಿದೆ':'');
@@ -665,9 +673,10 @@ function openCouponGenerator(){
  `<button class="btn" onclick="makeCoupons()">Generate QR Coupons</button><div id="couponResult"></div>`;
 }
 async function refreshDealerManagement(){
-  await ncUpdatePendingDealerCount();
+  const count=await ncUpdatePendingDealerCount();
   await loadFirebasePeople('dealer','firebaseDealerList');
-  await ncUpdatePendingDealerCount();
+  const latest=await ncUpdatePendingDealerCount();
+  return latest||count;
 }
 function renderModule(k){let b=$('moduleBody'),a;
 if(k==='dealers'){b.innerHTML='<h3>Firebase Dealer Accounts · Pending: <span id="pendingDealerCount">Loading…</span></h3><div class="dealer-refresh-row"><button class="btn secondary dealer-refresh-btn" onclick="refreshDealerManagement()">↻ Refresh</button></div><div id="firebaseDealerList"><p class="muted">Firebaseನಿಂದ ಲೋಡ್ ಆಗುತ್ತಿದೆ…</p></div>';refreshDealerManagement()}
