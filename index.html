@@ -383,40 +383,62 @@ function wrongPin(){ $('pin').value=''; $('pin').classList.add('wrong'); setTime
 function closeWrongPin(){ $('wrongPinModal').classList.add('hidden'); $('pin').value=''; }
 let ncDealerAccountStatusRef=null;
 let ncDealerAccountStatusHandler=null;
+let ncDealerAccountStatusUid=null;
 function ncStopDealerAccountStatusListener(){
  if(ncDealerAccountStatusRef&&ncDealerAccountStatusHandler){
   try{ncDealerAccountStatusRef.off('value',ncDealerAccountStatusHandler);}catch(e){}
  }
- ncDealerAccountStatusRef=null;ncDealerAccountStatusHandler=null;
+ ncDealerAccountStatusRef=null;ncDealerAccountStatusHandler=null;ncDealerAccountStatusUid=null;
 }
-function ncDealerIsApproved(u){
- const status=String((u&&u.status)||'').trim().toLowerCase();
- return !!(u&&u.approved===true)||status==='approved'||status==='active';
+function ncDealerStatusState(u){
+ const status=String((u&&u.status)||'pending').trim().toLowerCase();
+ if(u&&u.approved===true||status==='approved'||status==='active')return 'active';
+ if(['rejected'].includes(status))return 'rejected';
+ if(['suspended','disabled','blocked'].includes(status))return 'suspended';
+ return 'pending';
+}
+function ncDealerIsApproved(u){return ncDealerStatusState(u)==='active';}
+function ncShowDealerBlockedState(state){
+ const box=document.querySelector('#pending .status');
+ const title=document.querySelector('#pending h2');
+ const note=document.querySelector('#pending .adminbox');
+ if(title)title.textContent=state==='suspended'?'Dealer Account Suspended':state==='rejected'?'Dealer Request Rejected':'Dealer Approval Pending';
+ if(box)box.textContent=state==='suspended'
+  ?'ನಿಮ್ಮ Dealer Account ಅನ್ನು Admin ತಾತ್ಕಾಲಿಕವಾಗಿ Suspend ಮಾಡಿದ್ದಾರೆ. Admin ಸಂಪರ್ಕಿಸಿ.'
+  :state==='rejected'
+   ?'ನಿಮ್ಮ Dealer Request ತಿರಸ್ಕರಿಸಲಾಗಿದೆ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ Admin ಸಂಪರ್ಕಿಸಿ.'
+   :'⏳ ನಿಮ್ಮ Dealer account ಇನ್ನೂ ಸಕ್ರಿಯವಾಗಿಲ್ಲ.';
+ if(note)note.textContent=state==='suspended'
+  ?'Admin ಮತ್ತೆ Reactivate ಮಾಡಿದ ನಂತರ ನಿಮ್ಮ ಖಾತೆ ಸಕ್ರಿಯವಾಗುತ್ತದೆ. ನಿಮ್ಮ ಹಳೆಯ ದಾಖಲೆಗಳು ಉಳಿದಿರುತ್ತವೆ.'
+  :state==='rejected'
+   ?'Admin ಅನುಮೋದನೆ ನೀಡುವವರೆಗೆ Dealer Dashboard ತೆರೆಯುವುದಿಲ್ಲ.'
+   :'Admin App‌ನಿಂದ ಅನುಮೋದನೆ ಬಂದ ನಂತರ ಖಾತೆ Active ಆಗುತ್ತದೆ.';
 }
 function ncStartDealerAccountStatusListener(){
  const uid=account&&account.uid;if(!uid||!ncFirebaseDb)return;
+ if(ncDealerAccountStatusUid===uid&&ncDealerAccountStatusRef)return;
  ncStopDealerAccountStatusListener();
+ ncDealerAccountStatusUid=uid;
  ncDealerAccountStatusRef=ncFirebaseDb.ref('users/'+uid);
  ncDealerAccountStatusHandler=function(snap){
   const latest=snap.val()||{};
   if(latest.role!=='dealer')return;
   account={...account,...latest,uid};
-  if(ncDealerIsApproved(latest)){
-   ncStopDealerAccountStatusListener();
-   ncStartDealerOrderStatusListener();
+  const state=ncDealerStatusState(latest);
+  if(state==='active'){
+   const wasBlocked=!$('dealerDash') || $('dealerDash').classList.contains('hidden');
    hide('pending');
-   openDash();
-   msg('ನಿಮ್ಮ Dealer Account Adminರಿಂದ Approve ಆಗಿದೆ. ಸ್ವಾಗತ!');
+   if(wasBlocked)openDash();
    return;
   }
-  const status=String(latest.status||'pending').toLowerCase();
-  if(status==='rejected'||status==='disabled'||status==='blocked'){
-   const box=document.querySelector('#pending .status');
-   if(box)box.textContent='ನಿಮ್ಮ Dealer Request ಅನುಮೋದನೆಯಾಗಿಲ್ಲ. ದಯವಿಟ್ಟು Admin ಸಂಪರ್ಕಿಸಿ.';
-  }
+  // Keep this live listener attached even after approval so Admin suspension/rejection
+  // immediately removes access from an already-open Dealer session.
+  ['dealerDash','workerDash'].forEach(hide);
+  show('pending');
+  ncShowDealerBlockedState(state);
  };
  ncDealerAccountStatusRef.on('value',ncDealerAccountStatusHandler,function(err){
-  console.warn('Dealer approval status listener:',err&&err.message||err);
+  console.warn('Dealer account status listener:',err&&err.message||err);
  });
 }
 async function loginPin(){
@@ -429,10 +451,11 @@ async function loginPin(){
   if(!snap.exists()||snap.val().role!==r||snap.val().phone!==p){await firebase.auth().signOut();msg('ಈ ಖಾತೆಯ ವಿವರಗಳು ಸರಿಯಾಗಿಲ್ಲ. Admin ಸಂಪರ್ಕಿಸಿ.');return;}
   account={...snap.val(),uid:cred.user.uid};
   await ncHydrateCloud();
-  if(r==='dealer'&&!ncDealerIsApproved(account)){
-   hide('login');show('pending');ncStartDealerAccountStatusListener();return;
+  if(r==='dealer'){
+   ncStartDealerAccountStatusListener();
+   if(!ncDealerIsApproved(account)){hide('login');show('pending');return;}
+   ncStartDealerOrderStatusListener();
   }
-  if(r==='dealer')ncStartDealerOrderStatusListener();
   openDash();
  }catch(e){
   const map={'auth/user-not-found':'ಈ ಸಂಖ್ಯೆಗೆ ಖಾತೆ ಇಲ್ಲ. MPIN ಸೆಟ್ ಮಾಡಿ.','auth/wrong-password':'MPIN ತಪ್ಪಾಗಿದೆ.','auth/invalid-credential':'ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಅಥವಾ MPIN ತಪ್ಪಾಗಿದೆ.','auth/too-many-requests':'ಹಲವು ತಪ್ಪು ಪ್ರಯತ್ನಗಳು. ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ.'};
