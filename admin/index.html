@@ -317,9 +317,26 @@ async function ncStartDealerRequestWatcher(){
   });
   ncDealerRequestListener.on('child_changed',()=>{ncUpdatePendingDealerCount();const list=$('firebaseDealerList');if(list)loadFirebasePeople('dealer','firebaseDealerList');});
 }
+function ncDealerIsPending(userData){
+  const u=userData||{};
+  const status=String(u.status||'').trim().toLowerCase();
+  if(u.approved===true) return false;
+  if(['approved','active','rejected','disabled','blocked'].includes(status)) return false;
+  return u.role==='dealer';
+}
 async function ncUpdatePendingDealerCount(){
-  try{const snap=await adminDb.ref('users').orderByChild('role').equalTo('dealer').once('value');let n=0;snap.forEach(c=>{const u=c.val()||{};if(u.approved!==true&&!['Approved','Active'].includes(String(u.status||'')))n++;});const el=$('dealerCount');if(el)el.textContent=String(snap.numChildren());const badge=$('pendingDealerCount');if(badge)badge.textContent=String(n);}
-  catch(e){console.warn('Pending dealer count:',e.message||e);}
+  try{
+    const snap=await adminDb.ref('users').orderByChild('role').equalTo('dealer').once('value');
+    let pending=0;
+    snap.forEach(c=>{if(ncDealerIsPending(c.val()))pending++;});
+    const totalEl=$('dealerCount');if(totalEl)totalEl.textContent=String(snap.numChildren());
+    const badge=$('pendingDealerCount');if(badge)badge.textContent=String(pending);
+    return {total:snap.numChildren(),pending};
+  }catch(e){
+    console.warn('Pending dealer count:',e.message||e);
+    const badge=$('pendingDealerCount');if(badge)badge.textContent='—';
+    return null;
+  }
 }
 async function ncSetDealerApproval(uid,approved){
   const status=approved?'Approved':'Rejected';
@@ -437,12 +454,20 @@ function openDealerMenu(uid,phone,name){
  const mod=$('module');mod.classList.add('dealer-fullscreen','dealer-menu-open');mod.classList.remove('dealer-subpage-open');
  const b=$('moduleBody');
  b.innerHTML=`<div class="dealer-page-head"><div><h2>${adminSafeText(name||'Dealer')}</h2><p class="muted" style="margin:5px 0 0">${adminSafeText(phone)}</p></div><div class="dealer-head-actions"><a class="dealer-icon-link" aria-label="Direct Call" title="Direct Call" href="tel:+91${encodeURIComponent(String(phone).replace(/\D/g,''))}">☎</a><a class="dealer-icon-link" aria-label="WhatsApp" title="WhatsApp" href="https://wa.me/91${encodeURIComponent(String(phone).replace(/\D/g,''))}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.52 3.48A11.86 11.86 0 0 0 1.82 17.7L.2 23.6l6.04-1.58A11.86 11.86 0 0 0 20.52 3.48ZM12 21.1a9.1 9.1 0 0 1-4.64-1.27l-.33-.2-3.58.94.96-3.49-.22-.36A9.1 9.1 0 1 1 12 21.1Zm5-6.82c-.27-.14-1.6-.79-1.85-.88-.25-.09-.43-.14-.61.14-.18.27-.7.88-.86 1.06-.16.18-.32.2-.59.07-.27-.14-1.13-.42-2.15-1.33-.8-.71-1.34-1.59-1.5-1.86-.16-.27-.02-.42.12-.56.12-.12.27-.32.4-.48.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.48-.07-.14-.61-1.47-.84-2.01-.22-.53-.45-.46-.61-.47h-.52c-.18 0-.48.07-.73.34-.25.27-.95.93-.95 2.26s.98 2.62 1.11 2.8c.14.18 1.92 2.93 4.65 4.11.65.28 1.16.45 1.56.57.66.21 1.26.18 1.73.11.53-.08 1.6-.65 1.83-1.28.23-.63.23-1.17.16-1.28-.07-.11-.25-.18-.52-.32Z"/></svg></a><button class="btn secondary" style="width:auto;margin:0" onclick="backToDealerList()">← Back</button></div></div>
+ <div id="dealerMenuApprovalStatus" class="notice">Account Status ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…</div>
  <div class="dealer-menu-buttons">
   <button class="btn secondary" onclick="openDealerAdminDetails('${uid}','${phone}','rates')"><span class="menu-icon">🏷️</span>Rate</button>
-  <button class="btn secondary" onclick="openDealerAdminDetails('${uid}','${phone}','details')"><span class="menu-icon">👤</span>Details</button>
+  <button class="btn secondary" onclick="openDealerAdminDetails('${uid}','${phone}','details')"><span class="menu-icon">👤</span>Details / Approval</button>
   <button class="btn secondary" onclick="openDealerAdminDetails('${uid}','${phone}','payments')"><span class="menu-icon">💳</span>Payment</button>
   <button class="btn secondary" onclick="openDealerAdminDetails('${uid}','${phone}','orders')"><span class="menu-icon">📦</span>Orders</button>
  </div>`;
+ adminDb.ref('users/'+uid).once('value').then(snap=>{
+   const u=snap.val()||{};const el=$('dealerMenuApprovalStatus');if(!el)return;
+   const pending=ncDealerIsPending(u);
+   el.textContent='Account Status: '+String(u.status||(u.approved?'Active':'Pending'))+(pending?' · Approval ಬೇಕಾಗಿದೆ':'');
+   el.className=pending?'notice':'listitem';
+   if(pending){const btn=document.createElement('button');btn.type='button';btn.className='btn';btn.textContent='Review & Approve Dealer';btn.style.marginTop='10px';btn.onclick=()=>openDealerAdminDetails(uid,phone,'details');el.appendChild(document.createElement('br'));el.appendChild(btn);}
+ }).catch(e=>{const el=$('dealerMenuApprovalStatus');if(el)el.textContent='Account Status ಓದಲು ಆಗಲಿಲ್ಲ: '+(e.message||e);});
  window.scrollTo(0,0);
 }
 function backToDealerList(){const mod=$('module');mod.classList.remove('dealer-menu-open','dealer-subpage-open');mod.classList.add('dealer-fullscreen');renderModule('dealers');window.scrollTo(0,0);}
@@ -477,7 +502,14 @@ async function openDealerAdminDetails(uid,phone,tab){
   }
   const money=n=>'₹'+Number(n||0).toFixed(2);
   let content='';
-  if(tab==='details')content=`<h3>Dealer Details – Edit</h3><div class="field"><label>Shop Name</label><input id="admDealerShop" value="${adminSafeText(profile.shop||profile.name||'')}"></div><div class="field"><label>Owner Name</label><input id="admDealerOwner" value="${adminSafeText(profile.owner||'')}"></div><div class="field"><label>Mobile Number</label><input value="${adminSafeText(phone)}" readonly></div><div class="field"><label>Shop Address</label><input id="admDealerAddress" value="${adminSafeText(profile.address||'')}"></div><div class="field"><label>City / Area</label><input id="admDealerCity" value="${adminSafeText(profile.city||'')}"></div><div class="listitem"><b>Account Status</b> ${adminSafeText(userData.status||(userData.approved?'Active':'Pending'))}</div><div class="person-actions"><button class="btn" onclick="ncSetDealerApproval('${uid}',true)">Approve Dealer</button><button class="btn secondary" onclick="ncSetDealerApproval('${uid}',false)">Reject Request</button></div><button class="btn" onclick="saveDealerProfileToFirebase('${uid}','${phone}')">Save Dealer Details</button><div id="admDealerProfileNote" class="muted"></div>`;
+  if(tab==='details'){
+   const pending=ncDealerIsPending(userData);
+   const statusText=String(userData.status||(userData.approved?'Active':'Pending'));
+   content=`<h3>Dealer Details – Edit</h3><div class="field"><label>Shop Name</label><input id="admDealerShop" value="${adminSafeText(profile.shop||profile.name||'')}"></div><div class="field"><label>Owner Name</label><input id="admDealerOwner" value="${adminSafeText(profile.owner||'')}"></div><div class="field"><label>Mobile Number</label><input value="${adminSafeText(phone)}" readonly></div><div class="field"><label>Shop Address</label><input id="admDealerAddress" value="${adminSafeText(profile.address||'')}"></div><div class="field"><label>City / Area</label><input id="admDealerCity" value="${adminSafeText(profile.city||'')}"></div><div class="listitem"><b>Account Status</b> ${adminSafeText(statusText)} · approved: ${userData.approved===true?'true':'false'}</div>`;
+   if(pending)content+=`<div class="person-actions"><button class="btn" onclick="ncSetDealerApproval('${uid}',true)">Approve Dealer</button><button class="btn secondary" onclick="ncSetDealerApproval('${uid}',false)">Reject Request</button></div>`;
+   else content+=`<p class="notice">ಈ Dealer Request ಈಗಾಗಲೇ ${adminSafeText(statusText)} ಸ್ಥಿತಿಯಲ್ಲಿದೆ.</p>`;
+   content+=`<button class="btn" onclick="saveDealerProfileToFirebase('${uid}','${phone}')">Save Dealer Details</button><div id="admDealerProfileNote" class="muted"></div>`;
+  }
   if(tab==='orders'){
    content=`<h3>Order History</h3><p class="muted">ಈ Dealerನ Orders ವಿವರಗಳು. Status ಬದಲಿಸಿ Update ಒತ್ತಿದರೆ ಇದೇ Dealer accountಗೆ Save ಆಗುತ್ತದೆ.</p>`;
    if(Array.isArray(orders)&&orders.length){
@@ -632,8 +664,13 @@ function openCouponGenerator(){
  field('Batch Name','cBatch','Batch')+field('Number of Coupons (max 200)','cQty','e.g. 50','number')+field('Reward per Coupon ₹','cReward','e.g. 10','number')+
  `<button class="btn" onclick="makeCoupons()">Generate QR Coupons</button><div id="couponResult"></div>`;
 }
+async function refreshDealerManagement(){
+  await ncUpdatePendingDealerCount();
+  await loadFirebasePeople('dealer','firebaseDealerList');
+  await ncUpdatePendingDealerCount();
+}
 function renderModule(k){let b=$('moduleBody'),a;
-if(k==='dealers'){b.innerHTML='<h3>Firebase Dealer Accounts · Pending: <span id="pendingDealerCount">0</span></h3><div class="dealer-refresh-row"><button class="btn secondary dealer-refresh-btn" onclick="loadFirebasePeople(\'dealer\',\'firebaseDealerList\')">↻ Refresh</button></div><div id="firebaseDealerList"><p class="muted">Firebaseನಿಂದ ಲೋಡ್ ಆಗುತ್ತಿದೆ…</p></div>';loadFirebasePeople('dealer','firebaseDealerList')}
+if(k==='dealers'){b.innerHTML='<h3>Firebase Dealer Accounts · Pending: <span id="pendingDealerCount">Loading…</span></h3><div class="dealer-refresh-row"><button class="btn secondary dealer-refresh-btn" onclick="refreshDealerManagement()">↻ Refresh</button></div><div id="firebaseDealerList"><p class="muted">Firebaseನಿಂದ ಲೋಡ್ ಆಗುತ್ತಿದೆ…</p></div>';refreshDealerManagement()}
 else if(k==='applicators'){b.innerHTML='<h3>Firebase Applicator Accounts</h3><button class="btn secondary" onclick="loadFirebasePeople(\'worker\',\'firebasePeopleList\')">Refresh List</button><div id="firebasePeopleList"><p class="muted">Firebaseನಿಂದ ಲೋಡ್ ಆಗುತ್ತಿದೆ…</p></div>';loadFirebasePeople('worker','firebasePeopleList')}
 else if(k==='rates'){b.innerHTML=field('Dealer Mobile','rPhone','Dealer mobile','tel')+field('Epoxy Rate / pack ₹','rEpoxy','0','number')+field('Hardener Rate / pack ₹','rHardener','0','number')+field('Primer Rate / pack ₹','rPrimer','0','number')+field('Flooring Kit Rate / pack ₹','rKit','0','number')+`<button class="btn" onclick="saveRates()">Save Dealer Rates to Firebase</button><div id="rateSaved"></div>`}
 else if(k==='orders'){a=read('orders');b.innerHTML=field('Order ID','oId','Order ID')+`<div class="field"><label>Order Status</label><select id="oStatus"><option>Pending Admin Approval</option><option>Payment Verification Pending</option><option>Approved</option><option>Rejected</option><option>Dispatched</option></select></div><button class="btn" onclick="saveStatus('orders','oId','oStatus')">Update Order Status</button>`+listRows(a,x=>`${x.id} · ${x.status}`)}
