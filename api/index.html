@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="kn">
+<head>
+<meta charset="utf-8"><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>NEOCURE Admin Control</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--bg:#061426;--panel:#0d2036;--panel2:#102a45;--line:#24516f;--cyan:#35d5ff;--blue:#2878ff;--gold:#f5c66b;--text:#eff8ff;--muted:#9bb4c9;--green:#42d6a0;--red:#ff6575}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0,#123452 0,transparent 36%),linear-gradient(145deg,#030b17,#081a2d 55%,#030b17);color:var(--text);font-family:system-ui,'Noto Sans Kannada',sans-serif;min-height:100vh}button,input,select,textarea{font:inherit}button{cursor:pointer}
+.wrap{width:min(100%,760px);margin:auto;padding:14px 14px 90px}.brand{text-align:center;padding:18px 8px 20px}.brand b{font-size:29px;letter-spacing:5px;color:#a7efff;text-shadow:0 0 22px #19bdfb88}.brand small{display:block;color:#83cbe7;letter-spacing:3px;margin-top:5px;font-weight:700}
+.panel{background:linear-gradient(145deg,#102944f2,#08192cf5);border:1px solid #2c6488;border-radius:23px;padding:19px;margin:12px 0;box-shadow:0 12px 32px #0005,inset 0 1px #ffffff0b}
+h1,h2,h3,p{margin-top:0}h2{font-size:21px;margin-bottom:8px}h3{font-size:16px}.muted{color:var(--muted);font-size:13px;line-height:1.55}.tag{display:inline-block;color:#73e3ff;background:#0b3550;border:1px solid #286b8e;border-radius:30px;padding:6px 11px;font-size:11px;font-weight:800}
+.field{margin:13px 0}.field label{display:block;font-size:13px;color:#b9d4e7;font-weight:700;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;background:#061426;border:1px solid #315a78;color:white;border-radius:13px;padding:13px;outline:none}.field input:focus,.field select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #35d5ff20}
+.btn{border:0;border-radius:13px;padding:13px 16px;font-weight:800;color:#031321;background:linear-gradient(110deg,#25c8ec,#3477ff);width:100%;margin-top:8px}.btn.secondary{background:#183b58;color:#dff5ff;border:1px solid #356887}.btn.danger{background:#7d2637;color:#fff}.btn.gold{background:linear-gradient(110deg,#e5b957,#ffe19a);color:#30220a}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.keypad button{height:52px;border-radius:12px;border:1px solid #315d7e;background:#122e49;color:white;font-size:20px;font-weight:800}.keypad button:last-child{background:linear-gradient(110deg,#19c7e9,#286cff)}
+.hidden{display:none!important}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.tile{min-height:104px;text-align:left;background:linear-gradient(145deg,#123451,#0a1c30);border:1px solid #286184;border-radius:17px;padding:14px;color:white}.tile .ico{font-size:24px}.tile b{display:block;margin-top:7px;font-size:14px}.tile small{display:block;color:#9ebbd0;margin-top:4px;line-height:1.35}.stat{background:#07182a;border:1px solid #244965;border-radius:15px;padding:13px}.stat strong{display:block;font-size:23px;margin-top:5px}.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.listitem{padding:13px;border:1px solid #254a66;background:#091b2e;border-radius:13px;margin:9px 0}.listitem b{display:block}.nav{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.nav button{background:#102c46;border:1px solid #2c5877;color:#cfeeff;border-radius:20px;padding:8px 12px;font-size:12px}
+.notice{padding:12px;border-radius:12px;background:#332b17;border:1px solid #806b31;color:#ffe4a0;font-size:12px;line-height:1.5;margin-top:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.actions .btn{flex:1;min-width:120px}.tablewrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:480px;font-size:13px}th,td{text-align:left;padding:10px;border-bottom:1px solid #24435b}th{color:#7ee5ff}td{color:#dceeff}
+@media(min-width:620px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.wrap{padding-top:22px}}
+@media print{
+ @page{size:A4 portrait;margin:10mm}
+ html,body{background:#fff!important;color:#111!important;min-height:0!important}
+ body *{visibility:hidden!important}
+ #couponPrintArea,#couponPrintArea *{visibility:visible!important}
+ #couponPrintArea{display:grid!important;position:absolute!important;left:0!important;top:0!important;width:100%!important;grid-template-columns:repeat(var(--qr-cols,3),minmax(0,1fr))!important;gap:5mm!important;padding:0!important;margin:0!important}
+ .qr-card{break-inside:avoid;page-break-inside:avoid;border:1px dashed #777!important;border-radius:3mm!important;background:#fff!important;color:#111!important;padding:4mm!important;text-align:center!important;min-height:45mm}
+ .qr-card h4{color:#111!important;font-size:var(--qr-title-font,10pt)!important;margin:0 0 2mm!important}
+ .qr-card .qr-code{display:flex;justify-content:center;align-items:center;margin:0 auto 2mm}
+ .qr-card .qr-code img,.qr-card .qr-code canvas{width:var(--qr-size,28mm)!important;height:var(--qr-size,28mm)!important}
+ .qr-card p{color:#111!important;font-size:var(--qr-font,8pt)!important;margin:1mm 0!important;overflow-wrap:anywhere}
+ .no-print{display:none!important}
+}
+.qr-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0}
+.qr-tools .field{margin:4px 0}.qr-preview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.qr-card{background:#fff;color:#111;border:1px solid #cbd5e1;border-radius:12px;padding:12px;text-align:center;break-inside:avoid}
+.qr-card h4{margin:0 0 8px;font-size:13px;color:#111}.qr-code{display:flex;justify-content:center;align-items:center;min-height:100px}
+.qr-code img,.qr-code canvas{max-width:100%;height:auto}.qr-card p{margin:4px 0;color:#222;font-size:11px;overflow-wrap:anywhere}
+@media(max-width:420px){.qr-preview{grid-template-columns:1fr}.qr-tools{grid-template-columns:1fr}}
+/* Coupon output is a dedicated full-screen page; keep only its own Back button. */
+#module.coupon-output-open{position:fixed!important;inset:0!important;z-index:9999!important;width:100%!important;height:100dvh!important;max-height:100dvh!important;overflow-y:auto!important;margin:0!important;border:0!important;border-radius:0!important;padding:18px 14px 36px!important;background:linear-gradient(145deg,#102944,#061426 65%,#030b17)!important;box-shadow:none!important}
+#module.coupon-output-open>.row,#module.coupon-generator-open>.row{display:none!important}
+#module.coupon-output-open #moduleBody{width:100%;max-width:760px;margin:0 auto}
+
+
+
+.data-table th,.data-table td{padding:10px 8px;border-bottom:1px solid #294b65;text-align:left;font-size:13px}.data-table th{color:#9edcf2;background:#102b43;position:sticky;top:0}.data-table td{color:#e8f4ff}.stat{min-width:0}
+.person-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:stretch}
+.person-actions .btn{flex:1 1 145px;min-height:44px;margin:0;text-align:center}
+.person-card{overflow:hidden;line-height:1.45}
+.detail-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.detail-head h2{margin:0}.detail-head p{margin:5px 0;color:#9fb4c8}
+
+/* Dealer contact-list and dedicated 4-page navigation */
+.dealer-contact{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:15px 16px;margin:8px 0;background:linear-gradient(145deg,#123451,#091b2e);border:1px solid #2b6385;border-radius:14px;color:#eff8ff;text-align:left;font-weight:800;font-size:16px;min-height:58px}
+.dealer-contact:active{transform:scale(.99);border-color:var(--cyan)}
+.dealer-contact .arrow{color:#83dfff;font-size:20px}
+.dealer-page-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.dealer-page-head h2{margin:0;font-size:19px}
+.dealer-menu-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:16px}
+.dealer-menu-buttons .btn{margin:0;min-width:0;min-height:64px;padding:8px 4px;border-radius:11px;font-size:11px;line-height:1.2;white-space:normal;overflow-wrap:anywhere}
+.dealer-subpage{border:1px solid #285674;border-radius:15px;padding:14px;background:#091b2e;margin-top:12px}
+.dealer-subpage .field{margin:9px 0}
+.dealer-subpage .field input{padding:11px}
+.dealer-history-row{padding:12px;border:1px solid #254a66;border-radius:12px;background:#0b2035;margin:8px 0}
+.dealer-history-row .field{margin:7px 0}
+/* Centered authentication message popup */
+.auth-modal-backdrop{position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(0,7,18,.78);backdrop-filter:blur(5px)}
+.auth-modal-backdrop.hidden{display:none!important}
+.auth-modal{width:min(100%,420px);background:linear-gradient(145deg,#153653,#08192c);border:1px solid #3b789d;border-radius:20px;padding:22px;box-shadow:0 24px 70px #000b;text-align:center}
+.auth-modal-icon{width:54px;height:54px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:#512431;border:1px solid #b84d60;color:#ffdbe0;font-size:28px;font-weight:900}
+.auth-modal h3{font-size:20px;margin:0 0 9px;color:#fff}
+.auth-modal p{color:#c5d9e9;line-height:1.55;margin:0 0 18px;overflow-wrap:anywhere}
+.auth-modal .btn{margin:0}
+body.auth-modal-open{overflow:hidden}
+@media(max-width:420px){.dealer-contact{font-size:15px;min-height:54px}.dealer-menu-buttons{gap:5px}.dealer-menu-buttons .btn{min-height:60px;font-size:10px;padding:6px 2px}}
+/* Dealer workflow: full-screen mobile pages, compact refresh, one back control */
+#module.dealer-fullscreen{position:fixed!important;inset:0!important;z-index:9000!important;width:100%!important;height:100vh!important;height:100dvh!important;max-width:none!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch;margin:0!important;padding:calc(env(safe-area-inset-top,0px) + 14px) 14px calc(env(safe-area-inset-bottom,0px) + 22px)!important;border:0!important;border-radius:0!important;background:linear-gradient(155deg,#102944 0%,#071629 58%,#030b17 100%)!important;box-shadow:none!important}
+#module.dealer-fullscreen>.row{margin-bottom:14px}
+#module.dealer-menu-open>.row,#module.dealer-subpage-open>.row{display:none!important}
+.dealer-refresh-row{display:flex;justify-content:flex-end;margin:6px 0 12px}
+.dealer-refresh-btn{width:auto!important;min-width:0!important;margin:0!important;padding:7px 12px!important;min-height:34px!important;border-radius:9px!important;font-size:12px!important}
+.dealer-menu-buttons{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:7px!important;margin-top:16px!important}
+.dealer-menu-buttons .btn{min-width:0!important;width:100%!important;min-height:64px!important;padding:8px 4px!important;font-size:11px!important;line-height:1.2!important;white-space:normal!important;overflow-wrap:anywhere}
+.dealer-menu-buttons .btn .menu-icon{display:block;font-size:18px;margin-bottom:4px}
+.dealer-page-head{padding-bottom:12px;border-bottom:1px solid #285674}
+.dealer-contact-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 14px}
+.dealer-contact-actions a{display:flex;align-items:center;justify-content:center;min-height:42px;padding:9px 8px;border-radius:11px;text-decoration:none;font-weight:800;font-size:13px}
+.dealer-call-link{background:#123f36;border:1px solid #2b9b78;color:#baffdf}
+.dealer-wa-link{background:#123d2e;border:1px solid #268b5e;color:#baffd8}
+.dealer-page-head .btn{min-height:38px;padding:7px 10px!important;font-size:12px!important}.dealer-head-actions{display:flex;align-items:center;gap:7px;flex-shrink:0;flex-wrap:nowrap;justify-content:flex-end}.dealer-head-actions a.dealer-icon-link{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;min-height:36px;padding:0;border-radius:50%;text-decoration:none;font-size:19px;font-weight:600;background:rgba(36,91,119,.24);border:1px solid rgba(105,174,205,.42);color:#d7f2ff;white-space:nowrap;box-shadow:none}.dealer-head-actions a.dealer-icon-link svg{width:20px;height:20px;display:block;fill:currentColor}.dealer-page-head>div:first-child{min-width:0;flex:1}
+.dealer-subpage{margin-top:12px;padding:14px}
+@media(max-width:380px){.dealer-menu-buttons{gap:5px!important}.dealer-menu-buttons .btn{font-size:10px!important;min-height:60px!important;padding:6px 2px!important}}
+
+
+.dealer-table-wrap{width:100%;overflow-x:auto;border:1px solid #315a79;border-radius:13px;margin:12px 0;-webkit-overflow-scrolling:touch}
+.dealer-history-table{width:100%;min-width:760px;border-collapse:collapse;font-size:13px;color:#eff8ff;background:#091a2d}
+.dealer-history-table th{position:sticky;top:0;background:#153653;color:#8ee1ff;text-align:left;padding:12px 10px;white-space:nowrap;border-bottom:1px solid #396482}
+.dealer-history-table td{padding:11px 10px;border-bottom:1px solid #25415f;vertical-align:middle;white-space:nowrap}
+.dealer-history-table tr:last-child td{border-bottom:0}
+.dealer-history-table select{min-width:175px;padding:9px 8px;font-size:12px}
+.dealer-history-summary{display:flex;gap:9px;flex-wrap:wrap;margin:10px 0}
+.dealer-history-summary span{background:#102943;border:1px solid #315a79;border-radius:10px;padding:9px 11px;font-size:12px;color:#cce8fa}
+
+/* Extra-compact mobile brand and admin summary */
+.brand{padding:5px 6px 7px!important}
+.brand b{font-size:22px!important;letter-spacing:3px!important;line-height:1.1}
+.brand small{font-size:10px!important;letter-spacing:2px!important;margin-top:3px!important}
+#dashboard>.panel{padding:11px 12px!important;margin:5px 0 8px!important;border-radius:17px!important}
+#dashboard>.panel>.row{gap:7px!important;align-items:center!important}
+#dashboard>.panel .tag{font-size:9px!important;padding:4px 8px!important}
+#dashboard>.panel h2{font-size:17px!important;margin:5px 0 1px!important;line-height:1.25}
+#dashboard>.panel .muted{font-size:11px!important;line-height:1.3!important;margin-bottom:0!important}
+#dashboard>.panel>.row>.btn{padding:8px 11px!important;font-size:12px!important;border-radius:10px!important}
+#dashboard>.panel>.grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important;margin-top:7px!important}
+#dashboard>.panel .stat{min-width:0;padding:6px 5px!important;border-radius:10px!important;overflow:hidden!important}
+#dashboard>.panel .stat strong{font-size:16px!important;margin-top:1px!important;line-height:1.1!important}
+#dashboard>.panel .stat .muted{font-size:9px!important;line-height:1.15!important;display:block!important;overflow-wrap:anywhere!important}
+#dashboard>.nav{margin:7px 0!important;gap:6px!important}
+#dashboard>.nav button{padding:6px 10px!important;font-size:11px!important}
+@media(max-width:420px){.wrap{padding-top:6px!important}.brand{padding-top:2px!important;padding-bottom:5px!important}#dashboard>.panel{padding:9px 10px!important}#dashboard>.panel>.grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:4px!important}#dashboard>.panel .stat{padding:5px 4px!important}#dashboard>.panel .stat .muted{font-size:8px!important}#dashboard>.panel .stat strong{font-size:15px!important}}
+</style></head>
+<body><main class="wrap">
+<header class="brand"><b>NEOCURE</b><small>ADMIN CONTROL CENTRE</small></header>
+
+<section id="login1" class="panel">
+<span class="tag">SECURE ADMIN LOGIN</span><h2 style="margin-top:14px">Admin Email Login</h2>
+<p class="muted">ಅಧಿಕೃತ Admin Email ಮತ್ತು Password ಬಳಸಿ Login ಮಾಡಿ. OTP ಇಲ್ಲ.</p>
+<div class="field"><label>Admin Email</label><input id="adminEmail" type="email" autocomplete="username" placeholder="Admin email"></div>
+<div class="field"><label>Password</label><input id="adminPassword" type="password" autocomplete="current-password" placeholder="Password"></div>
+<button class="btn" onclick="adminLogin()">Login →</button>
+<div id="adminAuthMsg" class="notice hidden"></div>
+</section>
+<div id="authModal" class="auth-modal-backdrop hidden" role="presentation" onclick="if(event.target===this)closeAuthModal()">
+ <section class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle" aria-describedby="authModalText">
+  <div class="auth-modal-icon" aria-hidden="true">!</div>
+  <h3 id="authModalTitle">Login ವಿಫಲ</h3>
+  <p id="authModalText"></p>
+  <button type="button" class="btn" onclick="closeAuthModal()">OK</button>
+ </section>
+</div>
+<section id="dashboard" class="hidden">
+<div class="panel"><div class="row"><div><span class="tag">ADMIN CONTROL</span><h2 style="margin:10px 0 3px">ನಮಸ್ಕಾರ, Admin 👋</h2><p class="muted">Dealer ಮತ್ತು Applicator ನಿರ್ವಹಣೆ</p></div><button class="btn secondary" style="width:auto;margin:0" onclick="logout()">Logout</button></div>
+<div class="grid">
+<div class="stat"><span class="muted">Dealer Records</span><strong id="dealerCount">0</strong></div>
+<div class="stat"><span class="muted">Applicators</span><strong id="appCount">0</strong></div>
+<div class="stat"><span class="muted">Pending Payments</span><strong id="paymentCount">0</strong></div>
+</div></div>
+<div class="nav"><button onclick="showHome()">Dashboard</button><button onclick="openModule('audit')">Audit Log</button><button onclick="openModule('settings')">Settings</button></div>
+<div id="home" class="grid">
+<button class="tile" onclick="openModule('dealers')"><span class="ico">🏪</span><b>Dealer Network</b><small>Dealer list, profiles, activation</small></button>
+<button class="tile" onclick="openModule('applicators')"><span class="ico">👷</span><b>Applicator Management</b><small>Profile, rewards, withdrawal</small></button>
+<button class="tile" onclick="openModule('rates')"><span class="ico">🏷️</span><b>Dealer Rates</b><small>Individual product rates</small></button>
+<button class="tile" onclick="openModule('orders')"><span class="ico">📦</span><b>Order Management</b><small>COD, Udhaari, Online</small></button>
+<button class="tile" onclick="openModule('payments')"><span class="ico">💳</span><b>Payment Approval</b><small>Verify screenshot and amount</small></button>
+<button class="tile" onclick="openModule('ledger')"><span class="ico">📒</span><b>Dealer Ledger</b><small>Cash, credit, online entries</small></button>
+<button class="tile" onclick="openModule('rewards')"><span class="ico">🎁</span><b>Reward Settings</b><small>Coupon value and payout rules</small></button>
+<button class="tile" onclick="openModule('coupons')"><span class="ico">🔳</span><b>Coupon QR Studio</b><small>Generate and print QR batches</small></button>
+<button class="tile" onclick="openModule('issues')"><span class="ico">🛠️</span><b>Warranty & Problems</b><small>Product issue reports and photos</small></button>
+<button class="tile" onclick="openModule('reports')"><span class="ico">📊</span><b>Reports</b><small>Sales, collection, reward reports</small></button>
+<button class="tile" onclick="openModule('settings')"><span class="ico">⚙️</span><b>App Settings</b><small>UPI, security, configuration</small></button>
+<button class="tile" onclick="openModule('audit')"><span class="ico">🧾</span><b>Audit Log</b><small>Admin action records</small></button>
+</div>
+<div id="module" class="panel hidden"><div class="row"><h2 id="moduleTitle">Module</h2><button class="btn secondary" style="width:auto;margin:0" onclick="showHome()">← Back</button></div><div id="moduleBody"></div></div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id), STORE='nc_admin_demo_v1';
+let activeModule='';
+const firebaseConfig = {
+  apiKey: "AIzaSyABFenv_KFSxvUvw7KpnW29QB34w4TTcl4",
+  authDomain: "neocure-live-2026.firebaseapp.com",
+  databaseURL: "https://neocure-live-2026-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "neocure-live-2026",
+  messagingSenderId: "651603399266",
+  appId: "1:651603399266:web:6a5004ed3e95283f81773b"
+};
+if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+const adminAuth=firebase.auth(),adminDb=firebase.database();
+const read=(k,d=[])=>{try{return JSON.parse(localStorage.getItem(STORE+'_'+k)||JSON.stringify(d))}catch(e){return d}};
+const write=(k,v)=>localStorage.setItem(STORE+'_'+k,JSON.stringify(v));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function adminMessage(t){
+ $('adminAuthMsg').textContent=t;
+ $('adminAuthMsg').classList.add('hidden');
+ $('authModalText').textContent=String(t||'Login ವಿಫಲವಾಗಿದೆ.');
+ $('authModal').classList.remove('hidden');
+ document.body.classList.add('auth-modal-open');
+ const ok=$('authModal').querySelector('button');if(ok)ok.focus();
+}
+function closeAuthModal(){
+ $('authModal').classList.add('hidden');
+ document.body.classList.remove('auth-modal-open');
+ $('adminPassword').focus();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('authModal').classList.contains('hidden'))closeAuthModal();});
+
+// Admin session safety: 5-minute idle timeout, expiry checks on navigation/resume,
+// and sign-out so browser Back cannot restore an authenticated dashboard.
+const NC_ADMIN_IDLE_MS = 5 * 60 * 1000;
+const NC_ADMIN_SESSION_KEY = 'nc_admin_session_expiry_v1';
+let ncAdminIdleTimer = null;
+let ncAdminSessionEnding = false;
+function ncAdminTouch(){
+  if(!adminAuth.currentUser || ncAdminSessionEnding) return;
+  const expiry = Date.now() + NC_ADMIN_IDLE_MS;
+  try{ sessionStorage.setItem(NC_ADMIN_SESSION_KEY, String(expiry)); }catch(e){}
+  if(ncAdminIdleTimer) clearTimeout(ncAdminIdleTimer);
+  ncAdminIdleTimer = setTimeout(ncAdminExpireSession, NC_ADMIN_IDLE_MS);
+}
+async function ncAdminExpireSession(){
+  if(ncAdminSessionEnding) return;
+  ncAdminSessionEnding = true;
+  if(ncAdminIdleTimer) clearTimeout(ncAdminIdleTimer);
+  try{ sessionStorage.removeItem(NC_ADMIN_SESSION_KEY); }catch(e){}
+  try{ if(ncDealerRequestListener) ncDealerRequestListener.off(); }catch(e){}
+  try{ await adminAuth.signOut(); }catch(e){}
+  $('dashboard').classList.add('hidden');
+  $('login1').classList.remove('hidden');
+  $('adminPassword').value='';
+  adminMessage('ಭದ್ರತೆಗಾಗಿ 5 ನಿಮಿಷ inactivity ನಂತರ Logout ಮಾಡಲಾಗಿದೆ. ಮತ್ತೆ Login ಮಾಡಿ.');
+  ncAdminSessionEnding = false;
+}
+function ncAdminSessionValid(){
+  try{
+    const expiry = Number(sessionStorage.getItem(NC_ADMIN_SESSION_KEY)||0);
+    return expiry > Date.now();
+  }catch(e){ return false; }
+}
+['click','keydown','touchstart','mousemove','scroll'].forEach(ev=>{
+  document.addEventListener(ev, ()=>{ if(adminAuth.currentUser) ncAdminTouch(); }, {passive:true});
+});
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState==='visible' && adminAuth.currentUser){
+    if(!ncAdminSessionValid()) ncAdminExpireSession();
+    else ncAdminTouch();
+  }
+});
+window.addEventListener('pageshow', ()=>{
+  if(adminAuth.currentUser && !ncAdminSessionValid()) ncAdminExpireSession();
+});
+window.addEventListener('popstate', ()=>{
+  if(adminAuth.currentUser && !ncAdminSessionValid()) ncAdminExpireSession();
+});
+
+async function adminLogin(){
+  try{
+    const email=$('adminEmail').value.trim();
+    const password=$('adminPassword').value;
+    if(!email || !password) throw new Error('Admin Email ಮತ್ತು Password ನಮೂದಿಸಿ.');
+    try{sessionStorage.setItem(NC_ADMIN_SESSION_KEY,String(Date.now()+NC_ADMIN_IDLE_MS));}catch(e){}
+    const cred=await adminAuth.signInWithEmailAndPassword(email,password);
+    const snap=await adminDb.ref('admins/'+cred.user.uid).once('value');
+    if(snap.val() !== true){
+      await adminAuth.signOut();
+      throw new Error('ಈ Emailಗೆ Admin ಅನುಮತಿ ಇಲ್ಲ. Firebase Database admins/'+cred.user.uid+' = Boolean true ಇರಬೇಕು.');
+    }
+    ncAdminTouch();
+    $('login1').classList.add('hidden');
+    $('dashboard').classList.remove('hidden');
+    refreshStats();
+    ncStartDealerRequestWatcher(); ncAskBrowserNotification();
+    addAudit('Firebase Admin login');
+  }catch(e){try{sessionStorage.removeItem(NC_ADMIN_SESSION_KEY);}catch(x){} adminMessage('Admin Login ವಿಫಲ: '+(e.message||e))}
+}
+function logout(){
+  addAudit('Logout');
+  if(ncAdminIdleTimer) clearTimeout(ncAdminIdleTimer);
+  try{sessionStorage.removeItem(NC_ADMIN_SESSION_KEY);}catch(e){}
+  adminAuth.signOut();
+  $('dashboard').classList.add('hidden');
+  $('login1').classList.remove('hidden');
+  $('adminPassword').value='';
+}
+adminAuth.onAuthStateChanged(async user=>{
+  if(!user) return;
+  if(!ncAdminSessionValid()){
+    try{await adminAuth.signOut();}catch(e){}
+    $('dashboard').classList.add('hidden');
+    $('login1').classList.remove('hidden');
+    return;
+  }
+  ncAdminTouch();
+  try{
+    const snap=await adminDb.ref('admins/'+user.uid).once('value');
+    if(snap.val()===true){
+      $('login1').classList.add('hidden');$('dashboard').classList.remove('hidden');refreshStats();ncStartDealerRequestWatcher();ncAskBrowserNotification();
+    }else{await adminAuth.signOut();}
+  }catch(e){await adminAuth.signOut();adminMessage('Admin access check failed: '+e.message)}
+});
+async function refreshStats(){
+  $('paymentCount').textContent=read('payments').filter(x=>x.status==='Pending').length;
+  try{
+    const u=await adminDb.ref('users').once('value');
+    const all=u.val()||{};let dealers=0,apps=0;
+    Object.values(all).forEach(x=>{if(x&&x.role==='dealer')dealers++;if(x&&x.role==='worker')apps++;});
+    $('dealerCount').textContent=dealers;$('appCount').textContent=apps;
+  }catch(e){$('dealerCount').textContent='—';$('appCount').textContent='—';console.error('Firebase user count:',e);}
+}
+let ncDealerRequestListener=null;
+let ncKnownDealerIds=new Set();
+let ncDealerRequestBootstrapped=false;
+async function ncStartDealerRequestWatcher(){
+  if(ncDealerRequestListener) ncDealerRequestListener.off();
+  const query=adminDb.ref('users').orderByChild('role').equalTo('dealer');
+  try{const initial=await query.once('value');ncKnownDealerIds=new Set();initial.forEach(c=>ncKnownDealerIds.add(c.key));ncDealerRequestBootstrapped=true;await ncUpdatePendingDealerCount();}catch(e){console.warn('Dealer request initial load:',e.message||e);}
+  ncDealerRequestListener=query;
+  ncDealerRequestListener.on('child_added',snap=>{
+    const u=snap.val()||{}; const uid=snap.key;
+    const pending=u.approved!==true && !['Approved','Active'].includes(String(u.status||''));
+    if(ncDealerRequestBootstrapped && pending && !ncKnownDealerIds.has(uid)){
+      const who=u.profile?.shop||u.shop||u.phone||'ಹೊಸ Dealer';
+      adminMessage('ಹೊಸ Dealer Request ಬಂದಿದೆ: '+who);
+      try{ if('Notification' in window && Notification.permission==='granted') new Notification('NEOCURE – New Dealer Request',{body:who+' · Approval ಬೇಕಾಗಿದೆ'}); }catch(e){}
+      const list=$('firebaseDealerList'); if(list) loadFirebasePeople('dealer','firebaseDealerList');
+    }
+    ncKnownDealerIds.add(uid); ncUpdatePendingDealerCount();
+  });
+  ncDealerRequestListener.on('child_changed',()=>{ncUpdatePendingDealerCount();const list=$('firebaseDealerList');if(list)loadFirebasePeople('dealer','firebaseDealerList');});
+}
+function ncDealerIsPending(userData){
+  const u=userData||{};
+  const status=String(u.status||'').trim().toLowerCase();
+  if(u.approved===true) return false;
+  if(['approved','active','rejected','disabled','blocked','suspended'].includes(status)) return false;
+  return u.role==='dealer';
+}
+async function ncUpdatePendingDealerCount(){
+  try{
+    const snap=await adminDb.ref('users').orderByChild('role').equalTo('dealer').once('value');
+    let pending=0;
+    snap.forEach(c=>{if(ncDealerIsPending(c.val()))pending++;});
+    const totalEl=$('dealerCount');if(totalEl)totalEl.textContent=String(snap.numChildren());
+    const badge=$('pendingDealerCount');if(badge)badge.textContent=String(pending);
+    return {total:snap.numChildren(),pending};
+  }catch(e){
+    console.warn('Pending dealer count:',e.message||e);
+    const badge=$('pendingDealerCount');if(badge)badge.textContent='—';
+    return null;
+  }
+}
+async function ncApproveDealerFromList(uid,phone,name){
+ activeDealerAdmin={uid,phone,name};
+ await ncSetDealerApproval(uid,true);
+}
+async function ncRejectDealerFromList(uid,phone,name){
+ activeDealerAdmin={uid,phone,name};
+ await ncSetDealerApproval(uid,false);
+}
+async function ncSetDealerApproval(uid,approved){
+  const status=approved?'Approved':'Rejected';
+  if(!confirm('ಈ Dealer Request ಅನ್ನು '+status+' ಮಾಡಬೇಕೇ?'))return;
+  try{await adminDb.ref('users/'+uid).update({approved:!!approved,status,updatedAt:Date.now(),reviewedAt:Date.now()});addAudit('Dealer '+status+' '+uid);alert('Dealer '+status+' ಆಗಿದೆ.');await ncUpdatePendingDealerCount();if(activeDealerAdmin&&activeDealerAdmin.uid===uid)await openDealerAdminDetails(uid,activeDealerAdmin.phone,'details');else await loadFirebasePeople('dealer','firebaseDealerList');}
+  catch(e){alert('Status save ಆಗಲಿಲ್ಲ: '+(e.message||e)+'\nFirebase Database Rules ಪರಿಶೀಲಿಸಿ.');}
+}
+
+async function ncSetDealerAccountState(uid,nextState){
+  const state=String(nextState||'').toLowerCase();
+  if(!['suspended','active'].includes(state))return;
+  const label=state==='suspended'?'Suspend':'Reactivate';
+  const reason=state==='suspended'?prompt('Dealer suspend ಮಾಡಲು ಕಾರಣ ನಮೂದಿಸಿ:'):'';
+  if(state==='suspended'&&reason===null)return;
+  if(state==='suspended'&&!String(reason||'').trim()){alert('Suspend ಕಾರಣ ಅಗತ್ಯ.');return;}
+  if(!confirm('ಈ Dealer account ಅನ್ನು '+label+' ಮಾಡಬೇಕೇ?'))return;
+  try{
+    const patch={approved:state==='active',status:state==='active'?'Active':'Suspended',updatedAt:Date.now(),reviewedAt:Date.now(),statusReason:state==='suspended'?String(reason).trim():'',statusChangedAt:Date.now()};
+    await adminDb.ref('users/'+uid).update(patch);
+    addAudit('Dealer '+label+' '+uid+(reason?' · '+reason:''));
+    alert(state==='suspended'?'Dealer account Suspend ಆಗಿದೆ.':'Dealer account ಮತ್ತೆ Active ಆಗಿದೆ.');
+    await ncUpdatePendingDealerCount();
+    if(activeDealerAdmin&&activeDealerAdmin.uid===uid)await openDealerAdminDetails(uid,activeDealerAdmin.phone,'details');
+    else await loadFirebasePeople('dealer','firebaseDealerList');
+  }catch(e){alert('Dealer status update ಆಗಲಿಲ್ಲ: '+(e.message||e)+'\nFirebase Database Rules ಪರಿಶೀಲಿಸಿ.');}
+}
+
+
+let ncMessaging=null;
+async function ncAskBrowserNotification(){
+  try{
+    if(!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window) || !window.firebase || typeof firebase.messaging !== 'function') { console.info('FCM is unavailable in this browser; Admin login will continue normally.'); return; }
+    let permission=Notification.permission;
+    if(permission==='default') permission=await Notification.requestPermission();
+    if(permission!=='granted') return;
+    const registration=await navigator.serviceWorker.register('/firebase-messaging-sw.js',{scope:'/'});
+    ncMessaging=ncMessaging||firebase.messaging();
+    const token=await ncMessaging.getToken({vapidKey:'BK0ouWF8d2qGbofKHuc3NsiXFHfDaOOe3ZU-3-nsIA43MGIrJWlSPrJwcUj3yn8HVoVfWFgLhbNzTqQZ_m3sWUQ',serviceWorkerRegistration:registration});
+    if(!token) throw new Error('FCM token ಸಿಗಲಿಲ್ಲ.');
+    const user=adminAuth.currentUser;if(!user)return;
+    const deviceId=localStorage.getItem('nc_admin_fcm_device')||('device_'+Math.random().toString(36).slice(2)+Date.now().toString(36));
+    localStorage.setItem('nc_admin_fcm_device',deviceId);
+    await adminDb.ref('adminFcmTokens/'+user.uid+'/'+deviceId).set({token,updatedAt:Date.now(),userAgent:navigator.userAgent.slice(0,180)});
+    if(!window.ncFcmForegroundBound){
+      ncMessaging.onMessage(payload=>{
+        const title=payload.notification?.title||'NEOCURE – New Dealer Request';
+        const body=payload.notification?.body||'ಹೊಸ Dealer Request ಬಂದಿದೆ.';
+        try{new Notification(title,{body,icon:'/favicon.ico'});}catch(e){}
+      });
+      window.ncFcmForegroundBound=true;
+    }
+  }catch(e){console.warn('FCM registration failed (Admin login remains active):',e.message||e);}
+}
+
+function adminSafeText(v){return esc(v==null?'':v);}
+
+function filterFirebasePeople(inputId, listId){
+  const q=(document.getElementById(inputId)?.value||'').trim().toLowerCase();
+  const list=document.getElementById(listId);if(!list)return;
+  let shown=0;
+  list.querySelectorAll('[data-person-card]').forEach(card=>{
+    const hay=(card.getAttribute('data-search')||card.textContent||'').toLowerCase();
+    const match=!q||hay.includes(q);
+    card.style.display=match?'':'none';
+    if(match)shown++;
+  });
+  const count=document.getElementById(listId+'Count');
+  if(count)count.textContent=q?('ಹೊಂದಿದ ದಾಖಲೆಗಳು: '+shown):'';
+}
+
+async function loadFirebasePeople(roleName, targetId){
+  const target=$(targetId);if(!target)return;
+  target.innerHTML='<p class="muted">Firebaseನಿಂದ ನೈಜ ಖಾತೆಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…</p>';
+  try{
+    const usersSnap=await adminDb.ref('users').once('value');
+    const users=usersSnap.val()||{};
+    const matches=Object.entries(users).filter(([uid,u])=>u&&u.role===roleName);
+    if(!matches.length){target.innerHTML='<p class="muted">ಈ Roleಗೆ Firebaseನಲ್ಲಿ ಇನ್ನೂ ಖಾತೆ ದಾಖಲಾಗಿಲ್ಲ.</p>';return;}
+    const rows=await Promise.all(matches.map(async([uid,u])=>{
+      let data={};
+      try{const s=await adminDb.ref('appData/'+uid).once('value');data=s.val()||{};}catch(e){return {uid,u,error:e.message||'Permission denied'};}
+      const get=(key)=>{const v=data[encodeURIComponent(key)]??data[key];if(v==null)return '';try{return JSON.parse(v);}catch(e){return v;}};
+      if(roleName==='worker'){
+        const p=get('nc_applicator_profile_'+u.phone)||{};
+        const bal=get('nc_reward_balance_'+u.phone);
+        const photo=get('nc_applicator_photo_'+u.phone)||'';
+        return {uid,u,name:p.name||u.name||'ಹೆಸರು ಸೇರಿಸಿಲ್ಲ',area:p.city||'',balance:Number(bal||0),upi:p.upi||'',photo};
+      }
+      const p=get('nc_dealer_profile_'+u.phone)||{};
+      const photo=get('nc_dealer_photo_'+u.phone)||'';
+      return {uid,u,name:p.shop||u.shop||'ಅಂಗಡಿ ಹೆಸರು ಸೇರಿಸಿಲ್ಲ',area:p.city||'',owner:p.owner||'',address:p.address||'',profile:p,photo};
+    }));
+    const searchId=targetId+'Search';
+    target.innerHTML=`<label class="field"><span>ಹೆಸರು / ಮೊಬೈಲ್ ನಂಬರ್ ಹುಡುಕಿ</span><input id="${searchId}" type="search" inputmode="search" placeholder="Name ಅಥವಾ 10 digit mobile number" oninput="filterFirebasePeople('${searchId}','${targetId}')"></label><p class="muted" id="${targetId}Count"></p>`+rows.map(x=>{
+      const phone=String(x.u.phone||'');
+      const whatsapp=phone?`<a class="btn secondary" style="display:inline-block;text-decoration:none;margin-top:8px" href="https://wa.me/91${encodeURIComponent(phone)}" target="_blank" rel="noopener">WhatsApp</a>`:'';
+      const details=roleName==='worker'
+        ? `<div class="muted">ಮೊಬೈಲ್: ${adminSafeText(phone)} · ನಗರ: ${adminSafeText(x.area||'—')}</div><div>Reward Balance: <b>₹${Number(x.balance||0).toFixed(2)}</b></div>`
+        : `<div class="muted">ಮೊಬೈಲ್: ${adminSafeText(phone)} · ಮಾಲೀಕ: ${adminSafeText(x.owner||'—')}</div><div>ಊರು: ${adminSafeText(x.area||'—')} · ವಿಳಾಸ: ${adminSafeText(x.address||'—')}</div>`;
+      const photoValue=x.photo||'';
+      const photoSrc=typeof photoValue==='string'&&photoValue.startsWith('data:image/')?photoValue:'';
+      const photo=photoSrc?`<img src="${photoSrc}" alt="Profile photo" style="width:72px;height:72px;object-fit:cover;border-radius:50%;border:2px solid #38bdf8;float:right;margin:0 0 8px 12px">`:'';
+      const searchText=adminSafeText([x.name,phone,x.area,x.owner].filter(Boolean).join(' '));
+      if(roleName==='dealer'){
+        const pending=ncDealerIsPending(x.u);
+        const status=String(x.u.status||(x.u.approved?'Active':'Pending'));
+        const state=String(x.u.status|| (x.u.approved?'Active':'Pending')).trim().toLowerCase();
+        const approveAction=pending?`<button type="button" class="btn" style="width:auto;margin:8px 6px 0 12px" onclick="ncApproveDealerFromList('${x.uid}','${adminSafeText(phone)}','${adminSafeText(x.name)}')">Approve Dealer</button><button type="button" class="btn secondary" style="width:auto;margin:8px 0 0" onclick="ncRejectDealerFromList('${x.uid}','${adminSafeText(phone)}','${adminSafeText(x.name)}')">Reject</button>`:'';
+        const accountAction=(state==='active'||state==='approved')?`<button type="button" class="btn secondary" style="width:auto;margin:8px 0 0 12px" onclick="ncSetDealerAccountState('${x.uid}','suspended')">Suspend Dealer</button>`:(state==='suspended'?`<button type="button" class="btn" style="width:auto;margin:8px 0 0 12px" onclick="ncSetDealerAccountState('${x.uid}','active')">Reactivate Dealer</button>`:'');
+        return `<div class="dealer-contact-wrap" data-person-card data-search="${searchText}"><button type="button" class="dealer-contact" onclick="openDealerMenu('${x.uid}','${adminSafeText(phone)}','${adminSafeText(x.name)}')"><span>${adminSafeText(x.name)}</span><span class="arrow">›</span></button><div class="muted" style="padding:5px 12px">${adminSafeText(phone)} · Status: ${adminSafeText(status)}</div>${approveAction}${accountAction}</div>`;
+      }
+      return `<div class="listitem person-card" data-person-card data-search="${searchText}">${photo}<b>${adminSafeText(x.name)}</b>${details}<div class="muted">Status: ${adminSafeText(x.u.status|| (x.u.approved?'Active':'Pending'))}</div>${x.error?`<div class="notice">App Data ಓದಲು ಆಗಲಿಲ್ಲ: ${adminSafeText(x.error)}</div>`:''}<div class="person-actions">${whatsapp}</div><div style="clear:both"></div></div>`;
+    }).join('')+`<p class="muted">Firebase Accounts: ${rows.length}</p>`;
+  }catch(e){
+    target.innerHTML='<p class="notice">Firebase list load error: '+adminSafeText(e.code||e.message||e)+'</p>';
+  }
+}
+function addAudit(action){let a=read('audit');a.unshift({action,at:new Date().toLocaleString('en-IN')});write('audit',a.slice(0,200))}
+function showHome(){$('module').classList.add('hidden');$('home').classList.remove('hidden');refreshStats()}
+const defs={
+dealers:['Dealer Management','Dealer Mobile, Shop Name, Owner, Approval Status and individual credit/rate information.'],
+applicators:['Applicator Management','Applicator mobile, profile, coupon scans, reward balance, withdrawal requests and payout schedule.'],
+rates:['Dealer-wise Product Rates','Set Epoxy, Hardener, Primer and Flooring Kit rate for each dealer.'],
+orders:['Order Management','Review COD / Udhaari approval requests and Online Payment orders.'],
+payments:['Payment Verification','Review submitted amount, screenshot reference, dealer and verification status.'],
+ledger:['Dealer Ledger','Cash Receipt, Order Receipt, UPI collection, credit/debit and running balance.'],
+rewards:['Reward Settings','Coupon reward value, daily withdrawal cap, payout time 7–8 PM, minimum withdrawal.'],
+coupons:['Coupon QR Studio','Create coupon batch, unique code, reward amount and printable QR sheet.'],
+issues:['Warranty & Problem Reports','Customer/site problem reports, photo attachments, warranty requests and resolution status.'],
+reports:['Reports','Dealer sales, outstanding, cash collection, online payments, applicator rewards and payouts.'],
+settings:['Security & App Settings','Admin account, session timeout, UPI QR settings, app configuration.'],
+audit:['Admin Audit Log','Track admin actions with timestamp; review changes and approvals.']
+};
+function openModule(k){activeModule=k;$('home').classList.add('hidden');$('module').classList.remove('hidden','coupon-generator-open','coupon-output-open');$('module').classList.toggle('dealer-fullscreen',k==='dealers');$('module').classList.remove('dealer-menu-open','dealer-subpage-open');$('moduleTitle').textContent=defs[k][0];renderModule(k);addAudit('Opened '+defs[k][0])}
+function field(label,id,placeholder='',type='text'){return `<div class="field"><label>${label}</label><input id="${id}" type="${type}" placeholder="${placeholder}"></div>`}
+
+let activeDealerAdmin={uid:'',phone:'',name:''};
+function openDealerMenu(uid,phone,name){
+ activeDealerAdmin={uid,phone,name};
+ const mod=$('module');mod.classList.add('dealer-fullscreen','dealer-menu-open');mod.classList.remove('dealer-subpage-open');
+ const b=$('moduleBody');
+ b.innerHTML=`<div class="dealer-page-head"><div><h2>${adminSafeText(name||'Dealer')}</h2><p class="muted" style="margin:5px 0 0">${adminSafeText(phone)}</p></div><div class="dealer-head-actions"><a class="dealer-icon-link" aria-label="Direct Call" title="Direct Call" href="tel:+91${encodeURIComponent(String(phone).replace(/\D/g,''))}">☎</a><a class="dealer-icon-link" aria-label="WhatsApp" title="WhatsApp" href="https://wa.me/91${encodeURIComponent(String(phone).replace(/\D/g,''))}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.52 3.48A11.86 11.86 0 0 0 1.82 17.7L.2 23.6l6.04-1.58A11.86 11.86 0 0 0 20.52 3.48ZM12 21.1a9.1 9.1 0 0 1-4.64-1.27l-.33-.2-3.58.94.96-3.49-.22-.36A9.1 9.1 0 1 1 12 21.1Zm5-6.82c-.27-.14-1.6-.79-1.85-.88-.25-.09-.43-.14-.61.14-.18.27-.7.88-.86 1.06-.16.18-.32.2-.59.07-.27-.14-1.13-.42-2.15-1.33-.8-.71-1.34-1.59-1.5-1.86-.16-.27-.02-.42.12-.56.12-.12.27-.32.4-.48.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.48-.07-.14-.61-1.47-.84-2.01-.22-.53-.45-.46-.61-.47h-.52c-.18 0-.48.07-.73.34-.25.27-.95.93-.95 2.26s.98 2.62 1.11 2.8c.14.18 1.92 2.93 4.65 4.11.65.28 1.16.45 1.56.57.66.21 1.26.18 1.73.11.53-.08 1.6-.65 1.83-1.28.23-.63.23-1.17.16-1.28-.07-.11-.25-.18-.52-.32Z"/></svg></a><button class="btn secondary" style="width:auto;margin:0" onclick="backToDealerList()">← Back</button></div></div>
+ <div id="dealerMenuApprovalStatus" class="notice">Account Status ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…</div>
+ <div class="dealer-menu-buttons">
+  <button class="btn secondary" onclick="openDealerAdminDetails('${uid}','${phone}','rates')"><span class="menu-icon">🏷️</span>Rate</button>
+  <button class="btn secondary" onclick="openDealerAdminDetails('${uid}','${phone}','details')"><span class="menu-icon">👤</span>Details / Approval</button>
+  <button class="btn secondary" onclick="openDealerAdminDetails('${uid}','${phone}','payments')"><span class="menu-icon">💳</span>Payment</button>
+  <button class="btn secondary" onclick="openDealerAdminDetails('${uid}','${phone}','orders')"><span class="menu-icon">📦</span>Orders</button>
+ </div>`;
+ adminDb.ref('users/'+uid).once('value').then(snap=>{
+   if(!activeDealerAdmin||activeDealerAdmin.uid!==uid)return;
+   const u=snap.val()||{};const el=$('dealerMenuApprovalStatus');if(!el)return;
+   const pending=ncDealerIsPending(u);
+   el.textContent='Account Status: '+String(u.status||(u.approved?'Active':'Pending'))+(pending?' · Approval ಬೇಕಾಗಿದೆ':'');
+   el.className=pending?'notice':'listitem';
+   if(pending){const btn=document.createElement('button');btn.type='button';btn.className='btn';btn.textContent='Review & Approve Dealer';btn.style.marginTop='10px';btn.onclick=()=>openDealerAdminDetails(uid,phone,'details');el.appendChild(document.createElement('br'));el.appendChild(btn);}
+ }).catch(e=>{const el=$('dealerMenuApprovalStatus');if(el)el.textContent='Account Status ಓದಲು ಆಗಲಿಲ್ಲ: '+(e.message||e);});
+ window.scrollTo(0,0);
+}
+function backToDealerList(){const mod=$('module');mod.classList.remove('dealer-menu-open','dealer-subpage-open');mod.classList.add('dealer-fullscreen');renderModule('dealers');window.scrollTo(0,0);}
+function backToDealerMenu(){const d=activeDealerAdmin;openDealerMenu(d.uid,d.phone,d.name);}
+function ncDecodeStored(v){if(v==null)return null;try{return JSON.parse(v)}catch(e){return v;}}
+function dealerHistoryDateParts(x){
+ const raw=x.created??x.timestamp??x.dateTime??x.updatedAt??x.date??'';
+ let d=null;
+ if(typeof raw==='number'||/^\d{10,13}$/.test(String(raw))){let n=Number(raw);if(n>0&&n<1e12)n*=1000;d=new Date(n);}
+ else if(raw){const parsed=new Date(raw);if(!Number.isNaN(parsed.getTime()))d=parsed;}
+ if(!d||Number.isNaN(d.getTime()))return {date:adminSafeText(x.date||'—'),time:adminSafeText(x.time||'—')};
+ return {date:d.toLocaleDateString('en-IN'),time:d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})};
+}
+function dealerHistoryBalance(x){const v=x.balanceAfter??x.closingBalance??x.balance??x.remainingBalance??x.availableBalance;return v===undefined||v===null||v===''?'—':'₹'+Number(v).toFixed(2);}
+async function openDealerAdminDetails(uid,phone,tab){
+ activeDealerAdmin={uid,phone,name:activeDealerAdmin.name||'Dealer'};
+ const mod=$('module');mod.classList.add('dealer-fullscreen','dealer-subpage-open');mod.classList.remove('dealer-menu-open');const b=$('moduleBody');b.innerHTML='<p class="muted">Dealer ವಿವರಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…</p>';window.scrollTo(0,0);
+ try{
+  const snap=await adminDb.ref('appData/'+uid).once('value'),raw=snap.val()||{};
+  const userSnap=await adminDb.ref('users/'+uid).once('value'),userData=userSnap.val()||{};
+  const readKey=(key)=>ncDecodeStored(raw[encodeURIComponent(key)]??raw[key]);
+  const orders=readKey('nc_dealer_orders_'+phone)||[];
+  let payments=readKey('nc_dealer_payments_'+phone)||[];
+  const profile=readKey('nc_dealer_profile_'+phone)||{};
+  const rates=readKey('nc_dealer_rates')||{};
+  if(tab==='payments'){
+   const ledgerSnap=await adminDb.ref('dealer_ledger/'+phone).once('value');
+   const ledgerPayments=[];ledgerSnap.forEach(c=>{const x=c.val()||{};if(x.entryType==='PAYMENT_SUBMISSION'&&x.source==='DEALER_PAYMENT_SUBMISSION')ledgerPayments.push({...x,id:x.id||c.key,ledgerKey:c.key});});
+   const byId=new Map();(Array.isArray(payments)?payments:[]).forEach(x=>byId.set(x.id||('local_'+byId.size),x));
+   ledgerPayments.forEach(x=>byId.set(x.id,x));
+   payments=Array.from(byId.values()).sort((a,b)=>Number(b.created||b.timestamp||0)-Number(a.created||a.timestamp||0));
+  }
+  const money=n=>'₹'+Number(n||0).toFixed(2);
+  let content='';
+  if(tab==='details'){
+   const pending=ncDealerIsPending(userData);
+   const statusText=String(userData.status||(userData.approved?'Active':'Pending'));
+   content=`<h3>Dealer Details – Edit</h3><div class="field"><label>Shop Name</label><input id="admDealerShop" value="${adminSafeText(profile.shop||profile.name||'')}"></div><div class="field"><label>Owner Name</label><input id="admDealerOwner" value="${adminSafeText(profile.owner||'')}"></div><div class="field"><label>Mobile Number</label><input value="${adminSafeText(phone)}" readonly></div><div class="field"><label>Shop Address</label><input id="admDealerAddress" value="${adminSafeText(profile.address||'')}"></div><div class="field"><label>City / Area</label><input id="admDealerCity" value="${adminSafeText(profile.city||'')}"></div><div class="listitem"><b>Account Status</b> ${adminSafeText(statusText)} · approved: ${userData.approved===true?'true':'false'}</div>`;
+   const state=String(userData.status||'').trim().toLowerCase();
+   if(pending)content+=`<div class="person-actions"><button class="btn" onclick="ncSetDealerApproval('${uid}',true)">Approve Dealer</button><button class="btn secondary" onclick="ncSetDealerApproval('${uid}',false)">Reject Request</button></div>`;
+   else if(state==='active'||state==='approved')content+=`<div class="person-actions"><button class="btn secondary" onclick="ncSetDealerAccountState('${uid}','suspended')">Suspend Dealer</button></div>`;
+   else if(state==='suspended')content+=`<div class="person-actions"><button class="btn" onclick="ncSetDealerAccountState('${uid}','active')">Reactivate Dealer</button></div><p class="notice">Suspend Reason: ${adminSafeText(userData.statusReason||'—')}</p>`;
+   else if(state==='rejected')content+=`<div class="person-actions"><button class="btn" onclick="ncSetDealerApproval('${uid}',true)">Approve Dealer</button></div>`;
+   else content+=`<p class="notice">ಈ Dealer Request ಈಗಾಗಲೇ ${adminSafeText(statusText)} ಸ್ಥಿತಿಯಲ್ಲಿದೆ.</p>`;
+   content+=`<button class="btn" onclick="saveDealerProfileToFirebase('${uid}','${phone}')">Save Dealer Details</button><div id="admDealerProfileNote" class="muted"></div>`;
+  }
+  if(tab==='orders'){
+   content=`<h3>Order History</h3><p class="muted">ಈ Dealerನ Orders ವಿವರಗಳು. Status ಬದಲಿಸಿ Update ಒತ್ತಿದರೆ ಇದೇ Dealer accountಗೆ Save ಆಗುತ್ತದೆ.</p>`;
+   if(Array.isArray(orders)&&orders.length){
+    const total=orders.reduce((n,x)=>n+Number(x.totalAmount||0),0);
+    content+=`<div class="dealer-history-summary"><span>Total Orders: <b>${orders.length}</b></span><span>Total Amount: <b>${money(total)}</b></span></div><div class="dealer-table-wrap"><table class="dealer-history-table"><thead><tr><th>Order ID</th><th>Product</th><th>Quantity</th><th>Rate</th><th>Amount</th><th>Payment Method</th><th>Order Date</th><th>Time</th><th>Status</th></tr></thead><tbody>`;
+    content+=orders.map((x,i)=>{const dt=dealerHistoryDateParts(x);return `<tr><td><b>${adminSafeText(x.id||'—')}</b></td><td>${adminSafeText([x.product,x.variant].filter(Boolean).join(' · ')||'—')}</td><td>${Number(x.qty||0)}</td><td>${money(x.unitRate)}</td><td><b>${money(x.totalAmount)}</b></td><td>${adminSafeText(x.paymentMode||x.mode||'—')}</td><td>${dt.date}</td><td>${dt.time}</td><td><select id="admOrderStatus${i}">${['Pending Admin Approval','Payment Verification Pending','Awaiting Online Payment','Approved','Rejected','Dispatched','Completed','Cancelled'].map(v=>`<option ${String(x.status||'')===v?'selected':''}>${v}</option>`).join('')}</select></td></tr>`}).join('');
+    content+='</tbody></table></div>';
+    content+=`<button class="btn" onclick="saveDealerHistoryUpdates('${uid}','${phone}','orders',${orders.length})">Update Order History</button><div id="admOrdersNote" class="muted"></div>`;
+   }else content+='<p class="muted">ಈ ವಿಭಾಗದಲ್ಲಿ ಇನ್ನೂ Orders ಇಲ್ಲ.</p>';
+  }
+  if(tab==='payments'){
+   const storedLimit=readKey('nc_dealer_credit_limit_'+phone);
+   const creditLimit=Number(userData.creditLimit??profile.creditLimit??profile.credit_limit??storedLimit??0);
+   content=`<h3>Payment &amp; Credit Limit</h3><div class="field"><label>Dealer Credit Limit (₹)</label><input id="admDealerCreditLimit" type="number" min="0" step="0.01" value="${creditLimit}" placeholder="Enter credit limit"></div><button class="btn" onclick="saveDealerCreditLimitToFirebase('${uid}','${phone}')">Update Credit Limit</button><div id="admCreditLimitNote" class="muted"></div><h3 style="margin-top:18px">Payment History</h3><p class="muted">Payment Method, Amount, Balance, Payment Date ಮತ್ತು Time ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ. Status ಬದಲಿಸಿ Update ಒತ್ತಿ.</p>`;
+   if(Array.isArray(payments)&&payments.length){
+    const total=payments.reduce((n,x)=>n+Number(x.amount||0),0);
+    content+=`<div class="dealer-history-summary"><span>Total Payments: <b>${money(total)}</b></span><span>Transactions: <b>${payments.length}</b></span></div><div class="dealer-table-wrap"><table class="dealer-history-table"><thead><tr><th>Payment ID</th><th>Payment Method</th><th>Payment Amount</th><th>Balance</th><th>Payment Date</th><th>Time</th><th>UTR / Reference</th><th>Proof</th><th>Status</th></tr></thead><tbody>`;
+    content+=payments.map((x,i)=>{const dt=dealerHistoryDateParts(x);return `<tr><td><b>${adminSafeText(x.id||'—')}</b></td><td>${adminSafeText(x.paymentMode||x.mode||x.method||'—')}</td><td><b>${money(x.amount)}</b></td><td>${dealerHistoryBalance(x)}</td><td>${dt.date}</td><td>${dt.time}</td><td>${adminSafeText(x.utr||x.reference||'—')}</td><td>${x.proofUrl?`<a href="${adminSafeText(x.proofUrl)}" target="_blank" rel="noopener">View Proof</a>`:'—'}</td><td><select id="admPaymentStatus${i}">${['Pending Admin Verification','Pending','Verified','Approved','Rejected','Received'].map(v=>`<option ${String(x.status||'')===v?'selected':''}>${v}</option>`).join('')}</select></td></tr>`}).join('');
+    content+='</tbody></table></div>';
+    content+=`<button class="btn" onclick="saveDealerHistoryUpdates('${uid}','${phone}','payments',${payments.length},${JSON.stringify(payments.map(x=>({id:String(x.id||''),ledgerKey:String(x.ledgerKey||'')})))})">Update Payment History</button><div id="admPaymentsNote" class="muted"></div>`;
+   }else content+='<p class="muted">ಈ ವಿಭಾಗದಲ್ಲಿ ಇನ್ನೂ Payments ಇಲ್ಲ.</p>';
+  }
+  if(tab==='rates')content=`<h3>Dealer Product Rates</h3><p class="muted">ಈ ದರಗಳು ಈ Dealer accountಗೆ ಮಾತ್ರ Save ಆಗುತ್ತವೆ. Dealer App ಕೂಡ ಇದೇ rates ಬಳಸುತ್ತದೆ.</p><div class="field"><label>Epoxy ₹ / pack</label><input id="admRateEpoxy" type="number" min="0" value="${Number(rates.epoxy||0)}"></div><div class="field"><label>Hardener ₹ / pack</label><input id="admRateHardener" type="number" min="0" value="${Number(rates.hardener||0)}"></div><div class="field"><label>Primer ₹ / pack</label><input id="admRatePrimer" type="number" min="0" value="${Number(rates.primer||0)}"></div><div class="field"><label>Flooring Kit ₹ / pack</label><input id="admRateKit" type="number" min="0" value="${Number(rates.kit||0)}"></div><button class="btn" onclick="saveDealerRatesToFirebase('${uid}','${phone}')">Save Dealer Rates</button><div id="admRateNote" class="muted"></div>`;
+  const titles={rates:'Rate',details:'Details',payments:'Payment',orders:'Orders'};
+  b.innerHTML=`<div class="dealer-page-head"><div><h2>${adminSafeText(activeDealerAdmin.name||'Dealer')}</h2><p class="muted" style="margin:5px 0 0">${adminSafeText(phone)} · ${titles[tab]}</p></div><div class="dealer-head-actions"><a class="dealer-icon-link" aria-label="Direct Call" title="Direct Call" href="tel:+91${encodeURIComponent(String(phone).replace(/\D/g,''))}">☎</a><a class="dealer-icon-link" aria-label="WhatsApp" title="WhatsApp" href="https://wa.me/91${encodeURIComponent(String(phone).replace(/\D/g,''))}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.52 3.48A11.86 11.86 0 0 0 1.82 17.7L.2 23.6l6.04-1.58A11.86 11.86 0 0 0 20.52 3.48ZM12 21.1a9.1 9.1 0 0 1-4.64-1.27l-.33-.2-3.58.94.96-3.49-.22-.36A9.1 9.1 0 1 1 12 21.1Zm5-6.82c-.27-.14-1.6-.79-1.85-.88-.25-.09-.43-.14-.61.14-.18.27-.7.88-.86 1.06-.16.18-.32.2-.59.07-.27-.14-1.13-.42-2.15-1.33-.8-.71-1.34-1.59-1.5-1.86-.16-.27-.02-.42.12-.56.12-.12.27-.32.4-.48.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.48-.07-.14-.61-1.47-.84-2.01-.22-.53-.45-.46-.61-.47h-.52c-.18 0-.48.07-.73.34-.25.27-.95.93-.95 2.26s.98 2.62 1.11 2.8c.14.18 1.92 2.93 4.65 4.11.65.28 1.16.45 1.56.57.66.21 1.26.18 1.73.11.53-.08 1.6-.65 1.83-1.28.23-.63.23-1.17.16-1.28-.07-.11-.25-.18-.52-.32Z"/></svg></a><button class="btn secondary" style="width:auto;margin:0" onclick="backToDealerMenu()">← Back</button></div></div><div class="dealer-subpage">${content}</div>`;
+ }catch(e){b.innerHTML='<div class="notice">Dealer data load error: '+adminSafeText(e.code||e.message||e)+'</div><button class="btn secondary" onclick="backToDealerMenu()">Back</button>';}
+}
+async function saveDealerProfileToFirebase(uid,phone){
+ const existingSnap=await adminDb.ref('appData/'+uid).once('value');
+ const existingRaw=existingSnap.val()||{};
+ const profileKey='nc_dealer_profile_'+phone;
+ const existingProfile=ncDecodeStored(existingRaw[encodeURIComponent(profileKey)]??existingRaw[profileKey])||{};
+ const profile={...existingProfile,shop:$('admDealerShop').value.trim(),owner:$('admDealerOwner').value.trim(),address:$('admDealerAddress').value.trim(),city:$('admDealerCity').value.trim(),updatedAt:Date.now()};
+ if(!profile.shop){$('admDealerProfileNote').textContent='Shop Name ಅಗತ್ಯ.';return;}
+ try{
+  const updates={};
+  updates['appData/'+uid+'/'+encodeURIComponent('nc_dealer_profile_'+phone)]=JSON.stringify(profile);
+  await adminDb.ref().update(updates);
+  $('admDealerProfileNote').textContent='ಈ Dealerನ Details Firebaseಗೆ Update ಆಗಿವೆ.';
+  addAudit('Updated dealer profile and credit limit '+phone);
+ }catch(e){$('admDealerProfileNote').textContent='Update ಆಗಲಿಲ್ಲ: '+(e.code||e.message)+' — Firebase Rules ಪರಿಶೀಲಿಸಿ.';}
+}
+async function saveDealerCreditLimitToFirebase(uid,phone){
+ const input=$('admDealerCreditLimit'),note=$('admCreditLimitNote');
+ const creditLimit=Number(input?.value);
+ if(!Number.isFinite(creditLimit)||creditLimit<0){if(note)note.textContent='ಸರಿಯಾದ Credit Limit ನಮೂದಿಸಿ.';return;}
+ try{
+  const snap=await adminDb.ref('appData/'+uid).once('value'),raw=snap.val()||{};
+  const profileKey='nc_dealer_profile_'+phone;
+  const old=ncDecodeStored(raw[encodeURIComponent(profileKey)]??raw[profileKey])||{};
+  const profile={...old,creditLimit,updatedAt:Date.now()};
+  const updates={};
+  updates['appData/'+uid+'/'+encodeURIComponent(profileKey)]=JSON.stringify(profile);
+  updates['appData/'+uid+'/'+encodeURIComponent('nc_dealer_credit_limit_'+phone)]=JSON.stringify(creditLimit);
+  // Dealer App listens to users/{uid}.creditLimit for its live account display.
+  updates['users/'+uid+'/creditLimit']=creditLimit;
+  await adminDb.ref().update(updates);
+  if(note)note.textContent='ಈ Dealerನ Credit Limit Firebaseಗೆ Update ಆಗಿದೆ.';
+  addAudit('Updated dealer credit limit '+phone);
+ }catch(e){if(note)note.textContent='Update ಆಗಲಿಲ್ಲ: '+(e.code||e.message)+' — Firebase Rules ಪರಿಶೀಲಿಸಿ.';}
+}
+
+async function saveDealerHistoryUpdates(uid,phone,kind,count,ledgerIds=[]){
+ try{
+  const snap=await adminDb.ref('appData/'+uid).once('value'),raw=snap.val()||{};
+  const key='nc_dealer_'+kind+'_'+phone,stored=raw[encodeURIComponent(key)]??raw[key];
+  let arr=ncDecodeStored(stored)||[];if(!Array.isArray(arr))arr=[];
+  arr.forEach((x,i)=>{let displayIndex=i;if(kind==='payments'&&Array.isArray(ledgerIds)){const found=ledgerIds.findIndex(v=>v&&v.id===String(x.id||''));if(found>=0)displayIndex=found;}const el=$(kind==='orders'?'admOrderStatus'+i:'admPaymentStatus'+displayIndex);if(el)x.status=el.value;});
+  await adminDb.ref('appData/'+uid+'/'+encodeURIComponent(key)).set(JSON.stringify(arr));
+  if(kind==='payments'&&Array.isArray(ledgerIds)&&ledgerIds.length){
+   const updates={};ledgerIds.forEach((item,i)=>{const ledgerKey=item&&item.ledgerKey;const el=$('admPaymentStatus'+i);if(ledgerKey&&el)updates['dealer_ledger/'+phone+'/'+ledgerKey+'/status']=el.value;});
+   if(Object.keys(updates).length)await adminDb.ref().update(updates);
+  }
+  const note=$(kind==='orders'?'admOrdersNote':'admPaymentsNote');if(note)note.textContent='ಈ Dealerನ '+(kind==='orders'?'Order':'Payment')+' History Update ಆಗಿದೆ.';
+  addAudit('Updated dealer '+kind+' '+phone);
+ }catch(e){const note=$(kind==='orders'?'admOrdersNote':'admPaymentsNote');if(note)note.textContent='Update ಆಗಲಿಲ್ಲ: '+(e.code||e.message)+' — Firebase Rules ಪರಿಶೀಲಿಸಿ.';}
+}
+async function saveDealerRatesToFirebase(uid,phone){
+ const rates={epoxy:Number($('admRateEpoxy').value||0),hardener:Number($('admRateHardener').value||0),primer:Number($('admRatePrimer').value||0),kit:Number($('admRateKit').value||0),updatedAt:Date.now()};
+ try{await adminDb.ref('appData/'+uid+'/'+encodeURIComponent('nc_dealer_rates')).set(JSON.stringify(rates));$('admRateNote').textContent='ಈ Dealerನ Rates Firebaseಗೆ Update ಆಗಿವೆ.';addAudit('Updated dealer rates '+phone);}
+ catch(e){$('admRateNote').textContent='Save ಆಗಲಿಲ್ಲ: '+(e.code||e.message)+' — Firebase Rulesನಲ್ಲಿ Admin write permission ಪರಿಶೀಲಿಸಿ.';}
+}
+
+
+function couponIsRedeemed(x){
+ const st=String(x.status||'').toLowerCase();
+ return x.redeemed===true||x.used===true||x.claimed===true||/redeem|used|claim|paid/.test(st);
+}
+function couponDate(v){
+ if(!v)return '—';
+ const d=new Date(Number(v)||v);
+ return isNaN(d.getTime())?'—':d.toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+async function migrateLocalCouponsToFirebase(){
+ const localCoupons=read('coupons',[]);
+ if(!Array.isArray(localCoupons)||!localCoupons.length)return 0;
+ let migrated=0;
+ for(const x of localCoupons){
+  if(!x||!x.code)continue;
+  const ref=adminDb.ref('coupons/'+String(x.code).toUpperCase());
+  const snap=await ref.once('value');
+  if(!snap.exists()){
+   await ref.set({
+    code:String(x.code).toUpperCase(),
+    batch:x.batch||'Legacy Batch',
+    reward:Number(x.reward||0),
+    status:x.status||'Unused',
+    createdAt:Number(x.createdAt)||Date.now()
+   });
+   migrated++;
+  }
+ }
+ return migrated;
+}
+async function renderCouponDashboard(){
+ $('module').classList.remove('coupon-generator-open','coupon-output-open');
+ $('moduleBody').innerHTML='<p class="muted">Firebaseನಿಂದ QR Coupons ಲೋಡ್ ಆಗುತ್ತಿದೆ…</p>';
+ try{
+  const migrated=await migrateLocalCouponsToFirebase();
+  const snap=await adminDb.ref('coupons').once('value');
+  const raw=snap.val()||{};
+  const all=Object.entries(raw).map(([key,v])=>({...v,code:v.code||key}));
+  const redeemed=all.filter(couponIsRedeemed).length;
+  const active=all.length-redeemed;
+  const batches=[...new Set(all.map(x=>x.batch||'Default'))];
+  const rows=all.slice().sort((a,b)=>(Number(b.createdAt)||0)-(Number(a.createdAt)||0));
+  $('moduleBody').innerHTML=`
+  <div class="detail-head"><div><h2>Coupon QR Dashboard</h2><p class="muted">Firebase live QR production and redemption</p></div></div>
+  <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:9px">
+   <div class="stat">Total Production<strong>${all.length}</strong></div>
+   <div class="stat">Active QR<strong>${active}</strong></div>
+   <div class="stat">Redeemed<strong>${redeemed}</strong></div>
+   <div class="stat">Batches<strong>${batches.length}</strong></div>
+  </div>
+  <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0">
+   <button class="btn" onclick="openCouponGenerator()">＋ Generate New QR Batch</button>
+   <button class="btn secondary" style="width:auto" onclick="renderCouponDashboard()">↻ Refresh</button>
+  </div>
+  ${migrated?`<div class="notice">${migrated} ಹಳೆಯ Local QR ದಾಖಲೆಗಳನ್ನು Firebaseಗೆ ಸೇರಿಸಲಾಗಿದೆ.</div>`:''}
+  <h3>Generated QR List</h3>
+  ${rows.length?`<div style="overflow-x:auto"><table class="data-table" style="width:100%;border-collapse:collapse;min-width:520px"><thead><tr><th>QR Code</th><th>Batch</th><th>Reward</th><th>Status</th><th>Created</th><th>Redeemed By</th><th>Redeemed At</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(x.code||'—')}</td><td>${esc(x.batch||'—')}</td><td>₹${Number(x.reward||0).toFixed(2)}</td><td>${couponIsRedeemed(x)?'Redeemed':'Active'}</td><td>${couponDate(x.createdAt)}</td><td>${esc(x.claimedPhone||x.claimedBy||'—')}</td><td>${couponDate(x.claimedAt)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="muted">Firebaseನಲ್ಲಿ ಇನ್ನೂ QR Coupons ಇಲ್ಲ.</p>'}
+  <p class="muted" style="margin-top:12px">ಈ ಪಟ್ಟಿ Firebase <code>coupons</code> pathನಿಂದ ಬರುತ್ತದೆ. Dealer Appನಲ್ಲಿ QR claim ಆದಾಗ status ಮತ್ತು claimed details ಇಲ್ಲಿ Refresh ಮಾಡಿದಾಗ ಕಾಣಿಸುತ್ತವೆ.</p>`;
+ }catch(e){
+  $('moduleBody').innerHTML=`<div class="notice" style="background:#3a2518">Firebase QR data load ಆಗಲಿಲ್ಲ: ${esc(e.message||e)}. Admin login ಮತ್ತು Firebase Rulesನಲ್ಲಿ <code>coupons</code> read/write permission ಪರಿಶೀಲಿಸಿ.</div><button class="btn secondary" onclick="renderCouponDashboard()">↻ Retry</button>`;
+ }
+}
+function openCouponGenerator(){
+ $('module').classList.add('coupon-generator-open');
+ $('module').classList.remove('coupon-output-open');
+ $('moduleBody').innerHTML=`<div class="detail-head"><div><h2>Generate QR Coupons</h2><p class="muted">Create a new QR batch</p></div><button class="btn secondary" style="width:auto" onclick="renderCouponDashboard()">← Back</button></div>`+
+ field('Batch Name','cBatch','Batch')+field('Number of Coupons (max 200)','cQty','e.g. 50','number')+field('Reward per Coupon ₹','cReward','e.g. 10','number')+
+ `<button class="btn" onclick="makeCoupons()">Generate QR Coupons</button><div id="couponResult"></div>`;
+}
+async function refreshDealerManagement(){
+  const count=await ncUpdatePendingDealerCount();
+  await loadFirebasePeople('dealer','firebaseDealerList');
+  const latest=await ncUpdatePendingDealerCount();
+  return latest||count;
+}
+function renderModule(k){let b=$('moduleBody'),a;
+if(k==='dealers'){b.innerHTML='<h3>Firebase Dealer Accounts · Pending: <span id="pendingDealerCount">Loading…</span></h3><div class="dealer-refresh-row"><button class="btn secondary dealer-refresh-btn" onclick="refreshDealerManagement()">↻ Refresh</button></div><div id="firebaseDealerList"><p class="muted">Firebaseನಿಂದ ಲೋಡ್ ಆಗುತ್ತಿದೆ…</p></div>';refreshDealerManagement()}
+else if(k==='applicators'){b.innerHTML='<h3>Firebase Applicator Accounts</h3><button class="btn secondary" onclick="loadFirebasePeople(\'worker\',\'firebasePeopleList\')">Refresh List</button><div id="firebasePeopleList"><p class="muted">Firebaseನಿಂದ ಲೋಡ್ ಆಗುತ್ತಿದೆ…</p></div>';loadFirebasePeople('worker','firebasePeopleList')}
+else if(k==='rates'){b.innerHTML=field('Dealer Mobile','rPhone','Dealer mobile','tel')+field('Epoxy Rate / pack ₹','rEpoxy','0','number')+field('Hardener Rate / pack ₹','rHardener','0','number')+field('Primer Rate / pack ₹','rPrimer','0','number')+field('Flooring Kit Rate / pack ₹','rKit','0','number')+`<button class="btn" onclick="saveRates()">Save Dealer Rates to Firebase</button><div id="rateSaved"></div>`}
+else if(k==='orders'){a=read('orders');b.innerHTML=field('Order ID','oId','Order ID')+`<div class="field"><label>Order Status</label><select id="oStatus"><option>Pending Admin Approval</option><option>Payment Verification Pending</option><option>Approved</option><option>Rejected</option><option>Dispatched</option></select></div><button class="btn" onclick="saveStatus('orders','oId','oStatus')">Update Order Status</button>`+listRows(a,x=>`${x.id} · ${x.status}`)}
+else if(k==='payments'){a=read('payments');b.innerHTML=field('Payment ID','pId','Payment ID')+`<div class="field"><label>Verification Status</label><select id="pStatus"><option>Pending</option><option>Approved</option><option>Rejected</option></select></div><button class="btn" onclick="saveStatus('payments','pId','pStatus')">Update Payment</button>`+listRows(a,x=>`${x.id} · ₹${x.amount} · ${x.status}`)}
+else if(k==='ledger'){b.innerHTML=field('Dealer Mobile','lPhone','Dealer mobile','tel')+`<div class="field"><label>Entry Type</label><select id="lType"><option>Cash Receipt</option><option>Order Receipt</option><option>Udhaari Debit</option><option>UPI Receipt</option></select></div>`+field('Amount ₹','lAmount','Amount','number')+field('Remarks','lRemarks','Note')+`<button class="btn" onclick="saveLedger()">Save Ledger Entry to Firebase</button><div id="ledgerSaved"></div><h3>Recent Dealer Ledger</h3><div id="adminLedgerRows"></div>`}
+else if(k==='rewards'){b.innerHTML=field('Reward per Coupon ₹','rwValue','e.g. 10','number')+field('Daily Withdrawal Limit ₹','rwLimit','e.g. 500','number')+field('Minimum Withdrawal ₹','rwMin','e.g. 100','number')+field('Payout Window','rwTime','7 PM – 8 PM')+`<button class="btn" onclick="saveRewards()">Save Reward Settings</button>`}
+else if(k==='coupons'){renderCouponDashboard()}
+else if(k==='issues'){a=read('issues');b.innerHTML=field('Report ID','iId','Report ID')+`<div class="field"><label>Resolution Status</label><select id="iStatus"><option>Received</option><option>Under Review</option><option>Resolved</option><option>Rejected</option></select></div><button class="btn" onclick="saveStatus('issues','iId','iStatus')">Update Report</button>`+listRows(a,x=>`${x.id} · ${x.status}`)}
+else if(k==='reports'){const d=read('dealers'),apps=read('applicators'),orders=read('orders'),pay=read('payments');b.innerHTML=`<div class="grid"><div class="stat">Dealers<strong>${d.length}</strong></div><div class="stat">Applicators<strong>${apps.length}</strong></div><div class="stat">Orders<strong>${orders.length}</strong></div><div class="stat">Payments<strong>${pay.length}</strong></div></div><p class="muted" style="margin-top:12px">ಈ ವರದಿಯ ದಾಖಲೆಗಳು ಪ್ರಸ್ತುತ ಈ Browserನ Local Storage‌ನಿಂದ ಬರುತ್ತವೆ; Firebase live reports ಇನ್ನೂ ಸಂಪರ್ಕಿಸಿಲ್ಲ.</p>`}
+else if(k==='settings'){b.innerHTML=`<div class="notice">Admin ID / Password ಅನ್ನು HTMLನಲ್ಲಿ ಸಂಗ್ರಹಿಸಬೇಡಿ. Firebase Authentication, MFA, HTTPS ಮತ್ತು Realtime Database Security Rules ಬಳಸಿ.</div>`+field('Current Admin ID (display only)','sId','Not configured')+`<button class="btn secondary" onclick="alert('Connect Firebase Auth to configure admin account securely.')">Configure Secure Login (Firebase)</button>`}
+else if(k==='audit'){b.innerHTML=listRows(read('audit'),x=>`${x.at} · ${x.action}`)}
+}
+function listRows(arr,fn){return '<h3 style="margin-top:20px">Records</h3>'+(arr.length?arr.map(x=>`<div class="listitem">${esc(fn(x))}</div>`).join(''):'<p class="muted">No records yet.</p>')}
+function saveDealer(){let x={phone:$('dPhone').value.trim(),shop:$('dShop').value.trim(),owner:$('dOwner').value.trim(),status:$('dStatus').value};if(!/^\d{10}$/.test(x.phone)||!x.shop){alert('Dealer mobile ಮತ್ತು Shop Name ಪರಿಶೀಲಿಸಿ');return}let a=read('dealers');a=a.filter(v=>v.phone!==x.phone);a.push(x);write('dealers',a);addAudit('Saved dealer '+x.phone);renderModule('dealers');refreshStats()}
+function saveApplicator(){let x={phone:$('aPhone').value.trim(),name:$('aName').value.trim(),balance:Number($('aBalance').value||0)};if(!/^\d{10}$/.test(x.phone)||!x.name){alert('Applicator mobile ಮತ್ತು ಹೆಸರು ನಮೂದಿಸಿ');return}let a=read('applicators').filter(v=>v.phone!==x.phone);a.push(x);write('applicators',a);addAudit('Saved applicator '+x.phone);renderModule('applicators');refreshStats()}
+async function findDealerByPhone(phone){const snap=await adminDb.ref('users').once('value');const users=snap.val()||{};for(const [uid,u] of Object.entries(users)){if(String(u.phone||'').replace(/\D/g,'')===phone&&u.role==='dealer')return {uid,user:u};}return null;}
+async function saveRates(){const phone=$('rPhone').value.replace(/\D/g,'');if(!/^\d{10}$/.test(phone)){alert('Dealer mobile 10 digit ಇರಬೇಕು');return;}const found=await findDealerByPhone(phone);if(!found){$('rateSaved').textContent='ಈ mobileಗೆ Dealer account Firebaseನಲ್ಲಿ ಸಿಗಲಿಲ್ಲ.';return;}const rates={epoxy:+$('rEpoxy').value||0,hardener:+$('rHardener').value||0,primer:+$('rPrimer').value||0,kit:+$('rKit').value||0,updatedAt:Date.now()};try{const key='nc_dealer_rates';const updates={};updates['appData/'+found.uid+'/'+encodeURIComponent(key)]=JSON.stringify(rates);updates['users/'+found.uid+'/dealerRates']=rates;await adminDb.ref().update(updates);addAudit('Updated Firebase rates '+phone);$('rateSaved').innerHTML='<p class=\"notice\">Dealer '+esc(phone)+' rates Firebaseಗೆ save ಆಗಿವೆ.</p>';}catch(e){$('rateSaved').textContent='Firebase save ವಿಫಲ: '+e.message;}}
+function saveStatus(key,id,status){let v=$(id).value.trim();if(!v){alert('Record ID ನಮೂದಿಸಿ');return}let a=read(key),x=a.find(z=>z.id===v);if(!x){alert('ಈ Demoನಲ್ಲಿ record ಸಿಗಲಿಲ್ಲ.');return}x.status=$(status).value;write(key,a);addAudit('Updated '+key+' '+v);renderModule(activeModule);refreshStats()}
+async function saveLedger(){const phone=$('lPhone').value.replace(/\D/g,'');const amount=Number($('lAmount').value||0);if(!/^\d{10}$/.test(phone)||amount<=0){alert('Dealer mobile ಮತ್ತು Amount ಸರಿಯಾಗಿರಲಿ');return;}const found=await findDealerByPhone(phone);if(!found){$('ledgerSaved').textContent='ಈ mobileಗೆ Dealer account Firebaseನಲ್ಲಿ ಸಿಗಲಿಲ್ಲ.';return;}const type=$('lType').value;const entry={type,entryType:type,amount,remarks:$('lRemarks').value.trim(),status:'Posted',created:Date.now(),timestamp:Date.now(),date:new Date().toISOString().slice(0,10),source:'ADMIN_LEDGER'};try{await adminDb.ref('dealer_ledger/'+phone).push(entry);addAudit('Firebase ledger entry '+phone);$('ledgerSaved').textContent='Ledger entry Firebaseಗೆ save ಆಗಿದೆ.';await loadAdminLedger(phone);}catch(e){$('ledgerSaved').textContent='Firebase save ವಿಫಲ: '+e.message;}}
+async function loadAdminLedger(phone){const box=$('adminLedgerRows');if(!box)return;box.textContent='Loading…';try{const snap=await adminDb.ref('dealer_ledger/'+phone).limitToLast(30).once('value');const rows=[];snap.forEach(c=>rows.push(c.val()||{}));rows.reverse();box.innerHTML=rows.length?rows.map(x=>`<div class=\"listitem\"><b>${esc(x.type||x.entryType||'Entry')} · ₹${Number(x.amount||0).toFixed(2)}</b><span class=\"muted\">${esc(x.remarks||x.status||'')} · ${new Date(Number(x.timestamp||x.created||Date.now())).toLocaleString('en-IN')}</span></div>`).join(''):'<p class=\"muted\">ಈ Dealerಗೆ Ledger entries ಇಲ್ಲ.</p>';}catch(e){box.textContent='Ledger load ವಿಫಲ: '+e.message;}}
+function saveRewards(){let x={value:+$('rwValue').value||0,limit:+$('rwLimit').value||0,min:+$('rwMin').value||0,time:$('rwTime').value.trim()};write('rewardSettings',x);addAudit('Reward settings changed');alert('Demo reward settings saved')}
+let couponSettingsHTML='';
+let couponSettingsValues={};
+function backToCouponSettings(){
+ const b=$('moduleBody');
+ $('module').classList.remove('coupon-output-open');
+ $('module').classList.add('coupon-generator-open');
+ if(!couponSettingsHTML)return;
+ b.innerHTML=couponSettingsHTML;
+ Object.entries(couponSettingsValues).forEach(([id,value])=>{const el=$(id);if(el)el.value=value;});
+ window.scrollTo(0,0);
+}
+
+async function makeCoupons(){
+ let qty=Math.min(200,Math.max(1,+$('cQty').value||0)),batch=$('cBatch').value.trim(),reward=+$('cReward').value||0;
+ if(!batch||reward<=0){alert('Batch name ಮತ್ತು reward value ಬೇಕು');return}
+ if(typeof QRCode==='undefined'){alert('QR library load ಆಗಿಲ್ಲ. Internet connection ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');return}
+ const b=$('moduleBody');
+ couponSettingsHTML=b.innerHTML;
+ couponSettingsValues={cBatch:$('cBatch').value,cQty:$('cQty').value,cReward:$('cReward').value};
+ let created=[],updates={};
+ for(let i=0;i<qty;i++){
+  let code='NC'+Date.now().toString(36).toUpperCase()+Math.random().toString(36).slice(2,9).toUpperCase();
+  let item={code,batch,reward,status:'Unused',createdAt:firebase.database.ServerValue.TIMESTAMP};
+  created.push({...item,createdAt:Date.now()});
+  updates[code]={...item,createdAt:firebase.database.ServerValue.TIMESTAMP};
+ }
+ try{
+  await adminDb.ref('coupons').update(updates);
+  let local=read('coupons',[]);
+  write('coupons',local.concat(created));
+  addAudit('Generated '+qty+' Firebase QR coupons');
+ }catch(e){
+  alert('Firebaseಗೆ QR Save ಆಗಲಿಲ್ಲ: '+(e.message||e)+'. Internet ಮತ್ತು Firebase Rules ಪರಿಶೀಲಿಸಿ.');
+  return;
+ }
+ $('module').classList.remove('coupon-generator-open');
+ $('module').classList.add('coupon-output-open');
+ b.innerHTML=`<div class="dealer-page-head"><div><h2>Generated QR Coupons</h2><p class="muted" style="margin:5px 0 0">${qty} coupons · ${esc(batch)} · Reward ₹${Number(reward).toFixed(2)}</p></div><button class="btn secondary" style="width:auto;margin:0" onclick="backToCouponSettings()">← Back</button></div>
+ <div class="notice">${qty} QR coupons Firebaseಗೆ Save ಆಗಿವೆ. Print ಅಥವಾ Save as PDF ಆಯ್ಕೆಮಾಡಿ.</div>
+ <div class="qr-tools no-print">
+  <div class="field"><label>Paper Size</label><select id="qrPaper">
+    <option value="A4 portrait">A4 Portrait</option><option value="A4 landscape">A4 Landscape</option>
+    <option value="A5 portrait" selected>A5 Portrait</option><option value="A5 landscape">A5 Landscape</option>
+    <option value="Letter portrait">Letter</option></select></div>
+  <div class="field"><label>QR per row / Columns</label><select id="qrCols">
+    <option value="1">1 Column</option><option value="2">2 Columns</option><option value="3">3 Columns</option><option value="4" selected>4 Columns</option></select></div>
+  <div class="field"><label>QR Code Size</label><select id="qrSize">
+    <option value="15">Extra Small (15 mm)</option><option value="18">Small (18 mm)</option><option value="22">Medium (22 mm)</option><option value="28" selected>Large (28 mm)</option><option value="32">Extra Large (32 mm)</option></select></div>
+  <div class="field"><label>Font Size</label><select id="qrFont">
+    <option value="6">Tiny (6 pt)</option><option value="7">Small (7 pt)</option><option value="8" selected>Normal (8 pt)</option><option value="9">Medium (9 pt)</option><option value="10">Large (10 pt)</option><option value="12">Extra Large (12 pt)</option></select></div>
+  <div class="field"><label>Title Font Size</label><select id="qrTitleFont">
+    <option value="8">Small (8 pt)</option><option value="10" selected>Normal (10 pt)</option><option value="12">Large (12 pt)</option><option value="14">Extra Large (14 pt)</option></select></div>
+  <div class="field"><label>Page Margin</label><select id="qrMargin">
+    <option value="3">Extra Narrow (3 mm)</option><option value="5">Narrow (5 mm)</option><option value="8" selected>Normal (8 mm)</option><option value="12">Wide (12 mm)</option></select></div>
+  <div class="field"><label>Card Gap</label><select id="qrGap">
+    <option value="2">Tight (2 mm)</option><option value="4" selected>Normal (4 mm)</option><option value="6">Wide (6 mm)</option></select></div>
+  </div>
+  <div class="actions no-print"><button class="btn" onclick="printCouponBatch()">🖨️ Print QR</button><button class="btn gold" onclick="printCouponBatch()">📄 Save as PDF</button></div>
+ <p class="muted no-print">Save as PDF ಮಾಡಲು Print dialogನಲ್ಲಿ Destination → Save as PDF ಆಯ್ಕೆಮಾಡಿ. Page size ಮತ್ತು layout ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೆಟ್ ಆಗುತ್ತದೆ.</p><div id="couponPrintArea" class="qr-preview"></div>`;
+ renderCouponCards(created);
+ window.scrollTo(0,0);
+}
+function renderCouponCards(items){const area=$('couponPrintArea');if(!area)return;area.innerHTML=items.map((x,i)=>`<article class="qr-card"><h4>NEOCURE · ${esc(x.batch)}</h4><div class="qr-code" id="couponQr${i}"></div><p><b>${esc(x.code)}</b></p><p>Reward: ₹${Number(x.reward).toFixed(2)}</p></article>`).join('');items.forEach((x,i)=>new QRCode($('couponQr'+i),{text:x.code,width:120,height:120,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}));}
+function printCouponBatch(){
+ const area=$('couponPrintArea');
+ if(!area||!area.children.length){alert('ಮೊದಲು QR coupons generate ಮಾಡಿ');return}
+ const paper=$('qrPaper')?.value||'A5 portrait';
+ const cols=Math.min(4,Math.max(1,+$('qrCols')?.value||4));
+ const size=+$('qrSize')?.value||28;
+ const font=+$('qrFont')?.value||8;
+ const titleFont=+$('qrTitleFont')?.value||10;
+ const margin=+$('qrMargin')?.value||8;
+ const gap=+$('qrGap')?.value||4;
+ let style=document.getElementById('couponPrintDynamic');
+ if(!style){style=document.createElement('style');style.id='couponPrintDynamic';document.head.appendChild(style)}
+ style.textContent=`@media print{
+ @page{size:${paper};margin:${margin}mm}
+ #couponPrintArea{--qr-cols:${cols};--qr-size:${size}mm;--qr-font:${font}pt;--qr-title-font:${titleFont}pt;grid-template-columns:repeat(${cols},minmax(0,1fr))!important;gap:${gap}mm!important}
+ #couponPrintArea .qr-card{padding:3mm!important;min-height:0!important}
+ }`;
+ window.print();
+}
+function refreshStatsOnOpen(){refreshStats()}
+</script></body></html>
