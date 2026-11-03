@@ -12,38 +12,38 @@
     },
     "users": {
       ".read": "auth != null && root.child('admins').child(auth.uid).val() == true",
+      ".write": false,
       "$uid": {
         ".read": "auth != null && (auth.uid == $uid || root.child('admins').child(auth.uid).val() == true)",
-        ".write": false,
+        ".write": "auth != null && root.child('admins').child(auth.uid).val() == true",
         "role": {
-          ".write": "auth != null && (root.child('admins').child(auth.uid).val() == true || (auth.uid == $uid && !data.exists()))",
-          ".validate": "newData.val() == 'dealer' || newData.val() == 'worker'"
+          ".write": "auth != null && (auth.uid == $uid || root.child('admins').child(auth.uid).val() == true)",
+          ".validate": "newData.val() == 'dealer' || root.child('admins').child(auth.uid).val() == true"
         },
         "phone": {
-          ".write": "auth != null && (root.child('admins').child(auth.uid).val() == true || (auth.uid == $uid && !data.exists()))",
-          ".validate": "newData.isString() && newData.val().matches(/^\\d{10}$/)"
+          ".write": "auth != null && (auth.uid == $uid || root.child('admins').child(auth.uid).val() == true)",
+          ".validate": "root.child('admins').child(auth.uid).val() == true || (!data.exists() && newData.isString() && newData.val().matches(/^\\d{10,15}$/))"
         },
-        "approved": {
-          ".write": "auth != null && (root.child('admins').child(auth.uid).val() == true || (auth.uid == $uid && !data.exists() && ((root.child('users').child($uid).child('role').val() == 'worker' && newData.val() == true) || (root.child('users').child($uid).child('role').val() == 'dealer' && newData.val() == false))))",
-          ".validate": "newData.isBoolean()"
+        "creditLimit": {
+          ".write": "auth != null && (auth.uid == $uid || root.child('admins').child(auth.uid).val() == true)"
         },
-        "status": {
-          ".write": "auth != null && (root.child('admins').child(auth.uid).val() == true || (auth.uid == $uid && !data.exists() && ((root.child('users').child($uid).child('role').val() == 'worker' && newData.val() == 'active') || (root.child('users').child($uid).child('role').val() == 'dealer' && newData.val() == 'pending'))))",
-          ".validate": "newData.isString()"
+        "profile": {
+          ".write": "auth != null && (auth.uid == $uid || root.child('admins').child(auth.uid).val() == true)"
         },
         "createdAt": {
-          ".write": "auth != null && (root.child('admins').child(auth.uid).val() == true || (auth.uid == $uid && !data.exists()))",
-          ".validate": "newData.isNumber()"
+          ".write": "auth != null && (auth.uid == $uid || root.child('admins').child(auth.uid).val() == true)"
         },
-        "rewardBalance": {
-          ".write": "auth != null && root.child('admins').child(auth.uid).val() == true",
-          ".validate": "newData.isNumber() && newData.val() >= 0"
+        "updatedAt": {
+          ".write": "auth != null && (auth.uid == $uid || root.child('admins').child(auth.uid).val() == true)"
         },
-        "rewardHistory": {
+        "approved": {
           ".write": "auth != null && root.child('admins').child(auth.uid).val() == true"
         },
-        "$field": {
-          ".write": "auth != null && (root.child('admins').child(auth.uid).val() == true || (auth.uid == $uid && $field != 'role' && $field != 'phone' && $field != 'approved' && $field != 'status' && $field != 'createdAt' && $field != 'rewardBalance' && $field != 'rewardHistory'))"
+        "status": {
+          ".write": "auth != null && root.child('admins').child(auth.uid).val() == true"
+        },
+        "reviewedAt": {
+          ".write": "auth != null && root.child('admins').child(auth.uid).val() == true"
         }
       }
     },
@@ -55,11 +55,29 @@
         ".write": "auth != null && (auth.uid == $uid || root.child('admins').child(auth.uid).val() == true)"
       }
     },
+    "adminFcmTokens": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid && root.child('admins').child(auth.uid).val() == true",
+        ".write": "auth != null && auth.uid == $uid && root.child('admins').child(auth.uid).val() == true"
+      }
+    },
+    "dealerFcmTokens": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid"
+      }
+    },
+    "dealer_ledger": {
+      "$phone": {
+        ".read": "auth != null && (root.child('admins').child(auth.uid).val() == true || root.child('users').child(auth.uid).child('phone').val() == $phone)",
+        ".write": "auth != null && (root.child('admins').child(auth.uid).val() == true || root.child('users').child(auth.uid).child('phone').val() == $phone)"
+      }
+    },
     "coupons": {
       ".read": "auth != null && root.child('admins').child(auth.uid).val() == true",
-      ".write": "auth != null && root.child('admins').child(auth.uid).val() == true",
       "$code": {
-        ".validate": "newData.hasChildren(['code','batch','reward','status','createdAt']) && newData.child('code').val() == $code && newData.child('reward').isNumber() && newData.child('reward').val() > 0 && newData.child('batch').isString() && newData.child('createdAt').isNumber() && (newData.child('status').val() == 'Unused' || newData.child('status').val() == 'Claimed')"
+        ".read": "auth != null",
+        ".write": "auth != null && root.child('admins').child(auth.uid).val() == true"
       }
     }
   }
