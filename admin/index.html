@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="kn">
 <head>
-<meta charset="utf-8"><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging-compat.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta charset="utf-8"><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script><script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>NEOCURE Admin Control</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
@@ -176,7 +176,7 @@ const firebaseConfig = {
   appId: "1:651603399266:web:6a5004ed3e95283f81773b"
 };
 if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
-const adminAuth=firebase.auth(),adminDb=firebase.database(),adminFns=firebase.app().functions('asia-south1');
+const adminAuth=firebase.auth(),adminDb=firebase.database(),adminFns=firebase.app().functions('asia-southeast1');
 const read=(k,d=[])=>{try{return JSON.parse(localStorage.getItem(STORE+'_'+k)||JSON.stringify(d))}catch(e){return d}};
 const write=(k,v)=>localStorage.setItem(STORE+'_'+k,JSON.stringify(v));
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -194,26 +194,79 @@ function closeAuthModal(){
  $('adminPassword').focus();
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('authModal').classList.contains('hidden'))closeAuthModal();});
+
+// Admin session safety: 5-minute idle timeout, expiry checks on navigation/resume,
+// and sign-out so browser Back cannot restore an authenticated dashboard.
+const NC_ADMIN_IDLE_MS = 5 * 60 * 1000;
+const NC_ADMIN_SESSION_KEY = 'nc_admin_session_expiry_v1';
+let ncAdminIdleTimer = null;
+let ncAdminSessionEnding = false;
+function ncAdminTouch(){
+  if(!adminAuth.currentUser || ncAdminSessionEnding) return;
+  const expiry = Date.now() + NC_ADMIN_IDLE_MS;
+  try{ sessionStorage.setItem(NC_ADMIN_SESSION_KEY, String(expiry)); }catch(e){}
+  if(ncAdminIdleTimer) clearTimeout(ncAdminIdleTimer);
+  ncAdminIdleTimer = setTimeout(ncAdminExpireSession, NC_ADMIN_IDLE_MS);
+}
+async function ncAdminExpireSession(){
+  if(ncAdminSessionEnding) return;
+  ncAdminSessionEnding = true;
+  if(ncAdminIdleTimer) clearTimeout(ncAdminIdleTimer);
+  try{ sessionStorage.removeItem(NC_ADMIN_SESSION_KEY); }catch(e){}
+  try{ if(ncDealerRequestListener) ncDealerRequestListener.off(); }catch(e){}
+  try{ await adminAuth.signOut(); }catch(e){}
+  $('dashboard').classList.add('hidden');
+  $('login1').classList.remove('hidden');
+  $('adminPassword').value='';
+  adminMessage('ಭದ್ರತೆಗಾಗಿ 5 ನಿಮಿಷ inactivity ನಂತರ Logout ಮಾಡಲಾಗಿದೆ. ಮತ್ತೆ Login ಮಾಡಿ.');
+  ncAdminSessionEnding = false;
+}
+function ncAdminSessionValid(){
+  try{
+    const expiry = Number(sessionStorage.getItem(NC_ADMIN_SESSION_KEY)||0);
+    return expiry > Date.now();
+  }catch(e){ return false; }
+}
+['click','keydown','touchstart','mousemove','scroll'].forEach(ev=>{
+  document.addEventListener(ev, ()=>{ if(adminAuth.currentUser) ncAdminTouch(); }, {passive:true});
+});
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState==='visible' && adminAuth.currentUser){
+    if(!ncAdminSessionValid()) ncAdminExpireSession();
+    else ncAdminTouch();
+  }
+});
+window.addEventListener('pageshow', ()=>{
+  if(adminAuth.currentUser && !ncAdminSessionValid()) ncAdminExpireSession();
+});
+window.addEventListener('popstate', ()=>{
+  if(adminAuth.currentUser && !ncAdminSessionValid()) ncAdminExpireSession();
+});
+
 async function adminLogin(){
   try{
     const email=$('adminEmail').value.trim();
     const password=$('adminPassword').value;
     if(!email || !password) throw new Error('Admin Email ಮತ್ತು Password ನಮೂದಿಸಿ.');
+    try{sessionStorage.setItem(NC_ADMIN_SESSION_KEY,String(Date.now()+NC_ADMIN_IDLE_MS));}catch(e){}
     const cred=await adminAuth.signInWithEmailAndPassword(email,password);
     const snap=await adminDb.ref('admins/'+cred.user.uid).once('value');
     if(snap.val() !== true){
       await adminAuth.signOut();
       throw new Error('ಈ Emailಗೆ Admin ಅನುಮತಿ ಇಲ್ಲ. Firebase Database admins/'+cred.user.uid+' = Boolean true ಇರಬೇಕು.');
     }
+    ncAdminTouch();
     $('login1').classList.add('hidden');
     $('dashboard').classList.remove('hidden');
     refreshStats();
     ncStartDealerRequestWatcher(); ncAskBrowserNotification();
     addAudit('Firebase Admin login');
-  }catch(e){adminMessage('Admin Login ವಿಫಲ: '+(e.message||e))}
+  }catch(e){try{sessionStorage.removeItem(NC_ADMIN_SESSION_KEY);}catch(x){} adminMessage('Admin Login ವಿಫಲ: '+(e.message||e))}
 }
 function logout(){
   addAudit('Logout');
+  if(ncAdminIdleTimer) clearTimeout(ncAdminIdleTimer);
+  try{sessionStorage.removeItem(NC_ADMIN_SESSION_KEY);}catch(e){}
   adminAuth.signOut();
   $('dashboard').classList.add('hidden');
   $('login1').classList.remove('hidden');
@@ -221,6 +274,13 @@ function logout(){
 }
 adminAuth.onAuthStateChanged(async user=>{
   if(!user) return;
+  if(!ncAdminSessionValid()){
+    try{await adminAuth.signOut();}catch(e){}
+    $('dashboard').classList.add('hidden');
+    $('login1').classList.remove('hidden');
+    return;
+  }
+  ncAdminTouch();
   try{
     const snap=await adminDb.ref('admins/'+user.uid).once('value');
     if(snap.val()===true){
@@ -272,7 +332,7 @@ async function ncSetDealerApproval(uid,approved){
 let ncMessaging=null;
 async function ncAskBrowserNotification(){
   try{
-    if(!('Notification' in window) || !('serviceWorker' in navigator) || !firebase.messaging.isSupported()) return;
+    if(!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window) || !window.firebase || typeof firebase.messaging !== 'function') { console.info('FCM is unavailable in this browser; Admin login will continue normally.'); return; }
     let permission=Notification.permission;
     if(permission==='default') permission=await Notification.requestPermission();
     if(permission!=='granted') return;
@@ -292,7 +352,7 @@ async function ncAskBrowserNotification(){
       });
       window.ncFcmForegroundBound=true;
     }
-  }catch(e){console.warn('FCM registration failed:',e.message||e);adminMessage('Push Notification setup ಆಗಲಿಲ್ಲ: '+(e.message||e));}
+  }catch(e){console.warn('FCM registration failed (Admin login remains active):',e.message||e);}
 }
 
 function adminSafeText(v){return esc(v==null?'':v);}
@@ -428,8 +488,8 @@ async function openDealerAdminDetails(uid,phone,tab){
    content=`<h3>Payment &amp; Credit Limit</h3><div class="field"><label>Dealer Credit Limit (₹)</label><input id="admDealerCreditLimit" type="number" min="0" step="0.01" value="${creditLimit}" placeholder="Enter credit limit"></div><button class="btn" onclick="saveDealerCreditLimitToFirebase('${uid}','${phone}')">Update Credit Limit</button><div id="admCreditLimitNote" class="muted"></div><h3 style="margin-top:18px">Payment History</h3><p class="muted">Payment Method, Amount, Balance, Payment Date ಮತ್ತು Time ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ. Status ಬದಲಿಸಿ Update ಒತ್ತಿ.</p>`;
    if(Array.isArray(payments)&&payments.length){
     const total=payments.reduce((n,x)=>n+Number(x.amount||0),0);
-    content+=`<div class="dealer-history-summary"><span>Total Payments: <b>${money(total)}</b></span><span>Transactions: <b>${payments.length}</b></span></div><div class="dealer-table-wrap"><table class="dealer-history-table"><thead><tr><th>Payment ID</th><th>Payment Method</th><th>Payment Amount</th><th>Balance</th><th>Payment Date</th><th>Time</th><th>UTR / Reference</th><th>Status</th></tr></thead><tbody>`;
-    content+=payments.map((x,i)=>{const dt=dealerHistoryDateParts(x);return `<tr><td><b>${adminSafeText(x.id||'—')}</b></td><td>${adminSafeText(x.paymentMode||x.mode||x.method||'—')}</td><td><b>${money(x.amount)}</b></td><td>${dealerHistoryBalance(x)}</td><td>${dt.date}</td><td>${dt.time}</td><td>${adminSafeText(x.utr||x.reference||'—')}</td><td><select id="admPaymentStatus${i}">${['Pending Admin Verification','Pending','Verified','Approved','Rejected','Received'].map(v=>`<option ${String(x.status||'')===v?'selected':''}>${v}</option>`).join('')}</select></td></tr>`}).join('');
+    content+=`<div class="dealer-history-summary"><span>Total Payments: <b>${money(total)}</b></span><span>Transactions: <b>${payments.length}</b></span></div><div class="dealer-table-wrap"><table class="dealer-history-table"><thead><tr><th>Payment ID</th><th>Payment Method</th><th>Payment Amount</th><th>Balance</th><th>Payment Date</th><th>Time</th><th>UTR / Reference</th><th>Screenshot</th><th>Status</th></tr></thead><tbody>`;
+    content+=payments.map((x,i)=>{const dt=dealerHistoryDateParts(x);return `<tr><td><b>${adminSafeText(x.id||'—')}</b></td><td>${adminSafeText(x.paymentMode||x.mode||x.method||'—')}</td><td><b>${money(x.amount)}</b></td><td>${dealerHistoryBalance(x)}</td><td>${dt.date}</td><td>${dt.time}</td><td>${adminSafeText(x.utr||x.reference||'—')}</td><td>${x.proofUrl?`<a href="${adminSafeText(x.proofUrl)}" target="_blank" rel="noopener">View Proof</a>`:'—'}</td><td><select id="admPaymentStatus${i}">${['Pending Admin Verification','Pending','Verified','Approved','Rejected','Received'].map(v=>`<option ${String(x.status||'')===v?'selected':''}>${v}</option>`).join('')}</select></td></tr>`}).join('');
     content+='</tbody></table></div>';
     content+=`<button class="btn" onclick="saveDealerHistoryUpdates('${uid}','${phone}','payments',${payments.length})">Update Payment History</button><div id="admPaymentsNote" class="muted"></div>`;
    }else content+='<p class="muted">ಈ ವಿಭಾಗದಲ್ಲಿ ಇನ್ನೂ Payments ಇಲ್ಲ.</p>';
