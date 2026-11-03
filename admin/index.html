@@ -321,7 +321,7 @@ function ncDealerIsPending(userData){
   const u=userData||{};
   const status=String(u.status||'').trim().toLowerCase();
   if(u.approved===true) return false;
-  if(['approved','active','rejected','disabled','blocked'].includes(status)) return false;
+  if(['approved','active','rejected','disabled','blocked','suspended'].includes(status)) return false;
   return u.role==='dealer';
 }
 async function ncUpdatePendingDealerCount(){
@@ -342,12 +342,36 @@ async function ncApproveDealerFromList(uid,phone,name){
  activeDealerAdmin={uid,phone,name};
  await ncSetDealerApproval(uid,true);
 }
+async function ncRejectDealerFromList(uid,phone,name){
+ activeDealerAdmin={uid,phone,name};
+ await ncSetDealerApproval(uid,false);
+}
 async function ncSetDealerApproval(uid,approved){
   const status=approved?'Approved':'Rejected';
   if(!confirm('ಈ Dealer Request ಅನ್ನು '+status+' ಮಾಡಬೇಕೇ?'))return;
-  try{await adminDb.ref('users/'+uid).update({approved:!!approved,status,updatedAt:Date.now(),reviewedAt:Date.now()});addAudit('Dealer '+status+' '+uid);alert('Dealer '+status+' ಆಗಿದೆ.');await ncUpdatePendingDealerCount();await openDealerAdminDetails(uid,activeDealerAdmin.phone,'details');}
+  try{await adminDb.ref('users/'+uid).update({approved:!!approved,status,updatedAt:Date.now(),reviewedAt:Date.now()});addAudit('Dealer '+status+' '+uid);alert('Dealer '+status+' ಆಗಿದೆ.');await ncUpdatePendingDealerCount();if(activeDealerAdmin&&activeDealerAdmin.uid===uid)await openDealerAdminDetails(uid,activeDealerAdmin.phone,'details');else await loadFirebasePeople('dealer','firebaseDealerList');}
   catch(e){alert('Status save ಆಗಲಿಲ್ಲ: '+(e.message||e)+'\nFirebase Database Rules ಪರಿಶೀಲಿಸಿ.');}
 }
+
+async function ncSetDealerAccountState(uid,nextState){
+  const state=String(nextState||'').toLowerCase();
+  if(!['suspended','active'].includes(state))return;
+  const label=state==='suspended'?'Suspend':'Reactivate';
+  const reason=state==='suspended'?prompt('Dealer suspend ಮಾಡಲು ಕಾರಣ ನಮೂದಿಸಿ:'):'';
+  if(state==='suspended'&&reason===null)return;
+  if(state==='suspended'&&!String(reason||'').trim()){alert('Suspend ಕಾರಣ ಅಗತ್ಯ.');return;}
+  if(!confirm('ಈ Dealer account ಅನ್ನು '+label+' ಮಾಡಬೇಕೇ?'))return;
+  try{
+    const patch={approved:state==='active',status:state==='active'?'Active':'Suspended',updatedAt:Date.now(),reviewedAt:Date.now(),statusReason:state==='suspended'?String(reason).trim():'',statusChangedAt:Date.now()};
+    await adminDb.ref('users/'+uid).update(patch);
+    addAudit('Dealer '+label+' '+uid+(reason?' · '+reason:''));
+    alert(state==='suspended'?'Dealer account Suspend ಆಗಿದೆ.':'Dealer account ಮತ್ತೆ Active ಆಗಿದೆ.');
+    await ncUpdatePendingDealerCount();
+    if(activeDealerAdmin&&activeDealerAdmin.uid===uid)await openDealerAdminDetails(uid,activeDealerAdmin.phone,'details');
+    else await loadFirebasePeople('dealer','firebaseDealerList');
+  }catch(e){alert('Dealer status update ಆಗಲಿಲ್ಲ: '+(e.message||e)+'\nFirebase Database Rules ಪರಿಶೀಲಿಸಿ.');}
+}
+
 
 let ncMessaging=null;
 async function ncAskBrowserNotification(){
@@ -427,8 +451,10 @@ async function loadFirebasePeople(roleName, targetId){
       if(roleName==='dealer'){
         const pending=ncDealerIsPending(x.u);
         const status=String(x.u.status||(x.u.approved?'Active':'Pending'));
-        const approveAction=pending?`<button type="button" class="btn" style="width:auto;margin:8px 0 0" onclick="ncApproveDealerFromList('${x.uid}','${adminSafeText(phone)}','${adminSafeText(x.name)}')">Approve Dealer</button>`:'';
-        return `<div class="dealer-contact-wrap" data-person-card data-search="${searchText}"><button type="button" class="dealer-contact" onclick="openDealerMenu('${x.uid}','${adminSafeText(phone)}','${adminSafeText(x.name)}')"><span>${adminSafeText(x.name)}</span><span class="arrow">›</span></button><div class="muted" style="padding:5px 12px">${adminSafeText(phone)} · Status: ${adminSafeText(status)}</div>${approveAction}</div>`;
+        const state=String(x.u.status|| (x.u.approved?'Active':'Pending')).trim().toLowerCase();
+        const approveAction=pending?`<button type="button" class="btn" style="width:auto;margin:8px 6px 0 12px" onclick="ncApproveDealerFromList('${x.uid}','${adminSafeText(phone)}','${adminSafeText(x.name)}')">Approve Dealer</button><button type="button" class="btn secondary" style="width:auto;margin:8px 0 0" onclick="ncRejectDealerFromList('${x.uid}','${adminSafeText(phone)}','${adminSafeText(x.name)}')">Reject</button>`:'';
+        const accountAction=(state==='active'||state==='approved')?`<button type="button" class="btn secondary" style="width:auto;margin:8px 0 0 12px" onclick="ncSetDealerAccountState('${x.uid}','suspended')">Suspend Dealer</button>`:(state==='suspended'?`<button type="button" class="btn" style="width:auto;margin:8px 0 0 12px" onclick="ncSetDealerAccountState('${x.uid}','active')">Reactivate Dealer</button>`:'');
+        return `<div class="dealer-contact-wrap" data-person-card data-search="${searchText}"><button type="button" class="dealer-contact" onclick="openDealerMenu('${x.uid}','${adminSafeText(phone)}','${adminSafeText(x.name)}')"><span>${adminSafeText(x.name)}</span><span class="arrow">›</span></button><div class="muted" style="padding:5px 12px">${adminSafeText(phone)} · Status: ${adminSafeText(status)}</div>${approveAction}${accountAction}</div>`;
       }
       return `<div class="listitem person-card" data-person-card data-search="${searchText}">${photo}<b>${adminSafeText(x.name)}</b>${details}<div class="muted">Status: ${adminSafeText(x.u.status|| (x.u.approved?'Active':'Pending'))}</div>${x.error?`<div class="notice">App Data ಓದಲು ಆಗಲಿಲ್ಲ: ${adminSafeText(x.error)}</div>`:''}<div class="person-actions">${whatsapp}</div><div style="clear:both"></div></div>`;
     }).join('')+`<p class="muted">Firebase Accounts: ${rows.length}</p>`;
@@ -514,7 +540,11 @@ async function openDealerAdminDetails(uid,phone,tab){
    const pending=ncDealerIsPending(userData);
    const statusText=String(userData.status||(userData.approved?'Active':'Pending'));
    content=`<h3>Dealer Details – Edit</h3><div class="field"><label>Shop Name</label><input id="admDealerShop" value="${adminSafeText(profile.shop||profile.name||'')}"></div><div class="field"><label>Owner Name</label><input id="admDealerOwner" value="${adminSafeText(profile.owner||'')}"></div><div class="field"><label>Mobile Number</label><input value="${adminSafeText(phone)}" readonly></div><div class="field"><label>Shop Address</label><input id="admDealerAddress" value="${adminSafeText(profile.address||'')}"></div><div class="field"><label>City / Area</label><input id="admDealerCity" value="${adminSafeText(profile.city||'')}"></div><div class="listitem"><b>Account Status</b> ${adminSafeText(statusText)} · approved: ${userData.approved===true?'true':'false'}</div>`;
+   const state=String(userData.status||'').trim().toLowerCase();
    if(pending)content+=`<div class="person-actions"><button class="btn" onclick="ncSetDealerApproval('${uid}',true)">Approve Dealer</button><button class="btn secondary" onclick="ncSetDealerApproval('${uid}',false)">Reject Request</button></div>`;
+   else if(state==='active'||state==='approved')content+=`<div class="person-actions"><button class="btn secondary" onclick="ncSetDealerAccountState('${uid}','suspended')">Suspend Dealer</button></div>`;
+   else if(state==='suspended')content+=`<div class="person-actions"><button class="btn" onclick="ncSetDealerAccountState('${uid}','active')">Reactivate Dealer</button></div><p class="notice">Suspend Reason: ${adminSafeText(userData.statusReason||'—')}</p>`;
+   else if(state==='rejected')content+=`<div class="person-actions"><button class="btn" onclick="ncSetDealerApproval('${uid}',true)">Approve Dealer</button></div>`;
    else content+=`<p class="notice">ಈ Dealer Request ಈಗಾಗಲೇ ${adminSafeText(statusText)} ಸ್ಥಿತಿಯಲ್ಲಿದೆ.</p>`;
    content+=`<button class="btn" onclick="saveDealerProfileToFirebase('${uid}','${phone}')">Save Dealer Details</button><div id="admDealerProfileNote" class="muted"></div>`;
   }
