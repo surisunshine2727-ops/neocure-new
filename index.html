@@ -381,6 +381,44 @@ function pinKey(n){$('phonePad').classList.add('hidden');if(pinChecking)return;l
 function pinBack(){if(!pinChecking)$('pin').value=$('pin').value.slice(0,-1)}
 function wrongPin(){ $('pin').value=''; $('pin').classList.add('wrong'); setTimeout(()=>$('pin').classList.remove('wrong'),450); if(navigator.vibrate)navigator.vibrate([120,60,120]); $('wrongPinModal').classList.remove('hidden'); }
 function closeWrongPin(){ $('wrongPinModal').classList.add('hidden'); $('pin').value=''; }
+let ncDealerAccountStatusRef=null;
+let ncDealerAccountStatusHandler=null;
+function ncStopDealerAccountStatusListener(){
+ if(ncDealerAccountStatusRef&&ncDealerAccountStatusHandler){
+  try{ncDealerAccountStatusRef.off('value',ncDealerAccountStatusHandler);}catch(e){}
+ }
+ ncDealerAccountStatusRef=null;ncDealerAccountStatusHandler=null;
+}
+function ncDealerIsApproved(u){
+ const status=String((u&&u.status)||'').trim().toLowerCase();
+ return !!(u&&u.approved===true)||status==='approved'||status==='active';
+}
+function ncStartDealerAccountStatusListener(){
+ const uid=account&&account.uid;if(!uid||!ncFirebaseDb)return;
+ ncStopDealerAccountStatusListener();
+ ncDealerAccountStatusRef=ncFirebaseDb.ref('users/'+uid);
+ ncDealerAccountStatusHandler=function(snap){
+  const latest=snap.val()||{};
+  if(latest.role!=='dealer')return;
+  account={...account,...latest,uid};
+  if(ncDealerIsApproved(latest)){
+   ncStopDealerAccountStatusListener();
+   ncStartDealerOrderStatusListener();
+   hide('pending');
+   openDash();
+   msg('ನಿಮ್ಮ Dealer Account Adminರಿಂದ Approve ಆಗಿದೆ. ಸ್ವಾಗತ!');
+   return;
+  }
+  const status=String(latest.status||'pending').toLowerCase();
+  if(status==='rejected'||status==='disabled'||status==='blocked'){
+   const box=document.querySelector('#pending .status');
+   if(box)box.textContent='ನಿಮ್ಮ Dealer Request ಅನುಮೋದನೆಯಾಗಿಲ್ಲ. ದಯವಿಟ್ಟು Admin ಸಂಪರ್ಕಿಸಿ.';
+  }
+ };
+ ncDealerAccountStatusRef.on('value',ncDealerAccountStatusHandler,function(err){
+  console.warn('Dealer approval status listener:',err&&err.message||err);
+ });
+}
 async function loginPin(){
  if(pinChecking)return;if(!validPhone())return;if($('pin').value.length!==4)return;
  if(!firebase.auth||!ncFirebaseDb){msg('Firebase ಸಂಪರ್ಕ ಲಭ್ಯವಿಲ್ಲ.');return;}
@@ -391,8 +429,10 @@ async function loginPin(){
   if(!snap.exists()||snap.val().role!==r||snap.val().phone!==p){await firebase.auth().signOut();msg('ಈ ಖಾತೆಯ ವಿವರಗಳು ಸರಿಯಾಗಿಲ್ಲ. Admin ಸಂಪರ್ಕಿಸಿ.');return;}
   account={...snap.val(),uid:cred.user.uid};
   await ncHydrateCloud();
+  if(r==='dealer'&&!ncDealerIsApproved(account)){
+   hide('login');show('pending');ncStartDealerAccountStatusListener();return;
+  }
   if(r==='dealer')ncStartDealerOrderStatusListener();
-  if(r==='dealer'&&!account.approved){hide('login');show('pending');return;}
   openDash();
  }catch(e){
   const map={'auth/user-not-found':'ಈ ಸಂಖ್ಯೆಗೆ ಖಾತೆ ಇಲ್ಲ. MPIN ಸೆಟ್ ಮಾಡಿ.','auth/wrong-password':'MPIN ತಪ್ಪಾಗಿದೆ.','auth/invalid-credential':'ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಅಥವಾ MPIN ತಪ್ಪಾಗಿದೆ.','auth/too-many-requests':'ಹಲವು ತಪ್ಪು ಪ್ರಯತ್ನಗಳು. ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ.'};
@@ -687,7 +727,7 @@ function applyAdminSettingsToTools(){const c=getAdminSettings();if($('eCoverage'
 window.addEventListener('storage',e=>{if(e.key===ADMIN_SETTINGS_KEY){applyAdminSettingsToTools();}if(e.key===WITHDRAW_STORE){refreshAdminWithdrawTotal();}});
 function hide(id){$(id).classList.add('hidden')}function show(id){$(id).classList.remove('hidden')}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('workerFeature')?.classList.contains('feature-page-open'))closeWorkerFeaturePage();});
-async function logout(){ncCloudSyncReady=false;if(ncDealerOrderStatusRef){ncDealerOrderStatusRef.off();ncDealerOrderStatusRef=null;}try{if(firebase.auth)await firebase.auth().signOut();}catch(e){}account={};$('pin').value='';['workerDash','dealerDash','pending','pinSetupScreen'].forEach(hide);show('login');backLogin();$('pin').value='';$('newPin').value='';$('newPin2').value='';}
+async function logout(){ncCloudSyncReady=false;ncStopDealerAccountStatusListener();if(ncDealerOrderStatusRef){ncDealerOrderStatusRef.off();ncDealerOrderStatusRef=null;}try{if(firebase.auth)await firebase.auth().signOut();}catch(e){}account={};$('pin').value='';['workerDash','dealerDash','pending','pinSetupScreen'].forEach(hide);show('login');backLogin();$('pin').value='';$('newPin').value='';$('newPin2').value='';}
 // Restore authenticated session safely after a browser refresh.
 firebase.auth().onAuthStateChanged(async function(user){
   if(!user) { ncCloudSyncReady=false; return; }
@@ -697,7 +737,10 @@ firebase.auth().onAuthStateChanged(async function(user){
     account={...snap.val(),uid:user.uid};
     role=account.role||'worker';
     await ncHydrateCloud();
-    if(role==='dealer'&&account.approved)ncStartDealerOrderStatusListener();
+    if(role==='dealer'){
+      if(ncDealerIsApproved(account)){ncStartDealerOrderStatusListener();openDash();}
+      else{hide('login');show('pending');ncStartDealerAccountStatusListener();}
+    } else {openDash();}
   } catch(e) { ncCloudError(e); }
 });
 
