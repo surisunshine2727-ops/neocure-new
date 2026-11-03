@@ -171,12 +171,11 @@ const firebaseConfig = {
   authDomain: "neocure-live-2026.firebaseapp.com",
   databaseURL: "https://neocure-live-2026-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "neocure-live-2026",
-  storageBucket: "neocure-live-2026.firebasestorage.app",
   messagingSenderId: "651603399266",
   appId: "1:651603399266:web:6a5004ed3e95283f81773b"
 };
 if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
-const adminAuth=firebase.auth(),adminDb=firebase.database(),adminFns=firebase.app().functions('asia-southeast1');
+const adminAuth=firebase.auth(),adminDb=firebase.database();
 const read=(k,d=[])=>{try{return JSON.parse(localStorage.getItem(STORE+'_'+k)||JSON.stringify(d))}catch(e){return d}};
 const write=(k,v)=>localStorage.setItem(STORE+'_'+k,JSON.stringify(v));
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -466,9 +465,16 @@ async function openDealerAdminDetails(uid,phone,tab){
   const userSnap=await adminDb.ref('users/'+uid).once('value'),userData=userSnap.val()||{};
   const readKey=(key)=>ncDecodeStored(raw[encodeURIComponent(key)]??raw[key]);
   const orders=readKey('nc_dealer_orders_'+phone)||[];
-  const payments=readKey('nc_dealer_payments_'+phone)||[];
+  let payments=readKey('nc_dealer_payments_'+phone)||[];
   const profile=readKey('nc_dealer_profile_'+phone)||{};
   const rates=readKey('nc_dealer_rates')||{};
+  if(tab==='payments'){
+   const ledgerSnap=await adminDb.ref('dealer_ledger/'+phone).once('value');
+   const ledgerPayments=[];ledgerSnap.forEach(c=>{const x=c.val()||{};if(x.entryType==='PAYMENT_SUBMISSION'&&x.source==='DEALER_PAYMENT_SUBMISSION')ledgerPayments.push({...x,id:x.id||c.key,ledgerKey:c.key});});
+   const byId=new Map();(Array.isArray(payments)?payments:[]).forEach(x=>byId.set(x.id||('local_'+byId.size),x));
+   ledgerPayments.forEach(x=>byId.set(x.id,x));
+   payments=Array.from(byId.values()).sort((a,b)=>Number(b.created||b.timestamp||0)-Number(a.created||a.timestamp||0));
+  }
   const money=n=>'₹'+Number(n||0).toFixed(2);
   let content='';
   if(tab==='details')content=`<h3>Dealer Details – Edit</h3><div class="field"><label>Shop Name</label><input id="admDealerShop" value="${adminSafeText(profile.shop||profile.name||'')}"></div><div class="field"><label>Owner Name</label><input id="admDealerOwner" value="${adminSafeText(profile.owner||'')}"></div><div class="field"><label>Mobile Number</label><input value="${adminSafeText(phone)}" readonly></div><div class="field"><label>Shop Address</label><input id="admDealerAddress" value="${adminSafeText(profile.address||'')}"></div><div class="field"><label>City / Area</label><input id="admDealerCity" value="${adminSafeText(profile.city||'')}"></div><div class="listitem"><b>Account Status</b> ${adminSafeText(userData.status||(userData.approved?'Active':'Pending'))}</div><div class="person-actions"><button class="btn" onclick="ncSetDealerApproval('${uid}',true)">Approve Dealer</button><button class="btn secondary" onclick="ncSetDealerApproval('${uid}',false)">Reject Request</button></div><button class="btn" onclick="saveDealerProfileToFirebase('${uid}','${phone}')">Save Dealer Details</button><div id="admDealerProfileNote" class="muted"></div>`;
@@ -484,14 +490,14 @@ async function openDealerAdminDetails(uid,phone,tab){
   }
   if(tab==='payments'){
    const storedLimit=readKey('nc_dealer_credit_limit_'+phone);
-   const creditLimit=Number(profile.creditLimit??profile.credit_limit??storedLimit??0);
+   const creditLimit=Number(userData.creditLimit??profile.creditLimit??profile.credit_limit??storedLimit??0);
    content=`<h3>Payment &amp; Credit Limit</h3><div class="field"><label>Dealer Credit Limit (₹)</label><input id="admDealerCreditLimit" type="number" min="0" step="0.01" value="${creditLimit}" placeholder="Enter credit limit"></div><button class="btn" onclick="saveDealerCreditLimitToFirebase('${uid}','${phone}')">Update Credit Limit</button><div id="admCreditLimitNote" class="muted"></div><h3 style="margin-top:18px">Payment History</h3><p class="muted">Payment Method, Amount, Balance, Payment Date ಮತ್ತು Time ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ. Status ಬದಲಿಸಿ Update ಒತ್ತಿ.</p>`;
    if(Array.isArray(payments)&&payments.length){
     const total=payments.reduce((n,x)=>n+Number(x.amount||0),0);
-    content+=`<div class="dealer-history-summary"><span>Total Payments: <b>${money(total)}</b></span><span>Transactions: <b>${payments.length}</b></span></div><div class="dealer-table-wrap"><table class="dealer-history-table"><thead><tr><th>Payment ID</th><th>Payment Method</th><th>Payment Amount</th><th>Balance</th><th>Payment Date</th><th>Time</th><th>UTR / Reference</th><th>Screenshot</th><th>Status</th></tr></thead><tbody>`;
+    content+=`<div class="dealer-history-summary"><span>Total Payments: <b>${money(total)}</b></span><span>Transactions: <b>${payments.length}</b></span></div><div class="dealer-table-wrap"><table class="dealer-history-table"><thead><tr><th>Payment ID</th><th>Payment Method</th><th>Payment Amount</th><th>Balance</th><th>Payment Date</th><th>Time</th><th>UTR / Reference</th><th>Proof</th><th>Status</th></tr></thead><tbody>`;
     content+=payments.map((x,i)=>{const dt=dealerHistoryDateParts(x);return `<tr><td><b>${adminSafeText(x.id||'—')}</b></td><td>${adminSafeText(x.paymentMode||x.mode||x.method||'—')}</td><td><b>${money(x.amount)}</b></td><td>${dealerHistoryBalance(x)}</td><td>${dt.date}</td><td>${dt.time}</td><td>${adminSafeText(x.utr||x.reference||'—')}</td><td>${x.proofUrl?`<a href="${adminSafeText(x.proofUrl)}" target="_blank" rel="noopener">View Proof</a>`:'—'}</td><td><select id="admPaymentStatus${i}">${['Pending Admin Verification','Pending','Verified','Approved','Rejected','Received'].map(v=>`<option ${String(x.status||'')===v?'selected':''}>${v}</option>`).join('')}</select></td></tr>`}).join('');
     content+='</tbody></table></div>';
-    content+=`<button class="btn" onclick="saveDealerHistoryUpdates('${uid}','${phone}','payments',${payments.length})">Update Payment History</button><div id="admPaymentsNote" class="muted"></div>`;
+    content+=`<button class="btn" onclick="saveDealerHistoryUpdates('${uid}','${phone}','payments',${payments.length},${JSON.stringify(payments.map(x=>({id:String(x.id||''),ledgerKey:String(x.ledgerKey||'')})))})">Update Payment History</button><div id="admPaymentsNote" class="muted"></div>`;
    }else content+='<p class="muted">ಈ ವಿಭಾಗದಲ್ಲಿ ಇನ್ನೂ Payments ಇಲ್ಲ.</p>';
   }
   if(tab==='rates')content=`<h3>Dealer Product Rates</h3><p class="muted">ಈ ದರಗಳು ಈ Dealer accountಗೆ ಮಾತ್ರ Save ಆಗುತ್ತವೆ. Dealer App ಕೂಡ ಇದೇ rates ಬಳಸುತ್ತದೆ.</p><div class="field"><label>Epoxy ₹ / pack</label><input id="admRateEpoxy" type="number" min="0" value="${Number(rates.epoxy||0)}"></div><div class="field"><label>Hardener ₹ / pack</label><input id="admRateHardener" type="number" min="0" value="${Number(rates.hardener||0)}"></div><div class="field"><label>Primer ₹ / pack</label><input id="admRatePrimer" type="number" min="0" value="${Number(rates.primer||0)}"></div><div class="field"><label>Flooring Kit ₹ / pack</label><input id="admRateKit" type="number" min="0" value="${Number(rates.kit||0)}"></div><button class="btn" onclick="saveDealerRatesToFirebase('${uid}','${phone}')">Save Dealer Rates</button><div id="admRateNote" class="muted"></div>`;
@@ -534,13 +540,17 @@ async function saveDealerCreditLimitToFirebase(uid,phone){
  }catch(e){if(note)note.textContent='Update ಆಗಲಿಲ್ಲ: '+(e.code||e.message)+' — Firebase Rules ಪರಿಶೀಲಿಸಿ.';}
 }
 
-async function saveDealerHistoryUpdates(uid,phone,kind,count){
+async function saveDealerHistoryUpdates(uid,phone,kind,count,ledgerIds=[]){
  try{
   const snap=await adminDb.ref('appData/'+uid).once('value'),raw=snap.val()||{};
   const key='nc_dealer_'+kind+'_'+phone,stored=raw[encodeURIComponent(key)]??raw[key];
   let arr=ncDecodeStored(stored)||[];if(!Array.isArray(arr))arr=[];
-  arr.forEach((x,i)=>{const el=$(kind==='orders'?'admOrderStatus'+i:'admPaymentStatus'+i);if(el)x.status=el.value;});
+  arr.forEach((x,i)=>{let displayIndex=i;if(kind==='payments'&&Array.isArray(ledgerIds)){const found=ledgerIds.findIndex(v=>v&&v.id===String(x.id||''));if(found>=0)displayIndex=found;}const el=$(kind==='orders'?'admOrderStatus'+i:'admPaymentStatus'+displayIndex);if(el)x.status=el.value;});
   await adminDb.ref('appData/'+uid+'/'+encodeURIComponent(key)).set(JSON.stringify(arr));
+  if(kind==='payments'&&Array.isArray(ledgerIds)&&ledgerIds.length){
+   const updates={};ledgerIds.forEach((item,i)=>{const ledgerKey=item&&item.ledgerKey;const el=$('admPaymentStatus'+i);if(ledgerKey&&el)updates['dealer_ledger/'+phone+'/'+ledgerKey+'/status']=el.value;});
+   if(Object.keys(updates).length)await adminDb.ref().update(updates);
+  }
   const note=$(kind==='orders'?'admOrdersNote':'admPaymentsNote');if(note)note.textContent='ಈ Dealerನ '+(kind==='orders'?'Order':'Payment')+' History Update ಆಗಿದೆ.';
   addAudit('Updated dealer '+kind+' '+phone);
  }catch(e){const note=$(kind==='orders'?'admOrdersNote':'admPaymentsNote');if(note)note.textContent='Update ಆಗಲಿಲ್ಲ: '+(e.code||e.message)+' — Firebase Rules ಪರಿಶೀಲಿಸಿ.';}
