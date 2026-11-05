@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101b2b">
+<title>NEOCURE | Dealer & Applicator</title>
+<style>
+:root{--navy:#101b2b;--navy2:#17283b;--teal:#16b8a6;--lime:#c6ef63;--ink:#152438;--muted:#718096;--paper:#f4f7f8;--white:#fff;--line:#e6ecef;--shadow:0 18px 48px rgba(16,27,43,.12)}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#e9f0f1,#f7f9fa);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
+button,select{font:inherit}.app-shell{max-width:1180px;margin:0 auto;padding:22px;min-height:100vh}.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}.brand{display:flex;align-items:center;gap:11px;color:var(--navy);font-weight:900;letter-spacing:1.8px;font-size:20px}.brand-mark{width:38px;height:38px;border-radius:13px;background:linear-gradient(145deg,var(--teal),#087d82);display:grid;place-items:center;color:#fff;font-weight:900;box-shadow:0 7px 18px #16b8a64a}.top-actions{display:flex;align-items:center;gap:10px}.role-switch,.lang-select,.icon-btn{border:1px solid #dbe4e8;background:#fff;border-radius:13px;padding:10px 13px;color:var(--ink)}.role-switch{font-weight:750}.icon-btn{width:42px;height:42px;position:relative;cursor:pointer}.dot{position:absolute;width:8px;height:8px;border-radius:50%;background:#ef6c59;right:9px;top:8px}
+.layout{display:grid;grid-template-columns:245px minmax(0,1fr);gap:20px}.sidebar{background:var(--navy);color:#eaf2f5;border-radius:25px;padding:22px;min-height:690px;display:flex;flex-direction:column;box-shadow:var(--shadow)}.side-label{color:#8296a8;text-transform:uppercase;letter-spacing:1.5px;font-size:10px;font-weight:800;margin:22px 0 10px}.nav{display:grid;gap:7px}.nav button{border:0;background:transparent;color:#b9c7d2;text-align:left;padding:12px 13px;border-radius:13px;cursor:pointer;display:flex;gap:12px;align-items:center;font-weight:650}.nav button.active,.nav button:hover{background:#20394b;color:#fff}.nav .ico{width:21px;text-align:center;font-size:17px}.side-foot{margin-top:auto;border-top:1px solid #304253;padding-top:18px;color:#a9bbc7;font-size:12px;line-height:1.6}.main{min-width:0}.welcome{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin:4px 2px 20px}.eyebrow{color:#078f87;text-transform:uppercase;font-size:11px;letter-spacing:1.6px;font-weight:850}.welcome h1{margin:6px 0 5px;font-size:clamp(25px,4vw,34px);letter-spacing:-1.2px;color:var(--navy)}.welcome p{margin:0;color:var(--muted);font-size:14px}.date-chip{background:#fff;border:1px solid var(--line);padding:10px 13px;border-radius:13px;color:#627386;font-size:12px;white-space:nowrap}
+.hero{background:linear-gradient(115deg,#102437 0%,#164c58 100%);color:#fff;border-radius:24px;padding:25px;position:relative;overflow:hidden;box-shadow:var(--shadow);margin-bottom:17px}.hero:after{content:"";position:absolute;width:260px;height:260px;border:1px solid #ffffff20;border-radius:50%;right:-65px;top:-115px;box-shadow:0 0 0 28px #ffffff08,0 0 0 58px #ffffff06}.hero-top{display:flex;justify-content:space-between;gap:20px;position:relative;z-index:1}.hero-kicker{font-size:12px;color:#b9d9d9;font-weight:650}.hero-value{font-size:clamp(30px,5vw,42px);font-weight:850;letter-spacing:-1.5px;margin:8px 0 4px}.hero-sub{font-size:12px;color:#b7d2d4}.hero-pill{background:#c6ef63;color:#1a342e;padding:9px 12px;border-radius:12px;font-weight:800;font-size:11px;height:max-content}.hero-bottom{display:flex;gap:28px;margin-top:22px;padding-top:17px;border-top:1px solid #ffffff26;position:relative;z-index:1}.hero-stat small{display:block;color:#b9d2d4;font-size:10px;margin-bottom:5px}.hero-stat strong{font-size:15px}.section-head{display:flex;align-items:center;justify-content:space-between;margin:22px 2px 12px}.section-head h2{font-size:16px;margin:0;color:var(--navy)}.text-link{border:0;background:none;color:#078f87;font-size:12px;font-weight:800;cursor:pointer}.quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.quick{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 13px;min-height:112px;text-align:left;cursor:pointer;transition:.18s;box-shadow:0 5px 15px #17283b08}.quick:hover{transform:translateY(-3px);box-shadow:0 12px 25px #17283b12}.quick-icon{width:38px;height:38px;border-radius:12px;background:#e3f7f3;color:#078f87;display:grid;place-items:center;font-size:18px;margin-bottom:11px}.quick strong{display:block;font-size:12px}.quick span{display:block;color:#8996a4;font-size:10px;margin-top:4px}.content-grid{display:grid;grid-template-columns:1.35fr .9fr;gap:14px;margin-top:17px}.panel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;min-width:0}.panel h3{font-size:14px;margin:0 0 14px}.row-item{display:flex;align-items:center;gap:11px;padding:11px 0;border-top:1px solid #edf1f3}.row-item:first-of-type{border-top:0}.item-icon{width:36px;height:36px;border-radius:12px;background:#f0f5f6;display:grid;place-items:center;color:#167f7b}.item-copy{flex:1;min-width:0}.item-copy strong{display:block;font-size:12px}.item-copy small{display:block;color:#8a98a5;font-size:10px;margin-top:4px}.amount{font-weight:800;font-size:12px;white-space:nowrap}.positive{color:#15966e}.status{font-size:10px;font-weight:800;padding:6px 8px;border-radius:8px;background:#fff5dd;color:#a87916;white-space:nowrap}.status.done{background:#e5f7ee;color:#18855f}.metric-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.metric{background:#f6f9fa;border-radius:14px;padding:13px}.metric small{color:#8493a0;font-size:10px}.metric strong{display:block;font-size:20px;margin-top:5px;color:var(--navy)}.bottom-nav{display:none}.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#12283a;color:#fff;padding:12px 18px;border-radius:13px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;box-shadow:var(--shadow);z-index:10}.toast.show{opacity:1;transform:translate(-50%,0)}.hidden{display:none!important}
+@media(max-width:850px){.app-shell{padding:14px}.layout{grid-template-columns:1fr}.sidebar{display:none}.content-grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.topbar{margin-bottom:16px}.welcome{margin-bottom:15px}.bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);justify-content:space-around;padding:9px 5px calc(9px + env(safe-area-inset-bottom));z-index:5;box-shadow:0 -8px 25px #10243710}.bottom-nav button{border:0;background:none;color:#7c8b97;font-size:10px;display:grid;gap:4px;justify-items:center;min-width:55px}.bottom-nav button.active{color:#078f87;font-weight:850}.bottom-nav b{font-size:18px}.main{padding-bottom:78px}.date-chip{display:none}}
+@media(max-width:430px){.app-shell{padding:12px}.brand{font-size:17px}.brand-mark{width:34px;height:34px}.role-switch,.lang-select{padding:9px 8px;font-size:11px}.hero{padding:20px}.hero-bottom{gap:18px}.hero-stat strong{font-size:13px}.quick{padding:13px;min-height:105px}.panel{padding:15px}}
+
+/* Mobile overflow correction: keep every section inside the viewport */
+html, body { width:100%; max-width:100%; overflow-x:hidden; }
+.app-shell { width:100%; max-width:1180px; min-width:0; }
+.topbar, .top-actions, .welcome, .hero, .hero-top, .hero-bottom,
+.layout, .main, .panel { min-width:0; }
+.top-actions { flex-wrap:wrap; }
+.role-switch, .lang-select { max-width:100%; min-width:0; }
+.hero-stat { min-width:0; }
+.hero-stat strong { overflow-wrap:anywhere; }
+.quick-grid, .content-grid { min-width:0; }
+.quick { min-width:0; overflow-wrap:anywhere; }
+@media (max-width:850px) {
+  .topbar { flex-wrap:wrap; align-items:center; }
+  .brand { flex:1 1 100%; }
+  .top-actions { width:100%; display:grid; grid-template-columns:minmax(0,1fr) 82px 46px; gap:8px; }
+  .role-switch, .lang-select { width:100%; }
+  .icon-btn { width:46px; justify-self:end; }
+  .welcome { flex-wrap:wrap; }
+  .welcome > div:first-child { width:100%; }
+  .hero-top { flex-wrap:wrap; }
+  .hero-bottom { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+  .hero-stat { padding-right:6px; }
+  .hero-stat:not(:last-child) { border-right:1px solid #ffffff26; }
+  .hero-stat small { overflow-wrap:anywhere; line-height:1.35; }
+  .hero-stat strong { font-size:clamp(11px,3.2vw,15px); }
+  .quick-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .content-grid { grid-template-columns:minmax(0,1fr); }
+}
+@media (max-width:430px) {
+  .app-shell { padding:12px; }
+  .top-actions { grid-template-columns:minmax(0,1fr) 74px 44px; gap:6px; }
+  .role-switch, .lang-select { font-size:11px; padding:9px 7px; }
+  .hero { padding:17px; }
+  .hero-bottom { gap:7px; }
+  .hero-stat small { font-size:9px; }
+  .hero-stat strong { font-size:11px; }
+  .quick { padding:12px 10px; }
+  .quick strong { font-size:11px; }
+  .quick span { font-size:10px; }
+}
+
+
+.login-screen{min-height:100vh;display:grid;place-items:center;padding:22px;background:radial-gradient(circle at 10% 5%,#d5f4ef 0,transparent 34%),linear-gradient(145deg,#edf5f5,#f8fafb)}
+.login-wrap{width:min(100%,480px);background:#fff;border:1px solid #e1eaec;border-radius:28px;padding:28px;box-shadow:0 24px 70px rgba(16,27,43,.14)}
+.login-brand{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:9px;font-weight:950;letter-spacing:2px;font-size:25px;color:var(--navy)}
+.login-sub{text-align:center;color:#718096;font-size:13px;margin:0 0 25px}
+.login-heading{font-size:21px;font-weight:850;text-align:center;margin:0 0 6px;color:var(--navy)}
+.login-hint{text-align:center;color:#81909c;font-size:12px;margin:0 0 18px}
+.role-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 20px}
+.role-card{border:1.5px solid #e1e9eb;border-radius:18px;padding:17px 12px;background:#fff;text-align:center;cursor:pointer;transition:.18s;color:var(--ink)}
+.role-card.selected{border-color:var(--teal);background:#eaf9f6;box-shadow:0 0 0 3px #16b8a614}
+.role-card .role-icon{width:48px;height:48px;border-radius:15px;background:#def6f1;color:#078f87;display:grid;place-items:center;font-size:24px;margin:0 auto 10px}
+.role-card strong{display:block;font-size:14px}.role-card small{display:block;color:#84929d;font-size:10px;margin-top:4px}
+.login-field{display:block;margin:13px 0}.login-field span{display:block;font-size:12px;font-weight:750;color:#405367;margin-bottom:7px}
+.login-field input{width:100%;border:1px solid #dce6e9;border-radius:13px;padding:14px 13px;font-size:15px;outline:none;background:#fbfdfd;color:var(--ink)}
+.login-field input:focus{border-color:var(--teal);box-shadow:0 0 0 3px #16b8a61a}
+.login-submit{width:100%;border:0;border-radius:14px;padding:15px;background:linear-gradient(100deg,#0c8f87,#16b8a6);color:#fff;font-weight:850;font-size:15px;margin-top:10px;cursor:pointer;box-shadow:0 10px 20px #16b8a638}
+.login-foot{text-align:center;color:#9aa6af;font-size:10px;margin:18px 0 0}
+.login-error{color:#c74747;font-size:12px;min-height:16px;margin:6px 0 0}
+@media(max-width:430px){.login-screen{padding:14px}.login-wrap{padding:22px 18px;border-radius:23px}.login-brand{font-size:22px}}
+
+
+.register-link{display:block;width:100%;border:0;background:transparent;color:#078f87;font-weight:800;font-size:13px;padding:14px 8px 2px;cursor:pointer}
+.register-screen{min-height:100vh;display:none;place-items:center;padding:22px;background:radial-gradient(circle at 90% 5%,#d5f4ef 0,transparent 34%),linear-gradient(145deg,#edf5f5,#f8fafb)}
+.register-wrap{width:min(100%,560px);background:#fff;border:1px solid #e1eaec;border-radius:28px;padding:27px;box-shadow:0 24px 70px rgba(16,27,43,.14)}
+.register-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:17px 0}
+.register-grid .role-card{padding:13px 9px}
+.register-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.register-fields .full{grid-column:1/-1}
+.register-actions{display:flex;gap:10px;margin-top:12px}
+.register-actions button{flex:1}
+.secondary-btn{border:1px solid #dce6e9;background:#fff;color:#405367;border-radius:13px;padding:14px;font-weight:800;cursor:pointer}
+@media(max-width:480px){.register-screen{padding:12px}.register-wrap{padding:21px 16px}.register-fields{grid-template-columns:1fr}.register-fields .full{grid-column:auto}}
+
+
+/* Premium Teal feature pages */
+.nc-feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0 18px}
+.nc-feature-card{border:1px solid var(--line);background:#fff;border-radius:15px;padding:14px;text-align:left;cursor:pointer;color:var(--ink);font-weight:750;box-shadow:0 5px 15px #17283b08}
+.nc-feature-card span{display:block;color:var(--muted);font-size:11px;font-weight:500;margin-top:5px}
+.nc-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.nc-form label{display:block;font-size:12px;font-weight:750;color:#405367}
+.nc-form input,.nc-form select,.nc-form textarea{width:100%;margin-top:6px;border:1px solid #dce6e9;border-radius:12px;padding:12px;background:#fbfdfd;color:var(--ink);font:inherit;min-width:0}
+.nc-form .full{grid-column:1/-1}
+.nc-action{border:0;border-radius:12px;padding:12px 16px;background:linear-gradient(100deg,#0c8f87,#16b8a6);color:#fff;font-weight:850;cursor:pointer}
+.nc-result{background:#f4f8f8;border:1px solid var(--line);border-radius:13px;padding:12px;margin:10px 0;font-size:13px;overflow-wrap:anywhere}
+.nc-muted{font-size:12px;color:var(--muted)}
+@media(max-width:520px){.nc-form{grid-template-columns:1fr}.nc-form .full{grid-column:auto}}
+
+
+.nc-summary-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;column-gap:16px;padding:9px 0;border-bottom:1px solid #e6ecef;font-size:13px}.nc-summary-row>span{text-align:left;min-width:0;color:#405367}.nc-summary-row>strong{text-align:right;justify-self:end;min-width:0;overflow-wrap:anywhere;font-weight:800}.nc-summary-total{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:16px}.nc-summary-total>span{text-align:left}.nc-summary-total>strong{text-align:right;justify-self:end}.nc-summary-total{display:flex;justify-content:space-between;gap:12px;padding:13px 0;margin-top:6px;border-top:2px solid #16b8a6;font-size:16px;font-weight:850;color:#102437}.nc-warn{color:#b45309;font-size:12px}.nc-action{background:linear-gradient(100deg,#0c8f87,#16b8a6);color:#fff;border:0;border-radius:13px;padding:13px 16px;font-weight:800}\n
+/* NEOCURE Order Summary alignment fix */
+#ncOrderSummary .nc-summary-row,
+#ncOrderNotice .nc-summary-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(92px, auto) !important;
+  align-items: start !important;
+  column-gap: 14px !important;
+  width: 100% !important;
+  padding: 8px 0 !important;
+  border-bottom: 1px solid #e6ecef !important;
+  box-sizing: border-box !important;
+}
+#ncOrderSummary .nc-summary-row > span,
+#ncOrderNotice .nc-summary-row > span {
+  display: block !important;
+  text-align: left !important;
+  min-width: 0 !important;
+  white-space: normal !important;
+}
+#ncOrderSummary .nc-summary-row > strong,
+#ncOrderNotice .nc-summary-row > strong {
+  display: block !important;
+  text-align: right !important;
+  justify-self: end !important;
+  min-width: 92px !important;
+  max-width: 48% !important;
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+}
+#ncOrderSummary .nc-summary-total,
+#ncOrderNotice .nc-summary-total {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+#ncOrderSummary .nc-summary-total > span,
+#ncOrderNotice .nc-summary-total > span { text-align: left !important; }
+#ncOrderSummary .nc-summary-total > strong,
+#ncOrderNotice .nc-summary-total > strong {
+  text-align: right !important;
+  white-space: nowrap !important;
+}
+
+
+/* Four-item bottom navigation: Scan removed as requested */
+@media(max-width:850px){
+  #ncBottomNav{display:flex;justify-content:space-around}
+  #ncBottomNav button{flex:1;min-width:0}
+}
+
+
+.nc-credit-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:10px 0;border-bottom:1px solid #e6ecef}
+.nc-credit-row span{min-width:0;color:#526274}
+.nc-credit-row strong{text-align:right;white-space:nowrap;color:#152438}
+
+.nc-avatar-btn{position:relative;overflow:hidden;border-radius:50%!important;width:54px!important;height:54px!important;padding:0!important;display:flex;align-items:center;justify-content:center}
+.nc-avatar-btn img{width:100%;height:100%;object-fit:cover;border-radius:50%;position:absolute;inset:0}
+.nc-avatar-btn #ncHeaderPhotoFallback{font-size:25px}
+.nc-profile-photo-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 0 24px}
+.nc-profile-photo-circle{width:116px;height:116px;border-radius:50%;background:#e1f5f1;border:3px solid #36b5a8;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.nc-profile-photo-circle img{width:100%;height:100%;object-fit:cover}
+.nc-profile-photo-circle span{font-size:42px;color:#238f84}
+.nc-photo-pick{display:inline-flex!important;align-items:center;justify-content:center;background:#d9f7ed;color:#147f75;border:1px solid #8ed9cb;border-radius:14px;padding:11px 18px;font-weight:700;cursor:pointer}
+
+/* Keep the dealer profile-photo shortcut at the upper-right of the logo row. */
+.topbar{position:relative;min-height:58px;padding-right:68px;flex-wrap:wrap}
+.topbar .top-actions{width:100%;margin-top:10px;padding-right:0;justify-content:flex-start}
+.topbar .role-switch{flex:1;min-width:0}
+.topbar .lang-select{width:104px;flex:0 0 104px}
+.topbar .nc-avatar-top{position:absolute!important;top:0!important;right:0!important;z-index:5;width:54px!important;height:54px!important;border-radius:50%!important;margin:0!important}
+@media(min-width:760px){
+ .topbar{flex-wrap:nowrap;padding-right:68px}
+ .topbar .top-actions{width:auto;margin-top:0;justify-content:flex-end}
+ .topbar .role-switch{flex:0 1 auto}
+}
+
+.login-screen{position:relative}
+.login-language-control{position:absolute;top:16px;right:18px;z-index:20;display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #dce7e8;border-radius:999px;padding:7px 12px;box-shadow:0 5px 18px rgba(16,27,43,.08)}
+.login-language-icon{font-size:19px;color:#168f86;line-height:1}
+.login-language-select{border:0;background:transparent;color:#203044;font:inherit;font-size:13px;outline:none;max-width:112px}
+@media(max-width:520px){.login-language-control{top:8px;right:10px}.login-wrap{margin-top:48px}}
+
+.nc-language-control{display:flex;align-items:center;gap:5px;border:1px solid #dbe4e8;background:#fff;border-radius:14px;padding:0 8px;min-width:0;box-shadow:0 3px 12px rgba(16,27,43,.04)}
+.nc-language-icon{font-size:18px;line-height:1;color:#168f86}
+.nc-language-control .lang-select{border:0!important;background:transparent!important;box-shadow:none!important;padding:10px 5px!important;min-width:0;width:90px;outline:none}
+@media(max-width:520px){.nc-language-control{gap:2px;padding:0 5px}.nc-language-icon{font-size:16px}.nc-language-control .lang-select{width:76px;font-size:11px}}
+
+@keyframes ncPinShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.nc-pin-error-shake{animation:ncPinShake .34s ease}
+.nc-login-card-shake{animation:ncPinShake .42s ease}
+#loginPin.nc-pin-invalid{border-color:#c74747!important;box-shadow:0 0 0 3px rgba(199,71,71,.12)!important}
+</style>
+</head>
+<body>
+
+<div class="login-screen" id="loginScreen">
+  <div class="login-language-control" aria-label="Choose language">
+    <span class="login-language-icon" aria-hidden="true">🌐</span>
+    <select id="loginLanguage" class="login-language-select" aria-label="Language">
+      <option value="en">English</option><option value="kn">ಕನ್ನಡ</option><option value="hi">हिन्दी</option><option value="te">తెలుగు</option><option value="ta">தமிழ்</option><option value="ml">മലയാളം</option><option value="mr">मराठी</option>
+    </select>
+  </div>
+  <section class="login-wrap">
+    <div class="login-brand"><div class="brand-mark">N</div> NEOCURE</div>
+    <p class="login-sub">NEOCURE CLOUD · Dealer & Applicator Portal</p>
+    <h1 class="login-heading" data-i18n="loginTitle">Welcome back</h1>
+    <p class="login-hint" data-i18n="loginChoose">Choose how you want to sign in</p>
+    <div class="role-cards">
+      <button type="button" class="role-card selected" id="dealerLoginChoice" onclick="chooseLoginRole('dealer')">
+        <span class="role-icon">▣</span><strong data-i18n="dealerLogin">Dealer Login</strong><small data-i18n="dealerLoginSub">Orders · Stock · Payments</small>
+      </button>
+      <button type="button" class="role-card" id="applicatorLoginChoice" onclick="chooseLoginRole('applicator')">
+        <span class="role-icon">✦</span><strong data-i18n="applicatorLogin">Applicator Login</strong><small data-i18n="appLoginSub">Scan · Work · Rewards</small>
+      </button>
+    </div>
+    <form id="loginForm">
+      <label class="login-field"><span data-i18n="mobileNumber">Mobile number</span><input id="loginMobile" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit mobile number" data-i18n-placeholder="mobilePlaceholder" autocomplete="tel" required></label>
+      <label class="login-field"><span data-i18n="passwordPin">Password / PIN</span><input id="loginPin" type="password" inputmode="numeric" maxlength="4" placeholder="Enter 4-digit MPIN" data-i18n-placeholder="pinPlaceholder" autocomplete="current-password" required></label>
+      <div class="login-error" id="loginError" role="alert"></div>
+      <button class="login-submit" type="submit" data-i18n="signIn">SIGN IN →</button>
+    </form>
+    <button type="button" class="register-link" id="forgotMpinBtn" onclick="ncRequestMpinReset()">Forgot MPIN? / MPIN ಮರೆತಿದ್ದೀರಾ?</button>
+    <button type="button" class="register-link" onclick="showRegistration()" data-i18n="newRegistration">New user? Create an account</button>
+    <p class="login-foot" data-i18n="loginSecure">Secure access for authorised NEOCURE members</p>
+  </section>
+</div>
+
+
+<div class="register-screen" id="registerScreen">
+  <section class="register-wrap">
+    <div class="login-brand"><div class="brand-mark">N</div> NEOCURE</div>
+    <h1 class="login-heading" data-i18n="createAccount">Create your account</h1>
+    <p class="login-hint" data-i18n="chooseAccount">Select account type and submit for admin approval</p>
+    <div class="register-grid">
+      <button type="button" class="role-card selected" id="dealerRegChoice" onclick="chooseRegRole('dealer')"><span class="role-icon">▣</span><strong data-i18n="dealerLogin">Dealer</strong><small data-i18n="dealerLoginSub">Orders · Stock · Payments</small></button>
+      <button type="button" class="role-card" id="applicatorRegChoice" onclick="chooseRegRole('applicator')"><span class="role-icon">✦</span><strong data-i18n="applicatorLogin">Applicator</strong><small data-i18n="appLoginSub">Scan · Work · Rewards</small></button>
+    </div>
+    <form id="registrationForm">
+      <div class="register-fields">
+        <label class="login-field full"><span data-i18n="fullName">Full name</span><input id="regName" type="text" placeholder="Enter your full name" required></label>
+        <label class="login-field"><span data-i18n="mobileNumber">Mobile number</span><input id="regMobile" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" required></label>
+        <label class="login-field"><span data-i18n="passwordPin">Create password / PIN</span><input id="regPassword" type="password" inputmode="numeric" maxlength="4" minlength="4" placeholder="Create 4-digit MPIN" required></label>
+        <label class="login-field full"><span data-i18n="address">Address</span><input id="regAddress" type="text" placeholder="Village / Town, District" required></label>
+        <div id="dealerExtraFields" class="full">
+          <label class="login-field"><span>Dealer Name *</span><input id="regDealerName" type="text" placeholder="Dealer name"></label>
+          <label class="login-field"><span>Shop Owner Name *</span><input id="regOwnerName" type="text" placeholder="Shop owner name"></label>
+          <label class="login-field"><span>Shop Name *</span><input id="regShopName" type="text" placeholder="Shop name"></label>
+          <label class="login-field"><span>Village / City *</span><input id="regVillageCity" type="text" placeholder="Village / City"></label>
+        </div>
+        <label class="login-field full" id="dealerCodeField"><span data-i18n="dealerCode">Dealer code (optional)</span><input id="regDealerCode" type="text" placeholder="Enter dealer code (optional)"></label>
+        <label class="login-field full hidden" id="gstField"><span data-i18n="gstNumber">GST number (optional)</span><input id="regGST" type="text" placeholder="Enter GST number"></label>
+      </div>
+      <div class="login-error" id="regError" role="alert"></div>
+      <div class="register-actions">
+        <button type="button" class="secondary-btn" onclick="showLogin()" data-i18n="backToLogin">Back to login</button>
+        <button type="submit" class="login-submit" style="margin:0" data-i18n="submitForApproval">Submit for approval →</button>
+      </div>
+    </form>
+    <p class="login-foot" data-i18n="approvalNote">No OTP required · Account becomes active after admin approval</p>
+  </section>
+</div>
+
+<div class="login-screen" id="pendingScreen" style="display:none">
+  <section class="login-wrap"><div class="login-brand"><div class="brand-mark">N</div> NEOCURE</div>
+    <h1 class="login-heading">Dealer Approval Pending</h1>
+    <p class="login-hint">ನಿಮ್ಮ Dealer Registration ಸ್ವೀಕರಿಸಲಾಗಿದೆ. Admin ಅನುಮೋದನೆಯ ನಂತರ Login ಮಾಡಬಹುದು.</p>
+    <button type="button" class="secondary-btn" style="width:100%" onclick="firebaseSignOutToLogin()">Back to Login</button>
+  </section>
+</div>
+
+<div class="app-shell" id="appShell" style="display:none">
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">N</div> NEOCURE</div>
+    <div class="top-actions">
+      <select class="role-switch" id="roleSelect" aria-label="Choose app role"><option value="dealer">Dealer App</option><option value="applicator">Applicator App</option></select>
+      <label class="nc-language-control" aria-label="Choose language">
+        <span class="nc-language-icon" aria-hidden="true">🌐</span>
+        <select class="lang-select" id="language" aria-label="Language">
+          <option value="en">EN</option><option value="kn">ಕನ್ನಡ</option><option value="hi">हिन्दी</option><option value="te">తెలుగు</option><option value="ta">தமிழ்</option><option value="ml">മലയാളം</option><option value="mr">मराठी</option>
+        </select>
+      </label>
+    </div>
+    <button class="icon-btn nc-avatar-btn nc-avatar-top" id="ncHeaderPhotoBtn" onclick="ncOpenFeature('profile')" aria-label="Dealer profile photo"><span id="ncHeaderPhotoFallback">♧</span><img id="ncHeaderPhoto" alt="Profile photo" style="display:none"></button>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand" style="color:white"><div class="brand-mark">N</div> NEOCURE</div>
+      <div class="side-label" data-i18n="workspace">Workspace</div>
+      <nav class="nav" id="sideNav">
+        <button class="active" data-page="home"><span class="ico">⌂</span><span data-i18n="home">Home</span></button>
+        <button data-page="orders"><span class="ico">▤</span><span data-i18n="orders">Orders</span></button>
+        <button data-page="payments"><span class="ico">₹</span><span data-i18n="payments">Payments</span></button>
+        <button data-page="history"><span class="ico">◷</span><span data-i18n="history">History</span></button>
+        <button data-page="profile"><span class="ico">◎</span><span data-i18n="profile">Profile</span></button>
+      </nav>
+      <div class="side-label" data-i18n="support">Support</div>
+      <nav class="nav"><button onclick="notify('Support centre coming soon')"><span class="ico">◇</span><span data-i18n="help">Help centre</span></button></nav>
+      <div class="side-foot">NEOCURE CLOUD<br><span data-i18n="secure">A simpler way to work.</span><br>© 2026 NEOCURE</div>
+    </aside>
+    <main class="main">
+      <section class="welcome">
+        <div><div class="eyebrow" data-i18n="overview">Your workspace</div><h1 id="greeting">Good morning, Dealer</h1><p id="welcomeText">Here’s what’s happening with your business today.</p></div>
+        <div class="date-chip" id="today"></div>
+      </section>
+      <section class="hero" id="dealerHero">
+        <div class="hero-top"><div><div class="hero-kicker" data-i18n="outstanding">Outstanding balance</div><div class="hero-value">₹18,450</div><div class="hero-sub" data-i18n="credit">Your current credit overview</div></div><button type="button" class="hero-pill" onclick="ncOpenCreditDetails()" data-i18n="viewDetails" style="border:0;cursor:pointer">VIEW DETAILS ↗</button></div>
+        <div class="hero-bottom"><div class="hero-stat"><small data-i18n="availableCredit">AVAILABLE CREDIT</small><strong>₹50,000</strong></div><div class="hero-stat"><small data-i18n="thisMonth">THIS MONTH</small><strong>12 orders</strong></div><div class="hero-stat"><small data-i18n="paid">PAID</small><strong>₹32,500</strong></div></div>
+      </section>
+      <section class="hero hidden" id="applicatorHero">
+        <div class="hero-top"><div><div class="hero-kicker" data-i18n="rewardBalance">Reward balance</div><div class="hero-value">₹2,450</div><div class="hero-sub" data-i18n="earnedRewards">Your earned rewards, all in one place</div></div><button type="button" class="hero-pill" onclick="ncOpenFeature('workhistory')" data-i18n="viewHistory" style="border:0;cursor:pointer">VIEW HISTORY ↗</button></div>
+        <div class="hero-bottom"><div class="hero-stat"><small data-i18n="totalEarned">TOTAL EARNED</small><strong>₹8,750</strong></div><div class="hero-stat"><small data-i18n="redeemed">REDEEMED</small><strong>₹6,300</strong></div><div class="hero-stat"><small data-i18n="coupons">COUPONS</small><strong>49 scanned</strong></div></div>
+      </section>
+      <div class="section-head"><h2 data-i18n="quickActions">Quick actions</h2><button class="text-link" onclick="notify('All services are shown here')"><span data-i18n="viewAll">VIEW ALL</span> ↗</button></div>
+      <section class="quick-grid" id="dealerActions">
+        <button class="quick" onclick="ncOpenFeature('order')"><div class="quick-icon">＋</div><strong data-i18n="newOrder">New order</strong><span data-i18n="placeOrder">Place a fresh order</span></button>
+        <button class="quick" onclick="ncOpenFeature('payment')"><div class="quick-icon">₹</div><strong data-i18n="makePayment">Make payment</strong><span data-i18n="settleDues">Settle your dues</span></button>
+        <button class="quick" onclick="ncOpenFeature('rates')"><div class="quick-icon">▦</div><strong data-i18n="myStock">My stock</strong><span data-i18n="stockOverview">Check stock levels</span></button>
+        <button class="quick" onclick="ncOpenFeature('orders')"><div class="quick-icon">◷</div><strong data-i18n="orderHistory">Order history</strong><span data-i18n="trackOrders">Track all orders</span></button>
+      </section>
+      <section class="quick-grid hidden" id="applicatorActions">
+        <button class="quick" onclick="ncOpenFeature('coupon')"><div class="quick-icon">▦</div><strong data-i18n="scanCoupon">Scan coupon</strong><span data-i18n="scanEarn">Scan and earn rewards</span></button>
+        <button class="quick" onclick="ncOpenFeature('wallet')"><div class="quick-icon">₹</div><strong data-i18n="myEarnings">My earnings</strong><span data-i18n="earningSummary">Your reward summary</span></button>
+        <button class="quick" onclick="ncOpenFeature('workhistory')"><div class="quick-icon">◷</div><strong data-i18n="workHistory">Work history</strong><span data-i18n="pastWork">View completed work</span></button>
+        <button class="quick" onclick="ncOpenFeature('profile')"><div class="quick-icon">↗</div><strong data-i18n="referEarn">Refer & earn</strong><span data-i18n="inviteFriends">Invite your network</span></button>
+      </section>
+      <section class="quick-grid" id="ncDealerExtraActions" style="margin-top:11px">
+        <button class="quick" onclick="ncOpenFeature('khata')"><div class="quick-icon">📒</div><strong>Khata Book</strong><span>Udhaari / Payment entries</span></button>
+        <button class="quick" onclick="ncOpenFeature('gst')"><div class="quick-icon">₹</div><strong>GST Calculator</strong><span>Tax calculation</span></button>
+        <button class="quick" onclick="ncOpenFeature('profile')"><div class="quick-icon">◎</div><strong data-i18n="myProfile">My Profile</strong><span data-i18n="accountDetails">Account details</span></button>
+      </section>
+      <section class="quick-grid hidden" id="ncApplicatorExtraActions" style="margin-top:11px">
+        <button class="quick" onclick="ncOpenFeature('withdraw')"><div class="quick-icon">↙</div><strong data-i18n="withdraw">Withdraw</strong><span data-i18n="requestPayout">Request payout</span></button>
+        <button class="quick" onclick="ncOpenFeature('epoxy')"><div class="quick-icon">▦</div><strong data-i18n="epoxyCalculator">Epoxy Calculator</strong><span data-i18n="materialEstimate">Material estimate</span></button>
+        <button class="quick" onclick="ncOpenFeature('profile')"><div class="quick-icon">◎</div><strong data-i18n="myProfile">My Profile</strong><span data-i18n="accountDetails">Account details</span></button>
+      </section>
+      <div class="content-grid">
+        <section class="panel">
+          <h3 id="activityTitle" data-i18n="recentOrders">Recent orders</h3>
+          <div id="dealerActivity">
+            <div class="row-item"><div class="item-icon">▤</div><div class="item-copy"><strong>Order #NC2041</strong><small>Today · 10:42 AM</small></div><span class="status">Processing</span></div>
+            <div class="row-item"><div class="item-icon">▤</div><div class="item-copy"><strong>Order #NC2038</strong><small>Yesterday · 4:15 PM</small></div><span class="status done">Delivered</span></div>
+            <div class="row-item"><div class="item-icon">▤</div><div class="item-copy"><strong>Order #NC2032</strong><small>28 Oct · 11:20 AM</small></div><span class="status done">Delivered</span></div>
+          </div>
+          <div id="applicatorActivity" class="hidden">
+            <div class="row-item"><div class="item-icon">✦</div><div class="item-copy"><strong data-i18n="couponReward">Coupon reward</strong><small>Today · 10:30 AM</small></div><span class="amount positive">+ ₹50</span></div>
+            <div class="row-item"><div class="item-icon">↙</div><div class="item-copy"><strong data-i18n="payoutReceived">Payout received</strong><small>Yesterday · 5:20 PM</small></div><span class="amount positive">+ ₹500</span></div>
+            <div class="row-item"><div class="item-icon">✦</div><div class="item-copy"><strong data-i18n="couponReward">Coupon reward</strong><small>30 Oct · 12:05 PM</small></div><span class="amount positive">+ ₹100</span></div>
+          </div>
+        </section>
+        <section class="panel">
+          <h3 data-i18n="businessSnapshot">Business snapshot</h3>
+          <div class="metric-row" id="dealerMetrics"><div class="metric"><small data-i18n="totalOrders">Total orders</small><strong>12</strong></div><div class="metric"><small data-i18n="paidThisMonth">Paid this month</small><strong>₹32.5k</strong></div><div class="metric"><small data-i18n="pendingOrders">Pending orders</small><strong>02</strong></div><div class="metric"><small data-i18n="activeProducts">Active products</small><strong>08</strong></div></div>
+          <div class="metric-row hidden" id="applicatorMetrics"><div class="metric"><small data-i18n="couponsScanned">Coupons scanned</small><strong>49</strong></div><div class="metric"><small data-i18n="thisMonthEarned">Earned this month</small><strong>₹1.2k</strong></div><div class="metric"><small data-i18n="pendingPayout">Pending payout</small><strong>₹350</strong></div><div class="metric"><small data-i18n="completedJobs">Completed jobs</small><strong>26</strong></div></div>
+        </section>
+      </div>
+      <section id="ncFeaturePage" class="panel" style="display:none;margin-top:18px;min-height:420px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><div><div class="eyebrow">NEOCURE WORKSPACE</div><h2 id="ncFeatureTitle" style="margin:4px 0 0;color:var(--navy)">Feature</h2></div></div>
+        <div id="ncFeatureBody"></div>
+      </section>
+    </main>
+  </div>
+</div>
+<nav class="bottom-nav" id="ncBottomNav">
+  <button type="button" class="active" data-bottom="home" onclick="ncBottomNavGo('home')"><b>⌂</b><span data-i18n="home">Home</span></button>
+  <button type="button" data-bottom="activity" onclick="ncBottomNavGo('activity')"><b>▤</b><span data-i18n="activity">Activity</span></button>
+  <button type="button" data-bottom="rewards" onclick="ncBottomNavGo('rewards')"><b>✦</b><span data-i18n="rewards">Rewards</span></button>
+  <button type="button" data-bottom="profile" onclick="ncBottomNavGo('profile')"><b>◎</b><span data-i18n="profile">Profile</span></button>
+</nav>
+<div class="toast" id="toast" role="status"></div>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js">
+if (window.MutationObserver) {
+  const ncFeatureObserver = new MutationObserver(()=>ncTranslateFeaturePage());
+  document.addEventListener('DOMContentLoaded',()=>{
+    const root=document.getElementById('ncFeaturePage');
+    if(root)ncFeatureObserver.observe(root,{childList:true,subtree:true,characterData:true});
+  });
+}
+
+</script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+const translations={
+en:{workspace:"Workspace",home:"Home",orders:"Orders",payments:"Payments",history:"History",profile:"Profile",support:"Support",help:"Help centre",secure:"A simpler way to work.",overview:"Your workspace",outstanding:"Outstanding balance",credit:"Your current credit overview",viewDetails:"VIEW DETAILS ↗",availableCredit:"AVAILABLE CREDIT",thisMonth:"THIS MONTH",paid:"PAID",quickActions:"Quick actions",viewAll:"VIEW ALL",newOrder:"New order",placeOrder:"Place a fresh order",makePayment:"Make payment",settleDues:"Settle your dues",myStock:"My stock",stockOverview:"Check stock levels",orderHistory:"Order history",trackOrders:"Track all orders",recentOrders:"Recent orders",businessSnapshot:"Business snapshot",totalOrders:"Total orders",paidThisMonth:"Paid this month",pendingOrders:"Pending orders",activeProducts:"Active products",rewardBalance:"Reward balance",earnedRewards:"Your earned rewards, all in one place",viewHistory:"VIEW HISTORY ↗",totalEarned:"TOTAL EARNED",redeemed:"REDEEMED",coupons:"COUPONS",quickActions:"Quick actions",scanCoupon:"Scan coupon",scanEarn:"Scan and earn rewards",myEarnings:"My earnings",earningSummary:"Your reward summary",workHistory:"Work history",pastWork:"View completed work",referEarn:"Refer & earn",inviteFriends:"Invite your network",couponReward:"Coupon reward",payoutReceived:"Payout received",couponsScanned:"Coupons scanned",thisMonthEarned:"Earned this month",pendingPayout:"Pending payout",completedJobs:"Completed jobs",activity:"Activity",scan:"Scan",rewards:"Rewards",withdraw:"Withdraw",requestPayout:"Request payout",epoxyCalculator:"Epoxy Calculator",materialEstimate:"Material estimate",myProfile:"My Profile",accountDetails:"Account details"},
+kn:{workspace:"ಕಾರ್ಯಸ್ಥಳ",home:"ಮುಖಪುಟ",orders:"ಆರ್ಡರ್‌ಗಳು",payments:"ಪಾವತಿಗಳು",history:"ಹಿಸ್ಟರಿ",profile:"ಪ್ರೊಫೈಲ್",support:"ಸಹಾಯ",help:"ಸಹಾಯ ಕೇಂದ್ರ",secure:"ಕೆಲಸ ಮಾಡಲು ಸರಳವಾದ ಮಾರ್ಗ.",overview:"ನಿಮ್ಮ ಕಾರ್ಯಸ್ಥಳ",outstanding:"ಬಾಕಿ ಮೊತ್ತ",credit:"ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಕ್ರೆಡಿಟ್ ವಿವರ",viewDetails:"ವಿವರ ನೋಡಿ ↗",availableCredit:"ಲಭ್ಯವಿರುವ ಕ್ರೆಡಿಟ್",thisMonth:"ಈ ತಿಂಗಳು",paid:"ಪಾವತಿಸಿದದ್ದು",quickActions:"ತ್ವರಿತ ಆಯ್ಕೆಗಳು",viewAll:"ಎಲ್ಲವನ್ನೂ ನೋಡಿ",newOrder:"ಹೊಸ ಆರ್ಡರ್",placeOrder:"ಹೊಸ ಆರ್ಡರ್ ಮಾಡಿ",makePayment:"ಪಾವತಿ ಮಾಡಿ",settleDues:"ಬಾಕಿ ಪಾವತಿಸಿ",myStock:"ನನ್ನ ಸ್ಟಾಕ್",stockOverview:"ಸ್ಟಾಕ್ ಪರಿಶೀಲಿಸಿ",orderHistory:"ಆರ್ಡರ್ ಹಿಸ್ಟರಿ",trackOrders:"ಆರ್ಡರ್‌ಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ",recentOrders:"ಇತ್ತೀಚಿನ ಆರ್ಡರ್‌ಗಳು",businessSnapshot:"ವ್ಯವಹಾರದ ವಿವರ",totalOrders:"ಒಟ್ಟು ಆರ್ಡರ್‌ಗಳು",paidThisMonth:"ಈ ತಿಂಗಳ ಪಾವತಿ",pendingOrders:"ಬಾಕಿ ಆರ್ಡರ್‌ಗಳು",activeProducts:"ಸಕ್ರಿಯ ಉತ್ಪನ್ನಗಳು",rewardBalance:"ಬಹುಮಾನ ಬ್ಯಾಲೆನ್ಸ್",earnedRewards:"ನೀವು ಗಳಿಸಿದ ಬಹುಮಾನಗಳು",viewHistory:"ಹಿಸ್ಟರಿ ನೋಡಿ ↗",totalEarned:"ಒಟ್ಟು ಗಳಿಕೆ",redeemed:"ಬಳಸಿದ್ದು",coupons:"ಕೂಪನ್‌ಗಳು",scanCoupon:"ಕೂಪನ್ ಸ್ಕ್ಯಾನ್",scanEarn:"ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಬಹುಮಾನ ಗಳಿಸಿ",myEarnings:"ನನ್ನ ಗಳಿಕೆ",earningSummary:"ನಿಮ್ಮ ಬಹುಮಾನ ವಿವರ",workHistory:"ಕೆಲಸದ ಹಿಸ್ಟರಿ",pastWork:"ಮುಗಿದ ಕೆಲಸ ನೋಡಿ",referEarn:"ರೆಫರ್ ಮಾಡಿ ಗಳಿಸಿ",inviteFriends:"ನಿಮ್ಮ ಸ್ನೇಹಿತರನ್ನು ಆಹ್ವಾನಿಸಿ",couponReward:"ಕೂಪನ್ ಬಹುಮಾನ",payoutReceived:"ಹಣ ಸ್ವೀಕರಿಸಲಾಗಿದೆ",couponsScanned:"ಸ್ಕ್ಯಾನ್ ಮಾಡಿದ ಕೂಪನ್‌ಗಳು",thisMonthEarned:"ಈ ತಿಂಗಳ ಗಳಿಕೆ",pendingPayout:"ಬಾಕಿ ಪಾವತಿ",completedJobs:"ಪೂರ್ಣಗೊಂಡ ಕೆಲಸಗಳು",activity:"ಚಟುವಟಿಕೆ",scan:"ಸ್ಕ್ಯಾನ್",rewards:"ಬಹುಮಾನಗಳು",withdraw:"ಹಣ ಹಿಂಪಡೆಯಿರಿ",requestPayout:"ಪಾವತಿ ವಿನಂತಿ",epoxyCalculator:"ಎಪಾಕ್ಸಿ ಕ್ಯಾಲ್ಕುಲೇಟರ್",materialEstimate:"ವಸ್ತು ಅಂದಾಜು",myProfile:"ನನ್ನ ಪ್ರೊಫೈಲ್",accountDetails:"ಖಾತೆ ವಿವರಗಳು"},
+hi:{workspace:"कार्यस्थल",home:"होम",orders:"ऑर्डर",payments:"भुगतान",history:"इतिहास",profile:"प्रोफ़ाइल",support:"सहायता",help:"सहायता केंद्र",secure:"काम करने का आसान तरीका।",overview:"आपका कार्यस्थल",outstanding:"बकाया राशि",credit:"आपकी क्रेडिट जानकारी",viewDetails:"विवरण देखें ↗",availableCredit:"उपलब्ध क्रेडिट",thisMonth:"इस महीने",paid:"भुगतान किया",quickActions:"त्वरित कार्य",viewAll:"सभी देखें",newOrder:"नया ऑर्डर",placeOrder:"नया ऑर्डर दें",makePayment:"भुगतान करें",settleDues:"बकाया चुकाएं",myStock:"मेरा स्टॉक",stockOverview:"स्टॉक देखें",orderHistory:"ऑर्डर इतिहास",trackOrders:"ऑर्डर ट्रैक करें",recentOrders:"हाल के ऑर्डर",businessSnapshot:"व्यवसाय सारांश",totalOrders:"कुल ऑर्डर",paidThisMonth:"इस महीने भुगतान",pendingOrders:"लंबित ऑर्डर",activeProducts:"सक्रिय उत्पाद",rewardBalance:"रिवॉर्ड बैलेंस",earnedRewards:"आपके अर्जित रिवॉर्ड",viewHistory:"इतिहास देखें ↗",totalEarned:"कुल कमाई",redeemed:"रिडीम किया",coupons:"कूपन",scanCoupon:"कूपन स्कैन करें",scanEarn:"स्कैन करें और कमाएं",myEarnings:"मेरी कमाई",earningSummary:"रिवॉर्ड सारांश",workHistory:"कार्य इतिहास",pastWork:"पूरा काम देखें",referEarn:"रेफर करें और कमाएं",inviteFriends:"दोस्तों को आमंत्रित करें",couponReward:"कूपन रिवॉर्ड",payoutReceived:"भुगतान प्राप्त",couponsScanned:"स्कैन किए कूपन",thisMonthEarned:"इस महीने कमाई",pendingPayout:"लंबित भुगतान",completedJobs:"पूरे किए काम",activity:"गतिविधि",scan:"स्कैन",rewards:"रिवॉर्ड",withdraw:"पैसे निकालें",requestPayout:"भुगतान अनुरोध",epoxyCalculator:"एपॉक्सी कैलकुलेटर",materialEstimate:"सामग्री का अनुमान",myProfile:"मेरी प्रोफ़ाइल",accountDetails:"खाते का विवरण"},
+te:{workspace:"పని ప్రదేశం",home:"హోమ్",orders:"ఆర్డర్లు",payments:"చెల్లింపులు",history:"చరిత్ర",profile:"ప్రొఫైల్",support:"సహాయం",help:"సహాయ కేంద్రం",secure:"పని చేయడానికి సులభమైన మార్గం.",overview:"మీ పని ప్రదేశం",outstanding:"బకాయి మొత్తం",credit:"మీ క్రెడిట్ వివరాలు",viewDetails:"వివరాలు చూడండి ↗",availableCredit:"అందుబాటులో ఉన్న క్రెడిట్",thisMonth:"ఈ నెల",paid:"చెల్లించినది",quickActions:"త్వరిత చర్యలు",viewAll:"అన్నీ చూడండి",newOrder:"కొత్త ఆర్డర్",placeOrder:"కొత్త ఆర్డర్ చేయండి",makePayment:"చెల్లింపు చేయండి",settleDues:"బకాయిలు చెల్లించండి",myStock:"నా స్టాక్",stockOverview:"స్టాక్ చూడండి",orderHistory:"ఆర్డర్ చరిత్ర",trackOrders:"ఆర్డర్లను ట్రాక్ చేయండి",recentOrders:"ఇటీవలి ఆర్డర్లు",businessSnapshot:"వ్యాపార వివరాలు",totalOrders:"మొత్తం ఆర్డర్లు",paidThisMonth:"ఈ నెల చెల్లింపు",pendingOrders:"పెండింగ్ ఆర్డర్లు",activeProducts:"యాక్టివ్ ఉత్పత్తులు",rewardBalance:"రివార్డ్ బ్యాలెన్స్",earnedRewards:"మీరు సంపాదించిన రివార్డులు",viewHistory:"చరిత్ర చూడండి ↗",totalEarned:"మొత్తం సంపాదన",redeemed:"రిడీమ్ చేసినవి",coupons:"కూపన్లు",scanCoupon:"కూపన్ స్కాన్",scanEarn:"స్కాన్ చేసి సంపాదించండి",myEarnings:"నా సంపాదన",earningSummary:"రివార్డ్ వివరాలు",workHistory:"పని చరిత్ర",pastWork:"పూర్తయిన పని చూడండి",referEarn:"రిఫర్ చేసి సంపాదించండి",inviteFriends:"స్నేహితులను ఆహ్వానించండి",couponReward:"కూపన్ రివార్డ్",payoutReceived:"చెల్లింపు అందింది",couponsScanned:"స్కాన్ చేసిన కూపన్లు",thisMonthEarned:"ఈ నెల సంపాదన",pendingPayout:"పెండింగ్ చెల్లింపు",completedJobs:"పూర్తయిన పనులు",activity:"కార్యకలాపం",scan:"స్కాన్",rewards:"రివార్డులు",withdraw:"డబ్బు ఉపసంహరించండి",requestPayout:"చెల్లింపు అభ్యర్థన",epoxyCalculator:"ఎపాక్సీ కాలిక్యులేటర్",materialEstimate:"మెటీరియల్ అంచనా",myProfile:"నా ప్రొఫైల్",accountDetails:"ఖాతా వివరాలు"},
+ta:{workspace:"பணியிடம்",home:"முகப்பு",orders:"ஆர்டர்கள்",payments:"கட்டணங்கள்",history:"வரலாறு",profile:"சுயவிவரம்",support:"உதவி",help:"உதவி மையம்",secure:"வேலை செய்ய எளிய வழி.",overview:"உங்கள் பணியிடம்",outstanding:"நிலுவைத் தொகை",credit:"உங்கள் கடன் விவரம்",viewDetails:"விவரங்களைப் பார்க்க",availableCredit:"கிடைக்கும் கடன்",thisMonth:"இந்த மாதம்",paid:"செலுத்தியது",quickActions:"விரைவு செயல்கள்",viewAll:"அனைத்தையும் காண",newOrder:"புதிய ஆர்டர்",placeOrder:"புதிய ஆர்டர் செய்ய",makePayment:"பணம் செலுத்த",settleDues:"நிலுவையைச் செலுத்த",myStock:"என் இருப்பு",stockOverview:"இருப்பைப் பார்க்க",orderHistory:"ஆர்டர் வரலாறு",trackOrders:"ஆர்டர்களைக் கண்காணிக்க",recentOrders:"சமீபத்திய ஆர்டர்கள்",businessSnapshot:"வணிகச் சுருக்கம்",totalOrders:"மொத்த ஆர்டர்கள்",paidThisMonth:"இந்த மாதம் செலுத்தியது",pendingOrders:"நிலுவை ஆர்டர்கள்",activeProducts:"செயலில் உள்ள பொருட்கள்",rewardBalance:"வெகுமதி இருப்பு",earnedRewards:"நீங்கள் பெற்ற வெகுமதிகள்",viewHistory:"வரலாற்றைப் பார்க்க",totalEarned:"மொத்த வருமானம்",redeemed:"பெற்றது",coupons:"கூப்பன்கள்",scanCoupon:"கூப்பனை ஸ்கேன்",scanEarn:"ஸ்கேன் செய்து பெறுங்கள்",myEarnings:"என் வருமானம்",earningSummary:"வெகுமதி சுருக்கம்",workHistory:"வேலை வரலாறு",pastWork:"முடிந்த வேலையைப் பார்க்க",referEarn:"பரிந்துரைத்து சம்பாதிக்க",inviteFriends:"நண்பர்களை அழைக்க",couponReward:"கூப்பன் வெகுமதி",payoutReceived:"பணம் பெறப்பட்டது",couponsScanned:"ஸ்கேன் செய்த கூப்பன்கள்",thisMonthEarned:"இந்த மாத வருமானம்",pendingPayout:"நிலுவைத் தொகை",completedJobs:"முடிந்த பணிகள்",activity:"செயல்பாடு",scan:"ஸ்கேன்",rewards:"வெகுமதிகள்",withdraw:"பணம் பெறுதல்",requestPayout:"பணம் பெற கோரிக்கை",epoxyCalculator:"எபாக்ஸி கணிப்பான்",materialEstimate:"பொருள் மதிப்பீடு",myProfile:"என் சுயவிவரம்",accountDetails:"கணக்கு விவரங்கள்"},
+ml:{workspace:"പ്രവർത്തനസ്ഥലം",home:"ഹോം",orders:"ഓർഡറുകൾ",payments:"പേയ്മെന്റുകൾ",history:"ചരിത്രം",profile:"പ്രൊഫൈൽ",support:"സഹായം",help:"സഹായകേന്ദ്രം",secure:"ജോലി ചെയ്യാനുള്ള ലളിതമായ വഴി.",overview:"നിങ്ങളുടെ പ്രവർത്തനസ്ഥലം",outstanding:"കുടിശ്ശിക തുക",credit:"നിങ്ങളുടെ ക്രെഡിറ്റ് വിവരങ്ങൾ",viewDetails:"വിശദാംശങ്ങൾ കാണുക",availableCredit:"ലഭ്യമായ ക്രെഡിറ്റ്",thisMonth:"ഈ മാസം",paid:"അടച്ചത്",quickActions:"വേഗത്തിലുള്ള പ്രവർത്തനങ്ങൾ",viewAll:"എല്ലാം കാണുക",newOrder:"പുതിയ ഓർഡർ",placeOrder:"പുതിയ ഓർഡർ നൽകുക",makePayment:"പണമടയ്ക്കുക",settleDues:"കുടിശ്ശിക തീർക്കുക",myStock:"എന്റെ സ്റ്റോക്ക്",stockOverview:"സ്റ്റോക്ക് പരിശോധിക്കുക",orderHistory:"ഓർഡർ ചരിത്രം",trackOrders:"ഓർഡറുകൾ ട്രാക്ക് ചെയ്യുക",recentOrders:"സമീപകാല ഓർഡറുകൾ",businessSnapshot:"ബിസിനസ് സംഗ്രഹം",totalOrders:"ആകെ ഓർഡറുകൾ",paidThisMonth:"ഈ മാസത്തെ പേയ്മെന്റ്",pendingOrders:"ബാക്കിയുള്ള ഓർഡറുകൾ",activeProducts:"സജീവ ഉൽപ്പന്നങ്ങൾ",rewardBalance:"റിവാർഡ് ബാലൻസ്",earnedRewards:"നിങ്ങൾ നേടിയ റിവാർഡുകൾ",viewHistory:"ചരിത്രം കാണുക",totalEarned:"ആകെ വരുമാനം",redeemed:"റിഡീം ചെയ്തത്",coupons:"കൂപ്പണുകൾ",scanCoupon:"കൂപ്പൺ സ്കാൻ",scanEarn:"സ്കാൻ ചെയ്ത് നേടുക",myEarnings:"എന്റെ വരുമാനം",earningSummary:"റിവാർഡ് സംഗ്രഹം",workHistory:"ജോലി ചരിത്രം",pastWork:"പൂർത്തിയായ ജോലി കാണുക",referEarn:"റഫർ ചെയ്ത് നേടുക",inviteFriends:"സുഹൃത്തുക്കളെ ക്ഷണിക്കുക",couponReward:"കൂപ്പൺ റിവാർഡ്",payoutReceived:"പേയ്മെന്റ് ലഭിച്ചു",couponsScanned:"സ്കാൻ ചെയ്ത കൂപ്പണുകൾ",thisMonthEarned:"ഈ മാസത്തെ വരുമാനം",pendingPayout:"കുടിശ്ശിക പേയ്മെന്റ്",completedJobs:"പൂർത്തിയായ ജോലികൾ",activity:"പ്രവർത്തനം",scan:"സ്കാൻ",rewards:"റിവാർഡുകൾ",withdraw:"പണം പിൻവലിക്കുക",requestPayout:"പേയ്മെന്റ് അഭ്യർത്ഥന",epoxyCalculator:"എപോക്സി കാൽക്കുലേറ്റർ",materialEstimate:"മെറ്റീരിയൽ കണക്ക്",myProfile:"എന്റെ പ്രൊഫൈൽ",accountDetails:"അക്കൗണ്ട് വിവരങ്ങൾ"},
+mr:{workspace:"कार्यस्थळ",home:"मुख्यपृष्ठ",orders:"ऑर्डर",payments:"पेमेंट",history:"इतिहास",profile:"प्रोफाइल",support:"मदत",help:"मदत केंद्र",secure:"काम करण्याचा सोपा मार्ग.",overview:"तुमचे कार्यस्थळ",outstanding:"बाकी रक्कम",credit:"तुमचा क्रेडिट तपशील",viewDetails:"तपशील पहा ↗",availableCredit:"उपलब्ध क्रेडिट",thisMonth:"या महिन्यात",paid:"भरलेले",quickActions:"जलद कृती",viewAll:"सर्व पहा",newOrder:"नवीन ऑर्डर",placeOrder:"नवीन ऑर्डर द्या",makePayment:"पेमेंट करा",settleDues:"बाकी भरा",myStock:"माझा स्टॉक",stockOverview:"स्टॉक तपासा",orderHistory:"ऑर्डर इतिहास",trackOrders:"ऑर्डर ट्रॅक करा",recentOrders:"अलीकडील ऑर्डर",businessSnapshot:"व्यवसाय आढावा",totalOrders:"एकूण ऑर्डर",paidThisMonth:"या महिन्यात भरले",pendingOrders:"प्रलंबित ऑर्डर",activeProducts:"सक्रिय उत्पादने",rewardBalance:"रिवॉर्ड शिल्लक",earnedRewards:"तुम्ही मिळवलेले रिवॉर्ड",viewHistory:"इतिहास पहा",totalEarned:"एकूण कमाई",redeemed:"वापरलेले",coupons:"कूपन",scanCoupon:"कूपन स्कॅन करा",scanEarn:"स्कॅन करा आणि कमवा",myEarnings:"माझी कमाई",earningSummary:"रिवॉर्ड सारांश",workHistory:"कामाचा इतिहास",pastWork:"पूर्ण झालेले काम पहा",referEarn:"रेफर करा आणि कमवा",inviteFriends:"मित्रांना आमंत्रित करा",couponReward:"कूपन रिवॉर्ड",payoutReceived:"पेमेंट मिळाले",couponsScanned:"स्कॅन केलेली कूपन",thisMonthEarned:"या महिन्याची कमाई",pendingPayout:"प्रलंबित पेमेंट",completedJobs:"पूर्ण कामे",activity:"हालचाल",scan:"स्कॅन",rewards:"रिवॉर्ड",withdraw:"पैसे काढा",requestPayout:"पेमेंट विनंती",epoxyCalculator:"इपॉक्सी कॅल्क्युलेटर",materialEstimate:"साहित्याचा अंदाज",myProfile:"माझे प्रोफाइल",accountDetails:"खाते तपशील"}
+};
+
+const loginTranslations = {"en": {"loginTitle": "Welcome back", "loginChoose": "Choose how you want to sign in", "dealerLogin": "Dealer Login", "dealerLoginSub": "Orders · Stock · Payments", "applicatorLogin": "Applicator Login", "appLoginSub": "Scan · Work · Rewards", "mobileNumber": "Mobile number", "passwordPin": "Password / PIN", "signIn": "SIGN IN →", "loginSecure": "Secure access for authorised NEOCURE members", "mobileError": "Enter a valid 10-digit mobile number", "pinError": "Enter your password or PIN", "mobilePlaceholder":"Enter 10-digit mobile number", "pinPlaceholder":"Enter 4-digit MPIN"}, "kn": {"loginTitle": "ಮತ್ತೆ ಸ್ವಾಗತ", "loginChoose": "ಲಾಗಿನ್ ಮಾಡಲು ನಿಮ್ಮ ವಿಭಾಗ ಆಯ್ಕೆಮಾಡಿ", "dealerLogin": "ಡೀಲರ್ ಲಾಗಿನ್", "dealerLoginSub": "ಆರ್ಡರ್ · ಸ್ಟಾಕ್ · ಪಾವತಿ", "applicatorLogin": "ಅಪ್ಲಿಕೇಟರ್ ಲಾಗಿನ್", "appLoginSub": "ಸ್ಕ್ಯಾನ್ · ಕೆಲಸ · ಬಹುಮಾನ", "mobileNumber": "ಮೊಬೈಲ್ ಸಂಖ್ಯೆ", "passwordPin": "ಪಾಸ್\u200cವರ್ಡ್ / PIN", "signIn": "ಲಾಗಿನ್ ಮಾಡಿ →", "loginSecure": "ಅಧಿಕೃತ NEOCURE ಸದಸ್ಯರಿಗೆ ಮಾತ್ರ", "mobileError": "ಸರಿಯಾದ 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ", "pinError": "ಪಾಸ್\u200cವರ್ಡ್ ಅಥವಾ PIN ನಮೂದಿಸಿ", "mobilePlaceholder":"10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ", "pinPlaceholder":"4 ಅಂಕಿಯ MPIN ನಮೂದಿಸಿ"}, "hi": {"loginTitle": "वापसी पर स्वागत है", "loginChoose": "लॉगिन के लिए अपना विभाग चुनें", "dealerLogin": "डीलर लॉगिन", "dealerLoginSub": "ऑर्डर · स्टॉक · भुगतान", "applicatorLogin": "एप्लिकेटर लॉगिन", "appLoginSub": "स्कैन · काम · रिवॉर्ड", "mobileNumber": "मोबाइल नंबर", "passwordPin": "पासवर्ड / PIN", "signIn": "लॉगिन करें →", "loginSecure": "केवल अधिकृत NEOCURE सदस्यों के लिए", "mobileError": "10 अंकों का सही मोबाइल नंबर दर्ज करें", "pinError": "पासवर्ड या PIN दर्ज करें", "mobilePlaceholder":"10 अंकों का मोबाइल नंबर दर्ज करें", "pinPlaceholder":"4 अंकों का MPIN दर्ज करें"}, "te": {"loginTitle": "మళ్లీ స్వాగతం", "loginChoose": "లాగిన్ కోసం మీ విభాగాన్ని ఎంచుకోండి", "dealerLogin": "డీలర్ లాగిన్", "dealerLoginSub": "ఆర్డర్లు · స్టాక్ · చెల్లింపులు", "applicatorLogin": "అప్లికేటర్ లాగిన్", "appLoginSub": "స్కాన్ · పని · రివార్డులు", "mobileNumber": "మొబైల్ నంబర్", "passwordPin": "పాస్\u200cవర్డ్ / PIN", "signIn": "లాగిన్ →", "loginSecure": "అధికార NEOCURE సభ్యులకు మాత్రమే", "mobileError": "సరైన 10 అంకెల మొబైల్ నంబర్ ఇవ్వండి", "pinError": "పాస్\u200cవర్డ్ లేదా PIN ఇవ్వండి", "mobilePlaceholder":"10 అంకెల మొబైల్ నంబర్ నమోదు చేయండి", "pinPlaceholder":"4 అంకెల MPIN నమోదు చేయండి"}, "ta": {"loginTitle": "மீண்டும் வரவேற்கிறோம்", "loginChoose": "உள்நுழைய உங்கள் பிரிவைத் தேர்ந்தெடுக்கவும்", "dealerLogin": "டீலர் உள்நுழைவு", "dealerLoginSub": "ஆர்டர் · இருப்பு · கட்டணம்", "applicatorLogin": "அப்ளிகேட்டர் உள்நுழைவு", "appLoginSub": "ஸ்கேன் · வேலை · வெகுமதி", "mobileNumber": "மொபைல் எண்", "passwordPin": "கடவுச்சொல் / PIN", "signIn": "உள்நுழைக →", "loginSecure": "அங்கீகரிக்கப்பட்ட NEOCURE உறுப்பினர்களுக்கு மட்டும்", "mobileError": "சரியான 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்", "pinError": "கடவுச்சொல் அல்லது PIN உள்ளிடவும்", "mobilePlaceholder":"10 இலக்க மொபைல் எண்ணை உள்ளிடவும்", "pinPlaceholder":"4 இலக்க MPIN உள்ளிடவும்"}, "ml": {"loginTitle": "വീണ്ടും സ്വാഗതം", "loginChoose": "ലോഗിൻ ചെയ്യാൻ വിഭാഗം തിരഞ്ഞെടുക്കുക", "dealerLogin": "ഡീലർ ലോഗിൻ", "dealerLoginSub": "ഓർഡർ · സ്റ്റോക്ക് · പേയ്മെന്റ്", "applicatorLogin": "അപ്ലിക്കേറ്റർ ലോഗിൻ", "appLoginSub": "സ്കാൻ · ജോലി · റിവാർഡ്", "mobileNumber": "മൊബൈൽ നമ്പർ", "passwordPin": "പാസ്\u200cവേഡ് / PIN", "signIn": "ലോഗിൻ ചെയ്യുക →", "loginSecure": "അംഗീകൃത NEOCURE അംഗങ്ങൾക്ക് മാത്രം", "mobileError": "ശരിയായ 10 അക്ക മൊബൈൽ നമ്പർ നൽകുക", "pinError": "പാസ്\u200cവേഡ് അല്ലെങ്കിൽ PIN നൽകുക", "mobilePlaceholder":"10 അക്ക മൊബൈൽ നമ്പർ നൽകുക", "pinPlaceholder":"4 അക്ക MPIN നൽകുക"}, "mr": {"loginTitle": "पुन्हा स्वागत आहे", "loginChoose": "लॉगिनसाठी तुमचा विभाग निवडा", "dealerLogin": "डीलर लॉगिन", "dealerLoginSub": "ऑर्डर · स्टॉक · पेमेंट", "applicatorLogin": "अॅप्लिकेटर लॉगिन", "appLoginSub": "स्कॅन · काम · रिवॉर्ड", "mobileNumber": "मोबाइल नंबर", "passwordPin": "पासवर्ड / PIN", "signIn": "लॉगिन करा →", "loginSecure": "फक्त अधिकृत NEOCURE सदस्यांसाठी", "mobileError": "योग्य 10 अंकी मोबाइल नंबर टाका", "pinError": "पासवर्ड किंवा PIN टाका", "mobilePlaceholder":"10 अंकी मोबाइल नंबर टाका", "pinPlaceholder":"4 अंकी MPIN टाका"}};
+
+Object.keys(loginTranslations).forEach(lang=>Object.assign(translations[lang],loginTranslations[lang]));
+
+const registrationTranslations = {"en": {"newRegistration": "New user? Create an account", "createAccount": "Create your account", "chooseAccount": "Select account type and submit for admin approval", "fullName": "Full name", "address": "Address", "dealerCode": "Dealer code (if referred)", "gstNumber": "GST number (optional)", "backToLogin": "Back to login", "submitForApproval": "Submit for approval →", "approvalNote": "No OTP required · Account becomes active after admin approval", "regSuccess": "Registration submitted. Please wait for admin approval.", "regMobileError": "Enter a valid 10-digit mobile number", "regPasswordError": "Password / PIN must be at least 4 characters"}, "kn": {"newRegistration": "ಹೊಸ ಬಳಕೆದಾರರೇ? ಖಾತೆ ತೆರೆಯಿರಿ", "createAccount": "ನಿಮ್ಮ ಖಾತೆ ರಚಿಸಿ", "chooseAccount": "ವಿಭಾಗ ಆಯ್ಕೆಮಾಡಿ Admin Approval ಗೆ ಕಳುಹಿಸಿ", "fullName": "ಪೂರ್ಣ ಹೆಸರು", "address": "ವಿಳಾಸ", "dealerCode": "ಡೀಲರ್ ಕೋಡ್ (ಇದ್ದರೆ)", "gstNumber": "GST ಸಂಖ್ಯೆ (ಐಚ್ಛಿಕ)", "backToLogin": "ಲಾಗಿನ್\u200cಗೆ ಹಿಂತಿರುಗಿ", "submitForApproval": "ಅನುಮೋದನೆಗೆ ಕಳುಹಿಸಿ →", "approvalNote": "OTP ಬೇಡ · Admin ಅನುಮೋದನೆಯ ನಂತರ ಖಾತೆ Active ಆಗುತ್ತದೆ", "regSuccess": "Registration ಕಳುಹಿಸಲಾಗಿದೆ. Admin Approval ಗಾಗಿ ಕಾಯಿರಿ.", "regMobileError": "ಸರಿಯಾದ 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ", "regPasswordError": "Password / PIN ಕನಿಷ್ಠ 4 ಅಕ್ಷರ ಇರಬೇಕು"}, "hi": {"newRegistration": "नए उपयोगकर्ता? खाता बनाएं", "createAccount": "अपना खाता बनाएं", "chooseAccount": "प्रकार चुनें और एडमिन अनुमोदन के लिए भेजें", "fullName": "पूरा नाम", "address": "पता", "dealerCode": "डीलर कोड (यदि रेफर किया गया हो)", "gstNumber": "GST नंबर (वैकल्पिक)", "backToLogin": "लॉगिन पर वापस जाएं", "submitForApproval": "अनुमोदन के लिए भेजें →", "approvalNote": "OTP की आवश्यकता नहीं · एडमिन अनुमोदन के बाद खाता सक्रिय होगा", "regSuccess": "रजिस्ट्रेशन भेज दिया गया। एडमिन अनुमोदन की प्रतीक्षा करें।", "regMobileError": "सही 10 अंकों का मोबाइल नंबर दर्ज करें", "regPasswordError": "पासवर्ड / PIN कम से कम 4 अक्षरों का होना चाहिए"}, "te": {"newRegistration": "కొత్త వినియోగదారులా? ఖాతా సృష్టించండి", "createAccount": "మీ ఖాతాను సృష్టించండి", "chooseAccount": "రకాన్ని ఎంచుకుని అడ్మిన్ ఆమోదానికి పంపండి", "fullName": "పూర్తి పేరు", "address": "చిరునామా", "dealerCode": "డీలర్ కోడ్ (ఉంటే)", "gstNumber": "GST నంబర్ (ఐచ్ఛికం)", "backToLogin": "లాగిన్\u200cకు తిరిగి వెళ్లండి", "submitForApproval": "ఆమోదానికి పంపండి →", "approvalNote": "OTP అవసరం లేదు · అడ్మిన్ ఆమోదం తర్వాత ఖాతా యాక్టివ్ అవుతుంది", "regSuccess": "రిజిస్ట్రేషన్ పంపబడింది. అడ్మిన్ ఆమోదం కోసం వేచి ఉండండి.", "regMobileError": "సరైన 10 అంకెల మొబైల్ నంబర్ ఇవ్వండి", "regPasswordError": "పాస్\u200cవర్డ్ / PIN కనీసం 4 అక్షరాలు ఉండాలి"}, "ta": {"newRegistration": "புதிய பயனரா? கணக்கை உருவாக்கவும்", "createAccount": "உங்கள் கணக்கை உருவாக்கவும்", "chooseAccount": "வகையைத் தேர்ந்தெடுத்து நிர்வாகி ஒப்புதலுக்கு அனுப்பவும்", "fullName": "முழுப் பெயர்", "address": "முகவரி", "dealerCode": "டீலர் குறியீடு (இருந்தால்)", "gstNumber": "GST எண் (விருப்பம்)", "backToLogin": "உள்நுழைவுக்குத் திரும்பு", "submitForApproval": "ஒப்புதலுக்கு அனுப்பு →", "approvalNote": "OTP தேவையில்லை · நிர்வாகி ஒப்புதலுக்குப் பிறகு கணக்கு செயல்படும்", "regSuccess": "பதிவு அனுப்பப்பட்டது. நிர்வாகி ஒப்புதலுக்காக காத்திருக்கவும்.", "regMobileError": "சரியான 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்", "regPasswordError": "கடவுச்சொல் / PIN குறைந்தது 4 எழுத்துகள் இருக்க வேண்டும்"}, "ml": {"newRegistration": "പുതിയ ഉപയോക്താവാണോ? അക്കൗണ്ട് സൃഷ്ടിക്കുക", "createAccount": "നിങ്ങളുടെ അക്കൗണ്ട് സൃഷ്ടിക്കുക", "chooseAccount": "വിഭാഗം തിരഞ്ഞെടുത്ത് അഡ്മിൻ അംഗീകാരത്തിന് അയയ്ക്കുക", "fullName": "പൂർണ്ണ പേര്", "address": "വിലാസം", "dealerCode": "ഡീലർ കോഡ് (ഉണ്ടെങ്കിൽ)", "gstNumber": "GST നമ്പർ (ഓപ്ഷണൽ)", "backToLogin": "ലോഗിനിലേക്ക് മടങ്ങുക", "submitForApproval": "അംഗീകാരത്തിന് അയയ്ക്കുക →", "approvalNote": "OTP ആവശ്യമില്ല · അഡ്മിൻ അംഗീകാരത്തിന് ശേഷം അക്കൗണ്ട് സജീവമാകും", "regSuccess": "രജിസ്ട്രേഷൻ അയച്ചു. അഡ്മിൻ അംഗീകാരത്തിനായി കാത്തിരിക്കുക.", "regMobileError": "ശരിയായ 10 അക്ക മൊബൈൽ നമ്പർ നൽകുക", "regPasswordError": "പാസ്\u200cവേഡ് / PIN കുറഞ്ഞത് 4 അക്ഷരങ്ങൾ വേണം"}, "mr": {"newRegistration": "नवीन वापरकर्ता? खाते तयार करा", "createAccount": "तुमचे खाते तयार करा", "chooseAccount": "प्रकार निवडा आणि प्रशासकाच्या मंजुरीसाठी पाठवा", "fullName": "पूर्ण नाव", "address": "पत्ता", "dealerCode": "डीलर कोड (असल्यास)", "gstNumber": "GST क्रमांक (पर्यायी)", "backToLogin": "लॉगिनवर परत जा", "submitForApproval": "मंजुरीसाठी पाठवा →", "approvalNote": "OTP आवश्यक नाही · प्रशासकाच्या मंजुरीनंतर खाते सक्रिय होईल", "regSuccess": "नोंदणी पाठवली. प्रशासकाच्या मंजुरीची प्रतीक्षा करा.", "regMobileError": "योग्य 10 अंकी मोबाइल क्रमांक टाका", "regPasswordError": "पासवर्ड / PIN किमान 4 अक्षरांचा असावा"}};
+Object.keys(registrationTranslations).forEach(lang=>Object.assign(translations[lang],registrationTranslations[lang]));
+
+const ncLoginMessages={
+ en:{wrongPin:"Incorrect MPIN. Please try again.",missingAccount:"No account exists for this mobile number in the selected portal.",profileMissing:"Account profile is incomplete. Please contact Admin.",roleMismatch:"This account belongs to a different portal. Choose the correct Dealer / Applicator portal.",phoneMismatch:"The mobile number in the account profile does not match. Please contact Admin.",resetPrompt:"Enter your registered 10-digit mobile number first.",resetPending:"Your MPIN reset request is already waiting for Admin approval.",resetSent:"MPIN reset request sent to Admin. Please wait for approval.",resetFailed:"Could not send reset request. Please check Firebase permissions.",forgot:"Forgot MPIN?"},
+ kn:{wrongPin:"MPIN ತಪ್ಪಾಗಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",missingAccount:"ಆಯ್ಕೆ ಮಾಡಿದ Portalನಲ್ಲಿ ಈ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಗೆ ಖಾತೆ ಇಲ್ಲ.",profileMissing:"ಖಾತೆಯ Profile ಅಪೂರ್ಣವಾಗಿದೆ. Adminರನ್ನು ಸಂಪರ್ಕಿಸಿ.",roleMismatch:"ಈ ಖಾತೆ ಬೇರೆ Portalಗೆ ಸೇರಿದೆ. ಸರಿಯಾದ Dealer / Applicator Portal ಆಯ್ಕೆಮಾಡಿ.",phoneMismatch:"ಖಾತೆಯಲ್ಲಿರುವ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ. Adminರನ್ನು ಸಂಪರ್ಕಿಸಿ.",resetPrompt:"ಮೊದಲು ನೋಂದಾಯಿತ 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ.",resetPending:"ನಿಮ್ಮ MPIN Reset Request ಈಗಾಗಲೇ Admin ಅನುಮೋದನೆಗಾಗಿ ಕಾಯುತ್ತಿದೆ.",resetSent:"MPIN Reset Request Adminಗೆ ಕಳುಹಿಸಲಾಗಿದೆ. ಅನುಮೋದನೆಗಾಗಿ ಕಾಯಿರಿ.",resetFailed:"Reset Request ಕಳುಹಿಸಲಾಗಲಿಲ್ಲ. Firebase ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.",forgot:"MPIN ಮರೆತಿದ್ದೀರಾ?"},
+ hi:{wrongPin:"गलत MPIN। कृपया फिर से प्रयास करें।",missingAccount:"चुने गए पोर्टल में इस मोबाइल नंबर का खाता नहीं है।",profileMissing:"खाता प्रोफ़ाइल अधूरी है। कृपया एडमिन से संपर्क करें।",roleMismatch:"यह खाता दूसरे पोर्टल का है। सही Dealer / Applicator पोर्टल चुनें।",phoneMismatch:"खाते में मोबाइल नंबर मेल नहीं खाता। एडमिन से संपर्क करें।",resetPrompt:"पहले अपना पंजीकृत 10 अंकों का मोबाइल नंबर दर्ज करें।",resetPending:"आपका MPIN रीसेट अनुरोध पहले से एडमिन की मंज़ूरी की प्रतीक्षा में है।",resetSent:"MPIN रीसेट अनुरोध एडमिन को भेज दिया गया है।",resetFailed:"रीसेट अनुरोध नहीं भेजा जा सका। Firebase अनुमति जाँचें।",forgot:"MPIN भूल गए?"},
+ te:{wrongPin:"తప్పు MPIN. మళ్లీ ప్రయత్నించండి.",missingAccount:"ఎంచుకున్న పోర్టల్‌లో ఈ మొబైల్ నంబర్‌కు ఖాతా లేదు.",profileMissing:"ఖాతా ప్రొఫైల్ పూర్తిగా లేదు. అడ్మిన్‌ను సంప్రదించండి.",roleMismatch:"ఈ ఖాతా వేరే పోర్టల్‌కు చెందింది. సరైన Dealer / Applicator పోర్టల్ ఎంచుకోండి.",phoneMismatch:"ఖాతాలోని మొబైల్ నంబర్ సరిపోలడం లేదు. అడ్మిన్‌ను సంప్రదించండి.",resetPrompt:"ముందుగా నమోదు చేసిన 10 అంకెల మొబైల్ నంబర్ ఇవ్వండి.",resetPending:"మీ MPIN రీసెట్ అభ్యర్థన ఇప్పటికే అడ్మిన్ ఆమోదం కోసం వేచి ఉంది.",resetSent:"MPIN రీసెట్ అభ్యర్థన అడ్మిన్‌కు పంపబడింది.",resetFailed:"రీసెట్ అభ్యర్థన పంపలేకపోయాం. Firebase అనుమతులను తనిఖీ చేయండి.",forgot:"MPIN మర్చిపోయారా?"},
+ ta:{wrongPin:"தவறான MPIN. மீண்டும் முயற்சிக்கவும்.",missingAccount:"தேர்ந்தெடுத்த போர்ட்டலில் இந்த மொபைல் எண்ணுக்கு கணக்கு இல்லை.",profileMissing:"கணக்கு சுயவிவரம் முழுமையில்லை. நிர்வாகியைத் தொடர்புகொள்ளவும்.",roleMismatch:"இந்தக் கணக்கு வேறு போர்ட்டலுக்குரியது. சரியான Dealer / Applicator போர்ட்டலைத் தேர்ந்தெடுக்கவும்.",phoneMismatch:"கணக்கிலுள்ள மொபைல் எண் பொருந்தவில்லை. நிர்வாகியைத் தொடர்புகொள்ளவும்.",resetPrompt:"முதலில் பதிவு செய்த 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்.",resetPending:"உங்கள் MPIN மீட்டமைப்பு கோரிக்கை ஏற்கனவே நிர்வாகி ஒப்புதலுக்காக காத்திருக்கிறது.",resetSent:"MPIN மீட்டமைப்பு கோரிக்கை நிர்வாகிக்கு அனுப்பப்பட்டது.",resetFailed:"மீட்டமைப்பு கோரிக்கையை அனுப்ப முடியவில்லை. Firebase அனுமதிகளைச் சரிபார்க்கவும்.",forgot:"MPIN மறந்துவிட்டீர்களா?"},
+ ml:{wrongPin:"തെറ്റായ MPIN. വീണ്ടും ശ്രമിക്കുക.",missingAccount:"തിരഞ്ഞെടുത്ത പോർട്ടലിൽ ഈ മൊബൈൽ നമ്പറിന് അക്കൗണ്ട് ഇല്ല.",profileMissing:"അക്കൗണ്ട് പ്രൊഫൈൽ അപൂർണ്ണമാണ്. അഡ്മിനെ ബന്ധപ്പെടുക.",roleMismatch:"ഈ അക്കൗണ്ട് മറ്റൊരു പോർട്ടലിലേതാണ്. ശരിയായ Dealer / Applicator പോർട്ടൽ തിരഞ്ഞെടുക്കുക.",phoneMismatch:"അക്കൗണ്ടിലെ മൊബൈൽ നമ്പർ പൊരുത്തപ്പെടുന്നില്ല. അഡ്മിനെ ബന്ധപ്പെടുക.",resetPrompt:"ആദ്യം രജിസ്റ്റർ ചെയ്ത 10 അക്ക മൊബൈൽ നമ്പർ നൽകുക.",resetPending:"നിങ്ങളുടെ MPIN റീസെറ്റ് അഭ്യർത്ഥന അഡ്മിൻ അംഗീകാരത്തിനായി കാത്തിരിക്കുന്നു.",resetSent:"MPIN റീസെറ്റ് അഭ്യർത്ഥന അഡ്മിന് അയച്ചു.",resetFailed:"റീസെറ്റ് അഭ്യർത്ഥന അയയ്ക്കാനായില്ല. Firebase അനുമതികൾ പരിശോധിക്കുക.",forgot:"MPIN മറന്നോ?"},
+ mr:{wrongPin:"चुकीचा MPIN. कृपया पुन्हा प्रयत्न करा.",missingAccount:"निवडलेल्या पोर्टलमध्ये या मोबाइल क्रमांकाचे खाते नाही.",profileMissing:"खाते प्रोफाइल अपूर्ण आहे. कृपया प्रशासकाशी संपर्क साधा.",roleMismatch:"हे खाते दुसऱ्या पोर्टलचे आहे. योग्य Dealer / Applicator पोर्टल निवडा.",phoneMismatch:"खात्यातील मोबाइल क्रमांक जुळत नाही. प्रशासकाशी संपर्क साधा.",resetPrompt:"प्रथम नोंदणीकृत 10 अंकी मोबाइल क्रमांक टाका.",resetPending:"तुमची MPIN रीसेट विनंती आधीच प्रशासकाच्या मंजुरीसाठी प्रतीक्षेत आहे.",resetSent:"MPIN रीसेट विनंती प्रशासकाला पाठवली आहे.",resetFailed:"रीसेट विनंती पाठवता आली नाही. Firebase परवानग्या तपासा.",forgot:"MPIN विसरलात?"}
+};
+function ncMsg(key){const lang=(document.getElementById('language')?.value||'en');return (ncLoginMessages[lang]||ncLoginMessages.en)[key]||ncLoginMessages.en[key]||key;}
+function ncSetLoginError(key){const el=document.getElementById('loginError');if(el)el.textContent=ncMsg(key);}
+
+
+const roleSelect=document.getElementById('roleSelect'), language=document.getElementById('language');
+
+// Login role selection (Dealer / Applicator). Keep this separate from the
+// post-login role switch so the selected login type is always defined.
+let selectedLoginRole = 'dealer';
+function chooseLoginRole(role){
+  selectedLoginRole = role === 'applicator' ? 'applicator' : 'dealer';
+  const dealerCard = document.getElementById('dealerLoginChoice');
+  const applicatorCard = document.getElementById('applicatorLoginChoice');
+  if (dealerCard) dealerCard.classList.toggle('selected', selectedLoginRole === 'dealer');
+  if (applicatorCard) applicatorCard.classList.toggle('selected', selectedLoginRole === 'applicator');
+}
+
+function notify(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.classList.remove('show'),2300)}
+function setRole(){const app=roleSelect.value==='applicator';document.getElementById('ncDealerExtraActions').classList.toggle('hidden',app);document.getElementById('ncApplicatorExtraActions').classList.toggle('hidden',!app);document.getElementById('dealerHero').classList.toggle('hidden',app);document.getElementById('applicatorHero').classList.toggle('hidden',!app);document.getElementById('dealerActions').classList.toggle('hidden',app);document.getElementById('applicatorActions').classList.toggle('hidden',!app);document.getElementById('dealerActivity').classList.toggle('hidden',app);document.getElementById('applicatorActivity').classList.toggle('hidden',!app);document.getElementById('dealerMetrics').classList.toggle('hidden',app);document.getElementById('applicatorMetrics').classList.toggle('hidden',!app);document.getElementById('greeting').textContent=app?'Hello, Applicator':'Good morning, Dealer';document.getElementById('welcomeText').textContent=app?'Your work and rewards at a glance.':'Here’s what’s happening with your business today.';document.getElementById('activityTitle').textContent=app?(translations[language.value].activity||'Recent activity'):(translations[language.value].recentOrders||'Recent orders');}
+function setLanguage(){
+ const dict=translations[language.value]||translations.en;
+ const forgotBtn=document.getElementById('forgotMpinBtn');
+ if(forgotBtn&&typeof ncMsg==='function')forgotBtn.textContent=ncMsg('forgot');
+ try{localStorage.setItem('neocure_ui_language',language.value)}catch(e){}
+ document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.getAttribute('data-i18n');if(dict[key])el.textContent=dict[key]});
+ document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{const key=el.getAttribute('data-i18n-placeholder');if(dict[key])el.placeholder=dict[key]});
+ const loginSel=document.getElementById('loginLanguage');if(loginSel&&loginSel.value!==language.value)loginSel.value=language.value;
+ const appSel=document.getElementById('language');if(appSel&&appSel.value!==language.value)appSel.value=language.value;
+ setRole();if(typeof ncTranslateFeaturePage==='function')ncTranslateFeaturePage();
+}
+
+// Translate dynamic Dealer / Applicator feature pages as well as the home screen.
+// Only interface text is translated; names, phone numbers, order data and Firebase data remain unchanged.
+const ncFeatureTranslations = {
+  en: {
+    "Product":"Product","Pack Size / Variant":"Pack Size / Variant","Quantity":"Quantity",
+    "Payment Mode":"Payment Mode","Required Date":"Required Date","Remarks":"Remarks",
+    "Order Summary":"Order Summary","Pack Weight":"Pack Weight","Dealer Rate / kg":"Dealer Rate / kg",
+    "Rate / Pack":"Rate / Pack","Subtotal":"Subtotal","Grand Total":"Grand Total",
+    "Review & Submit Order":"Review & Submit Order","Place Order":"Place Order",
+    "Order History":"Order History","Payment Record":"Payment Record","Khata Book":"Khata Book",
+    "Party / Customer":"Party / Customer","Entry Type":"Entry Type","Debit / Udhaari (+)":"Debit / Udhaari (+)",
+    "Credit / Payment (-)":"Credit / Payment (-)","Amount (₹)":"Amount (₹)","Note":"Note",
+    "Save Khata Entry":"Save Khata Entry","Net Udhaari:":"Net Udhaari:",
+    "Product Rates":"Product Rates","Scan Coupon":"Scan Coupon","Rewards & Wallet":"Rewards & Wallet",
+    "Withdraw Request":"Withdraw Request","Work History":"Work History","My Profile":"My Profile",
+    "GST Calculator":"GST Calculator","Epoxy Calculator":"Epoxy Calculator",
+    "Payment Method":"Payment Method","Transaction ID / Reference":"Transaction ID / Reference",
+    "Submit Payment Record":"Submit Payment Record","Verify & Redeem Coupon":"Verify & Redeem Coupon",
+    "Available Reward Balance:":"Available Reward Balance:","Request Withdrawal":"Request Withdrawal",
+    "Withdraw Amount (₹)":"Withdraw Amount (₹)","UPI ID":"UPI ID","Submit Withdrawal Request":"Submit Withdrawal Request",
+    "Address / City":"Address / City","Save Profile":"Save Profile","Calculation":"Calculation",
+    "Add GST":"Add GST","GST Included":"GST Included","Enter amount.":"Enter amount.",
+    "No orders yet.":"No orders yet.","No payment records yet.":"No payment records yet.",
+    "No coupon history yet.":"No coupon history yet.","No Khata entries yet.":"No Khata entries yet.",
+    "Profile photo":"Profile photo","Upload / Change Photo":"Upload / Change Photo"
+  },
+  kn: {
+    "Product":"ಉತ್ಪನ್ನ","Pack Size / Variant":"ಪ್ಯಾಕ್ ಗಾತ್ರ / ವಿಧ","Quantity":"ಪ್ರಮಾಣ",
+    "Payment Mode":"ಪಾವತಿ ವಿಧಾನ","Required Date":"ಬೇಕಾದ ದಿನಾಂಕ","Remarks":"ಟಿಪ್ಪಣಿ",
+    "Order Summary":"ಆರ್ಡರ್ ಸಾರಾಂಶ","Pack Weight":"ಪ್ಯಾಕ್ ತೂಕ","Dealer Rate / kg":"ಡೀಲರ್ ದರ / ಕೆಜಿ",
+    "Rate / Pack":"ಪ್ಯಾಕ್ ದರ","Subtotal":"ಉಪಮೊತ್ತ","Grand Total":"ಒಟ್ಟು ಮೊತ್ತ",
+    "Review & Submit Order":"ಪರಿಶೀಲಿಸಿ ಆರ್ಡರ್ ಸಲ್ಲಿಸಿ","Place Order":"ಆರ್ಡರ್ ಮಾಡಿ",
+    "Order History":"ಆರ್ಡರ್ ಇತಿಹಾಸ","Payment Record":"ಪಾವತಿ ದಾಖಲೆ","Khata Book":"ಖಾತಾ ಪುಸ್ತಕ",
+    "Party / Customer":"ಪಾರ್ಟಿ / ಗ್ರಾಹಕ","Entry Type":"ಎಂಟ್ರಿ ವಿಧ","Debit / Udhaari (+)":"ಡೆಬಿಟ್ / ಉದ್ಹಾರಿ (+)",
+    "Credit / Payment (-)":"ಕ್ರೆಡಿಟ್ / ಪಾವತಿ (-)","Amount (₹)":"ಮೊತ್ತ (₹)","Note":"ಟಿಪ್ಪಣಿ",
+    "Save Khata Entry":"ಖಾತಾ ಎಂಟ್ರಿ ಉಳಿಸಿ","Net Udhaari:":"ಒಟ್ಟು ಉದ್ಹಾರಿ:",
+    "Product Rates":"ಉತ್ಪನ್ನ ದರಗಳು","Scan Coupon":"ಕೂಪನ್ ಸ್ಕ್ಯಾನ್","Rewards & Wallet":"ಬಹುಮಾನಗಳು ಮತ್ತು ವಾಲೆಟ್",
+    "Withdraw Request":"ಹಣ ಹಿಂಪಡೆಯುವ ವಿನಂತಿ","Work History":"ಕೆಲಸದ ಇತಿಹಾಸ","My Profile":"ನನ್ನ ಪ್ರೊಫೈಲ್",
+    "GST Calculator":"GST ಕ್ಯಾಲ್ಕುಲೇಟರ್","Epoxy Calculator":"ಎಪಾಕ್ಸಿ ಕ್ಯಾಲ್ಕುಲೇಟರ್",
+    "Payment Method":"ಪಾವತಿ ವಿಧಾನ","Transaction ID / Reference":"ವಹಿವಾಟು ID / ಉಲ್ಲೇಖ",
+    "Submit Payment Record":"ಪಾವತಿ ದಾಖಲೆ ಸಲ್ಲಿಸಿ","Verify & Redeem Coupon":"ಪರಿಶೀಲಿಸಿ ಕೂಪನ್ ಪಡೆಯಿರಿ",
+    "Available Reward Balance:":"ಲಭ್ಯವಿರುವ ಬಹುಮಾನ ಮೊತ್ತ:","Request Withdrawal":"ಹಣ ಹಿಂಪಡೆಯಲು ವಿನಂತಿಸಿ",
+    "Withdraw Amount (₹)":"ಹಿಂಪಡೆಯುವ ಮೊತ್ತ (₹)","UPI ID":"UPI ID","Submit Withdrawal Request":"ಹಿಂಪಡೆಯುವ ವಿನಂತಿ ಸಲ್ಲಿಸಿ",
+    "Address / City":"ವಿಳಾಸ / ನಗರ","Save Profile":"ಪ್ರೊಫೈಲ್ ಉಳಿಸಿ","Calculation":"ಲೆಕ್ಕಾಚಾರ",
+    "Add GST":"GST ಸೇರಿಸಿ","GST Included":"GST ಸೇರಿಸಲಾಗಿದೆ","Enter amount.":"ಮೊತ್ತ ನಮೂದಿಸಿ.",
+    "No orders yet.":"ಇನ್ನೂ ಆರ್ಡರ್‌ಗಳಿಲ್ಲ.","No payment records yet.":"ಇನ್ನೂ ಪಾವತಿ ದಾಖಲೆಗಳಿಲ್ಲ.",
+    "No coupon history yet.":"ಇನ್ನೂ ಕೂಪನ್ ಇತಿಹಾಸವಿಲ್ಲ.","No Khata entries yet.":"ಇನ್ನೂ ಖಾತಾ ಎಂಟ್ರಿಗಳಿಲ್ಲ.",
+    "Profile photo":"ಪ್ರೊಫೈಲ್ ಫೋಟೋ","Upload / Change Photo":"ಫೋಟೋ ಅಪ್‌ಲೋಡ್ / ಬದಲಾಯಿಸಿ"
+  },
+  hi: {
+    "Product":"उत्पाद","Pack Size / Variant":"पैक आकार / प्रकार","Quantity":"मात्रा",
+    "Payment Mode":"भुगतान का तरीका","Required Date":"आवश्यक तारीख","Remarks":"टिप्पणी",
+    "Order Summary":"ऑर्डर सारांश","Pack Weight":"पैक वजन","Dealer Rate / kg":"डीलर दर / किग्रा",
+    "Rate / Pack":"पैक दर","Subtotal":"उप-योग","Grand Total":"कुल राशि",
+    "Review & Submit Order":"जांचें और ऑर्डर भेजें","Place Order":"ऑर्डर करें",
+    "Order History":"ऑर्डर इतिहास","Payment Record":"भुगतान रिकॉर्ड","Khata Book":"खाता बुक",
+    "Party / Customer":"पार्टी / ग्राहक","Entry Type":"एंट्री प्रकार","Debit / Udhaari (+)":"डेबिट / उधारी (+)",
+    "Credit / Payment (-)":"क्रेडिट / भुगतान (-)","Amount (₹)":"राशि (₹)","Note":"नोट",
+    "Save Khata Entry":"खाता एंट्री सेव करें","Net Udhaari:":"कुल उधारी:",
+    "Product Rates":"उत्पाद दरें","Scan Coupon":"कूपन स्कैन करें","Rewards & Wallet":"रिवॉर्ड और वॉलेट",
+    "Withdraw Request":"निकासी अनुरोध","Work History":"कार्य इतिहास","My Profile":"मेरी प्रोफ़ाइल",
+    "GST Calculator":"GST कैलकुलेटर","Epoxy Calculator":"एपॉक्सी कैलकुलेटर",
+    "Payment Method":"भुगतान विधि","Transaction ID / Reference":"लेनदेन ID / संदर्भ",
+    "Submit Payment Record":"भुगतान रिकॉर्ड भेजें","Verify & Redeem Coupon":"कूपन जांचें और रिडीम करें",
+    "Available Reward Balance:":"उपलब्ध रिवॉर्ड बैलेंस:","Request Withdrawal":"निकासी का अनुरोध करें",
+    "Withdraw Amount (₹)":"निकासी राशि (₹)","UPI ID":"UPI ID","Submit Withdrawal Request":"निकासी अनुरोध भेजें",
+    "Address / City":"पता / शहर","Save Profile":"प्रोफ़ाइल सेव करें","Calculation":"गणना",
+    "Add GST":"GST जोड़ें","GST Included":"GST शामिल","Enter amount.":"राशि दर्ज करें।",
+    "No orders yet.":"अभी कोई ऑर्डर नहीं है।","No payment records yet.":"अभी कोई भुगतान रिकॉर्ड नहीं है।",
+    "No coupon history yet.":"अभी कोई कूपन इतिहास नहीं है।","No Khata entries yet.":"अभी कोई खाता एंट्री नहीं है।",
+    "Profile photo":"प्रोफ़ाइल फ़ोटो","Upload / Change Photo":"फ़ोटो अपलोड / बदलें"
+  },
+  te: {
+    "Product":"ఉత్పత్తి","Pack Size / Variant":"ప్యాక్ పరిమాణం / రకం","Quantity":"పరిమాణం",
+    "Payment Mode":"చెల్లింపు విధానం","Required Date":"కావలసిన తేదీ","Remarks":"వ్యాఖ్యలు",
+    "Order Summary":"ఆర్డర్ సారాంశం","Pack Weight":"ప్యాక్ బరువు","Dealer Rate / kg":"డీలర్ ధర / కిలో",
+    "Rate / Pack":"ప్యాక్ ధర","Subtotal":"ఉపమొత్తం","Grand Total":"మొత్తం మొత్తం",
+    "Review & Submit Order":"పరిశీలించి ఆర్డర్ పంపండి","Place Order":"ఆర్డర్ చేయండి",
+    "Order History":"ఆర్డర్ చరిత్ర","Payment Record":"చెల్లింపు రికార్డు","Khata Book":"ఖాతా పుస్తకం",
+    "Party / Customer":"పార్టీ / కస్టమర్","Entry Type":"ఎంట్రీ రకం","Debit / Udhaari (+)":"డెబిట్ / బాకీ (+)",
+    "Credit / Payment (-)":"క్రెడిట్ / చెల్లింపు (-)","Amount (₹)":"మొత్తం (₹)","Note":"గమనిక",
+    "Save Khata Entry":"ఖాతా ఎంట్రీ సేవ్ చేయండి","Net Udhaari:":"మొత్తం బాకీ:",
+    "Product Rates":"ఉత్పత్తి ధరలు","Scan Coupon":"కూపన్ స్కాన్","Rewards & Wallet":"రివార్డులు & వాలెట్",
+    "Withdraw Request":"విత్‌డ్రా అభ్యర్థన","Work History":"పని చరిత్ర","My Profile":"నా ప్రొఫైల్",
+    "GST Calculator":"GST కాలిక్యులేటర్","Epoxy Calculator":"ఎపాక్సీ కాలిక్యులేటర్",
+    "Payment Method":"చెల్లింపు పద్ధతి","Transaction ID / Reference":"లావాదేవీ ID / రిఫరెన్స్",
+    "Submit Payment Record":"చెల్లింపు రికార్డు పంపండి","Verify & Redeem Coupon":"కూపన్ ధృవీకరించి రీడీమ్ చేయండి",
+    "Available Reward Balance:":"అందుబాటులో ఉన్న రివార్డ్ బ్యాలెన్స్:","Request Withdrawal":"విత్‌డ్రా కోరండి",
+    "Withdraw Amount (₹)":"విత్‌డ్రా మొత్తం (₹)","UPI ID":"UPI ID","Submit Withdrawal Request":"విత్‌డ్రా అభ్యర్థన పంపండి",
+    "Address / City":"చిరునామా / నగరం","Save Profile":"ప్రొఫైల్ సేవ్ చేయండి","Calculation":"లెక్కింపు",
+    "Add GST":"GST జోడించండి","GST Included":"GST కలిపి ఉంది","Enter amount.":"మొత్తం నమోదు చేయండి.",
+    "No orders yet.":"ఇంకా ఆర్డర్లు లేవు.","No payment records yet.":"ఇంకా చెల్లింపు రికార్డులు లేవు.",
+    "No coupon history yet.":"ఇంకా కూపన్ చరిత్ర లేదు.","No Khata entries yet.":"ఇంకా ఖాతా ఎంట్రీలు లేవు.",
+    "Profile photo":"ప్రొఫైల్ ఫోటో","Upload / Change Photo":"ఫోటో అప్‌లోడ్ / మార్చండి"
+  },
+  ta: {
+    "Product":"தயாரிப்பு","Pack Size / Variant":"பேக் அளவு / வகை","Quantity":"அளவு",
+    "Payment Mode":"கட்டண முறை","Required Date":"தேவையான தேதி","Remarks":"குறிப்புகள்",
+    "Order Summary":"ஆர்டர் சுருக்கம்","Pack Weight":"பேக் எடை","Dealer Rate / kg":"டீலர் விலை / கிலோ",
+    "Rate / Pack":"பேக் விலை","Subtotal":"கூட்டுத்தொகை","Grand Total":"மொத்தத் தொகை",
+    "Review & Submit Order":"சரிபார்த்து ஆர்டரை சமர்ப்பிக்கவும்","Place Order":"ஆர்டர் செய்யவும்",
+    "Order History":"ஆர்டர் வரலாறு","Payment Record":"கட்டண பதிவு","Khata Book":"கணக்கு புத்தகம்",
+    "Party / Customer":"வாடிக்கையாளர்","Entry Type":"பதிவு வகை","Debit / Udhaari (+)":"பற்று / கடன் (+)",
+    "Credit / Payment (-)":"வரவு / கட்டணம் (-)","Amount (₹)":"தொகை (₹)","Note":"குறிப்பு",
+    "Save Khata Entry":"கணக்கு பதிவை சேமிக்கவும்","Net Udhaari:":"நிகர கடன்:",
+    "Product Rates":"தயாரிப்பு விலைகள்","Scan Coupon":"கூப்பனை ஸ்கேன் செய்யவும்","Rewards & Wallet":"வெகுமதி & வாலெட்",
+    "Withdraw Request":"பணம் பெறும் கோரிக்கை","Work History":"வேலை வரலாறு","My Profile":"என் சுயவிவரம்",
+    "GST Calculator":"GST கணிப்பான்","Epoxy Calculator":"எபாக்ஸி கணிப்பான்",
+    "Payment Method":"கட்டண முறை","Transaction ID / Reference":"பரிவர்த்தனை ID / குறிப்பு",
+    "Submit Payment Record":"கட்டண பதிவை சமர்ப்பிக்கவும்","Verify & Redeem Coupon":"கூப்பனை சரிபார்த்து பெறவும்",
+    "Available Reward Balance:":"கிடைக்கும் வெகுமதி இருப்பு:","Request Withdrawal":"பணம் பெற கோரிக்கை",
+    "Withdraw Amount (₹)":"பெறும் தொகை (₹)","UPI ID":"UPI ID","Submit Withdrawal Request":"பெறும் கோரிக்கையை சமர்ப்பிக்கவும்",
+    "Address / City":"முகவரி / நகரம்","Save Profile":"சுயவிவரத்தை சேமிக்கவும்","Calculation":"கணக்கீடு",
+    "Add GST":"GST சேர்க்கவும்","GST Included":"GST சேர்க்கப்பட்டுள்ளது","Enter amount.":"தொகையை உள்ளிடவும்.",
+    "No orders yet.":"இன்னும் ஆர்டர்கள் இல்லை.","No payment records yet.":"இன்னும் கட்டண பதிவுகள் இல்லை.",
+    "No coupon history yet.":"இன்னும் கூப்பன் வரலாறு இல்லை.","No Khata entries yet.":"இன்னும் கணக்கு பதிவுகள் இல்லை.",
+    "Profile photo":"சுயவிவரப் படம்","Upload / Change Photo":"படத்தை பதிவேற்ற / மாற்ற"
+  },
+  ml: {
+    "Product":"ഉൽപ്പന്നം","Pack Size / Variant":"പാക്ക് വലുപ്പം / തരം","Quantity":"അളവ്",
+    "Payment Mode":"പേയ്മെന്റ് രീതി","Required Date":"ആവശ്യമായ തീയതി","Remarks":"കുറിപ്പുകൾ",
+    "Order Summary":"ഓർഡർ സംഗ്രഹം","Pack Weight":"പാക്ക് ഭാരം","Dealer Rate / kg":"ഡീലർ നിരക്ക് / കിലോ",
+    "Rate / Pack":"പാക്ക് നിരക്ക്","Subtotal":"ഉപമൊത്തം","Grand Total":"ആകെ തുക",
+    "Review & Submit Order":"പരിശോധിച്ച് ഓർഡർ സമർപ്പിക്കുക","Place Order":"ഓർഡർ ചെയ്യുക",
+    "Order History":"ഓർഡർ ചരിത്രം","Payment Record":"പേയ്മെന്റ് രേഖ","Khata Book":"ഖാത ബുക്ക്",
+    "Party / Customer":"കക്ഷി / ഉപഭോക്താവ്","Entry Type":"എൻട്രി തരം","Debit / Udhaari (+)":"ഡെബിറ്റ് / കുടിശ്ശിക (+)",
+    "Credit / Payment (-)":"ക്രെഡിറ്റ് / പേയ്മെന്റ് (-)","Amount (₹)":"തുക (₹)","Note":"കുറിപ്പ്",
+    "Save Khata Entry":"ഖാത എൻട്രി സംരക്ഷിക്കുക","Net Udhaari:":"ആകെ കുടിശ്ശിക:",
+    "Product Rates":"ഉൽപ്പന്ന നിരക്കുകൾ","Scan Coupon":"കൂപ്പൺ സ്കാൻ ചെയ്യുക","Rewards & Wallet":"റിവാർഡുകളും വാലറ്റും",
+    "Withdraw Request":"പിൻവലിക്കൽ അഭ്യർത്ഥന","Work History":"ജോലി ചരിത്രം","My Profile":"എന്റെ പ്രൊഫൈൽ",
+    "GST Calculator":"GST കാൽക്കുലേറ്റർ","Epoxy Calculator":"എപോക്സി കാൽക്കുലേറ്റർ",
+    "Payment Method":"പേയ്മെന്റ് രീതി","Transaction ID / Reference":"ഇടപാട് ID / റഫറൻസ്",
+    "Submit Payment Record":"പേയ്മെന്റ് രേഖ സമർപ്പിക്കുക","Verify & Redeem Coupon":"കൂപ്പൺ പരിശോധിച്ച് റിഡീം ചെയ്യുക",
+    "Available Reward Balance:":"ലഭ്യമായ റിവാർഡ് ബാലൻസ്:","Request Withdrawal":"പിൻവലിക്കൽ അഭ്യർത്ഥിക്കുക",
+    "Withdraw Amount (₹)":"പിൻവലിക്കൽ തുക (₹)","UPI ID":"UPI ID","Submit Withdrawal Request":"പിൻവലിക്കൽ അഭ്യർത്ഥന സമർപ്പിക്കുക",
+    "Address / City":"വിലാസം / നഗരം","Save Profile":"പ്രൊഫൈൽ സംരക്ഷിക്കുക","Calculation":"കണക്കുകൂട്ടൽ",
+    "Add GST":"GST ചേർക്കുക","GST Included":"GST ഉൾപ്പെടുത്തിയിരിക്കുന്നു","Enter amount.":"തുക നൽകുക.",
+    "No orders yet.":"ഇതുവരെ ഓർഡറുകളില്ല.","No payment records yet.":"ഇതുവരെ പേയ്മെന്റ് രേഖകളില്ല.",
+    "No coupon history yet.":"ഇതുവരെ കൂപ്പൺ ചരിത്രമില്ല.","No Khata entries yet.":"ഇതുവരെ ഖാത എൻട്രികളില്ല.",
+    "Profile photo":"പ്രൊഫൈൽ ഫോട്ടോ","Upload / Change Photo":"ഫോട്ടോ അപ്‌ലോഡ് / മാറ്റുക"
+  },
+  mr: {
+    "Product":"उत्पादन","Pack Size / Variant":"पॅक आकार / प्रकार","Quantity":"प्रमाण",
+    "Payment Mode":"पेमेंट पद्धत","Required Date":"आवश्यक तारीख","Remarks":"शेरा",
+    "Order Summary":"ऑर्डर सारांश","Pack Weight":"पॅक वजन","Dealer Rate / kg":"डीलर दर / किलो",
+    "Rate / Pack":"पॅक दर","Subtotal":"उपएकूण","Grand Total":"एकूण रक्कम",
+    "Review & Submit Order":"तपासा आणि ऑर्डर पाठवा","Place Order":"ऑर्डर द्या",
+    "Order History":"ऑर्डर इतिहास","Payment Record":"पेमेंट नोंद","Khata Book":"खाते वही",
+    "Party / Customer":"पार्टी / ग्राहक","Entry Type":"नोंदीचा प्रकार","Debit / Udhaari (+)":"डेबिट / उधारी (+)",
+    "Credit / Payment (-)":"क्रेडिट / पेमेंट (-)","Amount (₹)":"रक्कम (₹)","Note":"नोंद",
+    "Save Khata Entry":"खाते नोंद जतन करा","Net Udhaari:":"एकूण उधारी:",
+    "Product Rates":"उत्पादन दर","Scan Coupon":"कूपन स्कॅन करा","Rewards & Wallet":"रिवॉर्ड आणि वॉलेट",
+    "Withdraw Request":"पैसे काढण्याची विनंती","Work History":"कामाचा इतिहास","My Profile":"माझे प्रोफाइल",
+    "GST Calculator":"GST कॅल्क्युलेटर","Epoxy Calculator":"इपॉक्सी कॅल्क्युलेटर",
+    "Payment Method":"पेमेंट पद्धत","Transaction ID / Reference":"व्यवहार ID / संदर्भ",
+    "Submit Payment Record":"पेमेंट नोंद पाठवा","Verify & Redeem Coupon":"कूपन तपासा आणि रिडीम करा",
+    "Available Reward Balance:":"उपलब्ध रिवॉर्ड शिल्लक:","Request Withdrawal":"पैसे काढण्याची विनंती करा",
+    "Withdraw Amount (₹)":"काढायची रक्कम (₹)","UPI ID":"UPI ID","Submit Withdrawal Request":"विनंती पाठवा",
+    "Address / City":"पत्ता / शहर","Save Profile":"प्रोफाइल जतन करा","Calculation":"गणना",
+    "Add GST":"GST जोडा","GST Included":"GST समाविष्ट","Enter amount.":"रक्कम भरा.",
+    "No orders yet.":"अजून ऑर्डर नाहीत.","No payment records yet.":"अजून पेमेंट नोंदी नाहीत.",
+    "No coupon history yet.":"अजून कूपन इतिहास नाही.","No Khata entries yet.":"अजून खाते नोंदी नाहीत.",
+    "Profile photo":"प्रोफाइल फोटो","Upload / Change Photo":"फोटो अपलोड / बदला"
+  }
+};
+
+const ncFeatureOriginalText = new WeakMap();
+function ncTranslateFeaturePage(){
+  const lang=(document.getElementById('language')?.value||'en');
+  const dict=ncFeatureTranslations[lang]||ncFeatureTranslations.en;
+  const root=document.getElementById('ncFeaturePage');
+  if(!root)return;
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+  let node;
+  while((node=walker.nextNode())){
+    if(!ncFeatureOriginalText.has(node))ncFeatureOriginalText.set(node,node.nodeValue);
+    const raw=ncFeatureOriginalText.get(node);
+    const trimmed=raw.trim();
+    if(!trimmed)continue;
+    if(Object.prototype.hasOwnProperty.call(dict,trimmed)){
+      const lead=raw.match(/^\\s*/)?.[0]||'';
+      const tail=raw.match(/\\s*$/)?.[0]||'';
+      node.nodeValue=lead+dict[trimmed]+tail;
+    } else {
+      let updated=raw;
+      Object.keys(dict).sort((a,b)=>b.length-a.length).forEach(key=>{
+        if(key && updated.includes(key)) updated=updated.split(key).join(dict[key]);
+      });
+      if(updated!==raw) node.nodeValue=updated;
+    }
+  }
+  root.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{
+    if(!el.hasAttribute('data-nc-original-placeholder'))el.setAttribute('data-nc-original-placeholder',el.getAttribute('placeholder')||'');
+    const ph=el.getAttribute('data-nc-original-placeholder');if(dict[ph])el.setAttribute('placeholder',dict[ph]);else el.setAttribute('placeholder',ph);
+  });
+  root.querySelectorAll('option').forEach(el=>{
+    if(!el.hasAttribute('data-nc-original-option'))el.setAttribute('data-nc-original-option',el.textContent);
+    const t=el.getAttribute('data-nc-original-option').trim();el.textContent=dict[t]||t;
+  });
+}
+
+
+
+let selectedRegRole='dealer';
+function showRegistration(){ncShowOnly('registerScreen');}
+function showLogin(){ncShowOnly('loginScreen');}
+function chooseRegRole(role){selectedRegRole=role;document.getElementById('dealerRegChoice').classList.toggle('selected',role==='dealer');document.getElementById('applicatorRegChoice').classList.toggle('selected',role==='applicator');document.getElementById('dealerExtraFields').classList.toggle('hidden',role!=='dealer');document.getElementById('dealerCodeField').classList.toggle('hidden',role!=='applicator');document.getElementById('gstField').classList.toggle('hidden',role!=='dealer');}
+const firebaseConfig = {
+  apiKey: "AIzaSyABFenv_KFSxvUvw7KpnW29QB34w4TTcl4",
+  authDomain: "neocure-live-2026.firebaseapp.com",
+  databaseURL: "https://neocure-live-2026-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "neocure-live-2026",
+  messagingSenderId: "651603399266",
+  appId: "1:651603399266:web:6a5004ed3e95283f81773b"
+};
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const ncAuth = firebase.auth();
+const ncDb = firebase.database();
+let ncCurrentAccount = null;
+function ncRole(role){ return role==='applicator'?'worker':'dealer'; }
+function ncNormalizePhone(phone){ return String(phone||'').replace(/\D/g,''); }
+function ncAuthEmail(role,phone){ return ncRole(role)+'.'+ncNormalizePhone(phone)+'@neocure-live-2026.app'; }
+function ncAuthPassword(pin){ return 'NcLive!'+pin+'#26'; }
+function ncShowOnly(screen){ if(screen==='appShell'&&typeof ncLoadProfilePhoto==='function')setTimeout(ncLoadProfilePhoto,150); ['loginScreen','registerScreen','pendingScreen'].forEach(id=>document.getElementById(id).style.display=(id===screen?'grid':'none')); document.getElementById('appShell').style.display=(screen==='appShell'?'block':'none'); }
+function firebaseSignOutToLogin(){ ncAuth.signOut().finally(()=>{ncCurrentAccount=null;ncShowOnly('loginScreen');}); }
+
+document.getElementById('registrationForm').addEventListener('submit',async function(e){
+ e.preventDefault();
+ const dict=translations[language.value]||translations.en;
+ const mobile=ncNormalizePhone(document.getElementById('regMobile').value);
+ const pin=document.getElementById('regPassword').value;
+ const err=document.getElementById('regError');
+ const role=selectedRegRole==='applicator'?'applicator':'dealer';
+ if(!/^[0-9]{10}$/.test(mobile)){err.textContent=dict.regMobileError;return;}
+ if(!/^\d{4}$/.test(pin)){err.textContent='4 ಅಂಕಿಯ MPIN ನಮೂದಿಸಿ.';return;}
+ const name=document.getElementById('regName').value.trim();
+ const address=document.getElementById('regAddress').value.trim();
+ const dealerName=document.getElementById('regDealerName').value.trim();
+ const ownerName=document.getElementById('regOwnerName').value.trim();
+ const shopName=document.getElementById('regShopName').value.trim();
+ const villageCity=document.getElementById('regVillageCity').value.trim();
+ if(!name||!address){err.textContent='ಹೆಸರು ಮತ್ತು ವಿಳಾಸ ನಮೂದಿಸಿ.';return;}
+ if(role==='dealer'&&(!dealerName||!ownerName||!shopName||!villageCity)){err.textContent='Dealer Name, Owner Name, Shop Name ಮತ್ತು Village/City ನಮೂದಿಸಿ.';return;}
+ err.textContent='';
+ const btn=this.querySelector('button[type="submit"]');btn.disabled=true;btn.textContent='Saving…';
+ try{
+  const cred=await ncAuth.createUserWithEmailAndPassword(ncAuthEmail(role,mobile),ncAuthPassword(pin));
+  const profile={role,phone:mobile,name,address,approved:role==='applicator',status:role==='applicator'?'active':'pending',createdAt:firebase.database.ServerValue.TIMESTAMP,
+   ...(role==='dealer'?{dealerName,ownerName,shopName,villageCity,name:dealerName,shop:shopName,owner:ownerName}:{dealerCode:document.getElementById('regDealerCode').value.trim()})};
+  await ncDb.ref('users/'+cred.user.uid).set(profile);
+  ncCurrentAccount={...profile,uid:cred.user.uid};
+  this.reset();
+  if(role==='dealer'){await ncAuth.signOut();ncShowOnly('pendingScreen');}
+  else {roleSelect.value='applicator';setRole();ncShowOnly('appShell');notify('Applicator account created successfully');}
+ }catch(ex){
+  const map={'auth/email-already-in-use':'ಈ Portalನಲ್ಲಿ ಈ Mobile Number ಈಗಾಗಲೇ ನೋಂದಾಯಿಸಲಾಗಿದೆ. ಅದೇ Portalಗೆ Login ಮಾಡಿ. ಬೇರೆ Portalಗೆ ಪ್ರತ್ಯೇಕವಾಗಿ Register ಮಾಡಬಹುದು.','auth/weak-password':'MPIN ಸ್ವೀಕರಿಸಲಾಗಲಿಲ್ಲ.','auth/network-request-failed':'Internet ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ.'};
+  err.textContent=map[ex.code]||('Registration failed: '+(ex.message||ex.code));
+ }finally{btn.disabled=false;btn.textContent=dict.submitForApproval||'Submit for approval →';}
+});
+
+
+async function ncRequestMpinReset(){
+ const mobile=ncNormalizePhone(document.getElementById('loginMobile').value);
+ const role=selectedLoginRole==='applicator'?'applicator':'dealer';
+ const err=document.getElementById('loginError');
+ const btn=document.getElementById('forgotMpinBtn');
+ if(!/^\d{10}$/.test(mobile)){
+  ncSetLoginError('resetPrompt');
+  document.getElementById('loginMobile').focus();return;
+ }
+ if(btn){btn.disabled=true;btn.textContent='Sending request…';}
+ try{
+  const ref=ncDb.ref('mpinResetRequests');
+  const snap=await ref.orderByChild('phone').equalTo(mobile).once('value');
+  let pending=false;
+  snap.forEach(child=>{const v=child.val()||{};if(v.role===role&&v.status==='Pending')pending=true;});
+  if(pending){ncSetLoginError('resetPending');return;}
+  await ref.push({phone:mobile,role,status:'Pending',requestedAt:firebase.database.ServerValue.TIMESTAMP,source:'dealer_app'});
+  ncSetLoginError('resetSent');
+ }catch(ex){
+  console.error('MPIN reset request failed',ex);
+  ncSetLoginError('resetFailed');
+ }finally{
+  if(btn){btn.disabled=false;btn.textContent=ncMsg('forgot');}
+ }
+}
+
+let ncLoginBusy=false;
+
+// Auto sign-in only when mobile + MPIN are complete; also handle paste/autofill and portal selection.
+(function(){
+ const mobileInput=document.getElementById('loginMobile');
+ const pinInput=document.getElementById('loginPin');
+ const form=document.getElementById('loginForm');
+ let autoSubmitQueued=false;
+ let autoSubmitTimer=null;
+ let lastAttemptKey='';
+ window.ncCancelAutoLogin=function(){
+   if(autoSubmitTimer!==null) clearTimeout(autoSubmitTimer);
+   autoSubmitTimer=null; autoSubmitQueued=false; lastAttemptKey='';
+ };
+ window.ncTryAutoLogin=function(force){
+   if(autoSubmitQueued || ncLoginBusy || !form) return;
+   const mobile=ncNormalizePhone(mobileInput.value);
+   const pin=String(pinInput.value||'').trim();
+   if(!/^[0-9]{10}$/.test(mobile) || !/^\d{4}$/.test(pin)) return;
+   const attemptKey=selectedLoginRole+'|'+mobile+'|'+pin;
+   if(!force && attemptKey===lastAttemptKey) return;
+   lastAttemptKey=attemptKey;
+   autoSubmitQueued=true;
+   autoSubmitTimer=setTimeout(()=>{
+     autoSubmitTimer=null; autoSubmitQueued=false;
+     if(!ncLoginBusy && form && document.getElementById('loginScreen').style.display!=='none'){
+       if(typeof form.requestSubmit==='function') form.requestSubmit();
+       else form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));
+     }
+   },180);
+ };
+ const trigger=()=>window.ncTryAutoLogin(false);
+ ['input','change','keyup','paste','blur'].forEach(ev=>{
+   mobileInput.addEventListener(ev,()=>{lastAttemptKey='';setTimeout(trigger,30);});
+   pinInput.addEventListener(ev,()=>{lastAttemptKey='';setTimeout(trigger,30);});
+ });
+ window.addEventListener('pageshow',()=>setTimeout(trigger,100));
+ document.querySelectorAll('#dealerLoginChoice,#applicatorLoginChoice').forEach(el=>{
+   el.addEventListener('click',()=>setTimeout(()=>{lastAttemptKey='';window.ncTryAutoLogin(true);},80));
+ });
+})();
+
+document.getElementById('loginForm').addEventListener('submit',async function(e){
+ e.preventDefault(); if(ncLoginBusy)return;
+ const mobile=ncNormalizePhone(document.getElementById('loginMobile').value);
+ const pin=document.getElementById('loginPin').value.trim();
+ const err=document.getElementById('loginError');
+ const role=selectedLoginRole==='applicator'?'applicator':'dealer';
+ if(!/^[0-9]{10}$/.test(mobile)){err.textContent=(translations[language.value]||translations.en).mobileError;return;}
+ if(!/^\d{4}$/.test(pin)){err.textContent='4 ಅಂಕಿಯ MPIN ನಮೂದಿಸಿ.';return;}
+ err.textContent='';ncLoginBusy=true;
+ const btn=this.querySelector('button[type="submit"]');btn.disabled=true;btn.textContent='Signing in…';
+ try{
+  const cred=await ncAuth.signInWithEmailAndPassword(ncAuthEmail(role,mobile),ncAuthPassword(pin));
+  const snap=await ncDb.ref('users/'+cred.user.uid).once('value');
+  if(!snap.exists()){
+    await ncAuth.signOut();
+    throw new Error('ಈ Loginಗೆ ಸಂಬಂಧಿಸಿದ Profile Firebaseನಲ್ಲಿ ಸಿಗಲಿಲ್ಲ. Adminರಿಂದ Account ಪರಿಶೀಲಿಸಿ.');
+  }
+  const saved=snap.val()||{};
+  const savedRole=String(saved.role||saved.accountRole||saved.portalRole||'').toLowerCase();
+  const roleAliases = role==='applicator'
+    ? ['applicator','worker','application']
+    : ['dealer','dealers'];
+  // The Firebase Auth email is already role-scoped (dealer.<mobile> or worker.<mobile>).
+  // Older profiles may store role/phone under legacy field names, so do not reject a valid
+  // role-scoped Auth login just because an optional legacy profile field is absent.
+  const roleMatches = !savedRole || roleAliases.includes(savedRole);
+  const savedPhone=saved.phone??saved.mobile??saved.mobileNumber??saved.phoneNumber??saved.contactNumber??'';
+  const phoneMatches = !savedPhone || ncNormalizePhone(savedPhone)===mobile;
+  if(!roleMatches){
+    await ncAuth.signOut();
+    throw new Error('ROLE_MISMATCH');
+  }
+  if(!phoneMatches){
+    await ncAuth.signOut();
+    throw new Error('PHONE_MISMATCH');
+  }
+  ncCurrentAccount={...saved,role:role,phone:mobile,uid:cred.user.uid};
+  if(role==='dealer' && !(ncCurrentAccount.approved===true||ncCurrentAccount.status==='active')){
+    await ncAuth.signOut();ncShowOnly('pendingScreen');return;
+  }
+  roleSelect.value=selectedLoginRole;setRole();ncShowOnly('appShell');notify(role==='dealer'?'Dealer login successful':'Applicator login successful');
+ }catch(ex){
+  const errorCode=String(ex && ex.code || '').toLowerCase();
+  const errorMessage=String(ex && (ex.message || ex) || '').toLowerCase();
+  const isWrongPin=(['auth/wrong-password','auth/invalid-credential','auth/invalid-login-credentials','auth/invalid-login-credentials','auth/invalid_password'].includes(errorCode)
+    || errorCode.includes('invalid-credential') || errorCode.includes('wrong-password')
+    || errorMessage.includes('invalid_login_credentials') || errorMessage.includes('invalid login credentials')
+    || errorMessage.includes('invalid-credential') || errorMessage.includes('wrong password'));
+  const pinInput=document.getElementById('loginPin');
+  if(isWrongPin){
+    if(window.ncCancelAutoLogin) window.ncCancelAutoLogin();
+    pinInput.value='';
+    pinInput.setAttribute('aria-invalid','true');
+    pinInput.classList.remove('nc-pin-invalid','nc-pin-error-shake');
+    void pinInput.offsetWidth;
+    pinInput.classList.add('nc-pin-invalid','nc-pin-error-shake');
+    const loginCard=document.querySelector('#loginScreen .login-wrap');
+    if(loginCard){loginCard.classList.remove('nc-login-card-shake');void loginCard.offsetWidth;loginCard.classList.add('nc-login-card-shake');}
+    try{if(typeof navigator!=='undefined' && typeof navigator.vibrate==='function') navigator.vibrate([180,80,180]);}catch(vErr){}
+    ncSetLoginError('wrongPin');
+    setTimeout(()=>{pinInput.classList.remove('nc-pin-invalid','nc-pin-error-shake');if(loginCard)loginCard.classList.remove('nc-login-card-shake');pinInput.removeAttribute('aria-invalid');pinInput.focus();},700);
+  }else{ 
+    const message=String(ex.message||'');
+    if(message==='ROLE_MISMATCH') ncSetLoginError('roleMismatch');
+    else if(message==='PHONE_MISMATCH') ncSetLoginError('phoneMismatch');
+    else if(message.includes('Profile Firebaseನಲ್ಲಿ ಸಿಗಲಿಲ್ಲ')) ncSetLoginError('profileMissing');
+    else{
+      const map={'auth/user-not-found':'missingAccount','auth/too-many-requests':null,'auth/network-request-failed':null};
+      if(map[ex.code]==='missingAccount') ncSetLoginError('missingAccount');
+      else if(ex.code==='auth/too-many-requests') err.textContent=language.value==='kn'?'ಹಲವು ಪ್ರಯತ್ನಗಳು ಆಗಿವೆ. ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ.':(language.value==='en'?'Too many attempts. Try again later.':'ಹಲವು ಪ್ರಯತ್ನಗಳು ಆಗಿವೆ. ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ.');
+      else if(ex.code==='auth/network-request-failed') err.textContent=language.value==='en'?'Check your internet connection.':'Internet ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ.';
+      else err.textContent=message||'Login failed.';
+    }
+  }
+ }finally{ncLoginBusy=false;btn.disabled=false;btn.textContent=(translations[language.value]||translations.en).signIn||'SIGN IN →';}
+});
+
+roleSelect.addEventListener('change',async function(){
+ const nextRole=this.value==='applicator'?'applicator':'dealer';
+ const currentRole=ncCurrentAccount?.role==='worker'||ncCurrentAccount?.role==='applicator'?'applicator':'dealer';
+ if(!ncCurrentAccount||nextRole===currentRole){setRole();return;}
+ selectedLoginRole=nextRole;
+ const dealerCard=document.getElementById('dealerLoginChoice');
+ const applicatorCard=document.getElementById('applicatorLoginChoice');
+ if(dealerCard)dealerCard.classList.toggle('selected',nextRole==='dealer');
+ if(applicatorCard)applicatorCard.classList.toggle('selected',nextRole==='applicator');
+ document.getElementById('loginMobile').value=ncNormalizePhone(ncCurrentAccount.phone||'');
+ document.getElementById('loginPin').value='';
+ document.getElementById('loginError').textContent='';
+ await ncAuth.signOut();
+ ncCurrentAccount=null;
+ ncShowOnly('loginScreen');
+ notify(nextRole==='dealer'?'Dealer Portal ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ. MPIN ನಮೂದಿಸಿ.':'Applicator Portal ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ. MPIN ನಮೂದಿಸಿ.');
+});
+language.addEventListener('change',setLanguage);
+document.getElementById('loginLanguage')?.addEventListener('change',function(){language.value=this.value;setLanguage();});
+
+document.getElementById('today').textContent=new Intl.DateTimeFormat('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}).format(new Date());
+document.querySelectorAll('#sideNav button').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('#sideNav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const p=btn.dataset.page;if(p==='home')ncCloseFeature();else if(p==='orders')ncOpenFeature('orders');else if(p==='payments')ncOpenFeature('payment');else if(p==='history')ncOpenFeature(roleSelect.value==='dealer'?'orders':'workhistory');else if(p==='profile')ncOpenFeature('profile');}));try{const savedLang=localStorage.getItem('neocure_ui_language');if(savedLang&&translations[savedLang])language.value=savedLang;}catch(e){} loginLanguage.value=language.value;setRole();chooseRegRole('dealer');setLanguage();
+
+// Selected Dealer + Applicator features. Uses the same Firebase project and appData key format as the existing app.
+function ncBottomNavGo(tab){
+  const isDealer = roleSelect.value === 'dealer';
+  document.querySelectorAll('#ncBottomNav button').forEach(b=>b.classList.toggle('active', b.dataset.bottom===tab));
+  if(tab==='home'){ ncCloseFeature(); return; }
+  if(tab==='activity'){ ncOpenFeature(isDealer ? 'orders' : 'workhistory'); return; }
+  if(tab==='rewards'){ ncOpenFeature(isDealer ? 'khata' : 'wallet'); return; }
+  if(tab==='profile'){ ncOpenFeature('profile'); return; }
+}
+function ncUserPhone(){return String((ncCurrentAccount&&ncCurrentAccount.phone)||'').replace(/\D/g,'');}
+function ncDataKey(kind){return (roleSelect.value==='dealer'?'nc_dealer_':'nc_')+kind+'_'+ncUserPhone();}
+async function ncReadData(kind, fallback){
+ const key=ncDataKey(kind); let local;
+ try{local=JSON.parse(localStorage.getItem(key)||'null');}catch(e){local=null;}
+ const user=ncAuth.currentUser;
+ if(user){try{const snap=await ncDb.ref('appData/'+user.uid+'/'+encodeURIComponent(key)).once('value');const v=snap.val();if(typeof v==='string'){try{local=JSON.parse(v);localStorage.setItem(key,v);}catch(e){}}}catch(e){console.warn('NEOCURE data read:',e.message||e);}}
+ return local==null?fallback:local;
+}
+async function ncWriteData(kind,value){
+ const key=ncDataKey(kind),raw=JSON.stringify(value);localStorage.setItem(key,raw);
+ const user=ncAuth.currentUser;if(!user)throw new Error('Login session ಇಲ್ಲ. ಮತ್ತೆ Login ಮಾಡಿ.');
+ await ncDb.ref('appData/'+user.uid+'/'+encodeURIComponent(key)).set(raw);
+}
+function ncOpenFeature(name){
+ const navTab = (name==='orders'||name==='workhistory')?'activity':(name==='coupon'?'scan':(name==='wallet'||name==='withdraw'?'rewards':(name==='profile'?'profile':null))); if(navTab){document.querySelectorAll('#ncBottomNav button').forEach(b=>b.classList.toggle('active',b.dataset.bottom===navTab));}
+ if(!window.ncFeatureHistoryLock){history.pushState({ncFeature:true},'','#nc-feature');window.ncFeatureHistoryLock=true;}
+ const app=document.getElementById('appShell'),page=document.getElementById('ncFeaturePage');
+ if(!app||app.style.display==='none')return;
+ document.querySelectorAll('.main > .welcome,.main > .hero,.main > .section-head,.main > .quick-grid,.main > .content-grid').forEach(x=>x.style.display='none');
+ page.style.display='block';
+ const isDealer=roleSelect.value==='dealer';
+ const titles={creditdetails:'Credit Details & Online Payment',order:'Place Order',orders:'Order History',payment:'Payment Record',khata:'Khata Book',rates:'Product Rates',coupon:'Scan Coupon',wallet:'Rewards & Wallet',withdraw:'Withdraw Request',workhistory:'Work History',profile:'My Profile',gst:'GST Calculator',epoxy:'Epoxy Calculator'};
+ document.getElementById('ncFeatureTitle').textContent=titles[name]||'NEOCURE';
+ const body=document.getElementById('ncFeatureBody');
+ if(name==='order'&&isDealer) body.innerHTML=`<form class="nc-form" id="ncOrderForm" oninput="ncUpdateOrderSummary()" onchange="ncUpdateOrderSummary()" onsubmit="ncSubmitOrder(event)"><label>Product<select id="ncoProduct"><option>NEOCURE Epoxy</option><option>NEOCURE Hardener</option><option>NEOCURE Primer</option><option>NEOCURE Flooring Kit</option></select></label><label>Pack Size / Variant<input id="ncoVariant" required placeholder="1 kg / 5 kg / 20 kg"></label><label>Quantity<input id="ncoQty" type="number" min="1" step="1" value="1" required></label><label>Payment Mode<select id="ncoMode"><option value="COD">COD</option><option value="Udhaari">Credit / Udhaari</option><option value="Online Payment">Online Payment</option></select></label><label>GST Rate<select id="ncoGst"><option value="">Select GST</option><option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option></select></label><label>Required Date<input id="ncoDate" type="date"></label><label class="full">Remarks<textarea id="ncoNote" rows="2"></textarea></label><div class="nc-result full" id="ncOrderSummary"><b>Order Summary</b><p>Product rate ಮತ್ತು GST ಆಯ್ಕೆ ಮಾಡಿದ ನಂತರ ಒಟ್ಟು ಮೊತ್ತ ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತದೆ.</p></div><div class="full" id="ncOrderPaymentBox" style="display:none"></div><button class="nc-action full" id="ncSubmitOrderBtn" type="submit">Review & Submit Order</button></form><p class="nc-muted">COD / Credit orderಗಳು Admin approval ನಂತರವೇ Confirm ಆಗುತ್ತವೆ. Online paymentಗೂ ಮೊದಲು Order Summary ಪರಿಶೀಲಿಸಿ.</p><div id="ncOrderNotice" class="nc-result" style="display:none"></div>`;
+ else if(name==='orders'&&isDealer) { body.innerHTML='<div id="ncOrdersList"></div>'; ncRenderOrders(); }
+ else if(name==='payment'&&isDealer) body.innerHTML=`<form class="nc-form" onsubmit="ncSubmitPaymentRecord(event)"><label>Amount (₹)<input id="ncpAmount" type="number" min="1" step="0.01" required></label><label>Payment Method<select id="ncpMode"><option>UPI</option><option>Bank Transfer</option><option>Cash</option></select></label><label class="full">Transaction ID / Reference<input id="ncpRef" required></label><label class="full">Note<textarea id="ncpNote" rows="2"></textarea></label><button class="nc-action full">Submit Payment Record</button></form><p class="nc-muted">ಇದು payment record/request ಮಾತ್ರ; ಹಣ ಸ್ವೀಕೃತಿಯ ದೃಢೀಕರಣ Admin ಮಾಡಬೇಕು.</p>`;
+ else if(name==='khata'&&isDealer) body.innerHTML=`<form class="nc-form" onsubmit="ncAddKhata(event)"><label>Party / Customer<input id="nckParty" required></label><label>Entry Type<select id="nckType"><option value="debit">Debit / Udhaari (+)</option><option value="credit">Credit / Payment (-)</option></select></label><label>Amount (₹)<input id="nckAmount" type="number" min="0.01" step="0.01" required></label><label>Note<input id="nckNote"></label><button class="nc-action full">Save Khata Entry</button></form><div id="ncKhataList"></div>`;
+ else if(name==='rates'&&isDealer) body.innerHTML=`<div class="nc-result">Admin ನಿಗದಿಪಡಿಸಿದ product rates ಅನ್ನು ಇಲ್ಲಿ ಪರಿಶೀಲಿಸಬಹುದು. ನಿಮ್ಮ ಖಾತೆಗೆ rate ಲಭ್ಯವಿದೆಯೇ ಎಂದು Firebaseನಲ್ಲಿ ಓದುತ್ತಿದ್ದೇನೆ…</div><div id="ncRatesList"></div>`;
+ else if(name==='coupon'&&!isDealer) body.innerHTML=`<div class="nc-form"><label class="full">Coupon Code<input id="nccCode" autocapitalize="characters" placeholder="QR code scan ಮಾಡಿ ಅಥವಾ code ನಮೂದಿಸಿ"></label><button class="nc-action full" onclick="ncRedeemCoupon()" type="button">Verify & Redeem Coupon</button></div><p class="nc-muted">Coupon validity ಮತ್ತು redeemed status Firebaseನಲ್ಲಿ ಪರಿಶೀಲಿಸಲಾಗುತ್ತದೆ.</p><div id="ncCouponResult" class="nc-result">Ready to scan / enter code.</div>`;
+ else if(name==='wallet'&&!isDealer) body.innerHTML=`<div class="nc-result">Available Reward Balance: <b id="ncWalletBalance">Loading…</b></div><button class="nc-action" onclick="ncOpenFeature('withdraw')">Request Withdrawal</button><div id="ncRewardHistory"></div>`;
+ else if(name==='withdraw'&&!isDealer) body.innerHTML=`<form class="nc-form" onsubmit="ncSubmitWithdraw(event)"><label>Withdraw Amount (₹)<input id="ncWithdrawAmount" type="number" min="1" step="1" required></label><label>UPI ID<input id="ncWithdrawUpi" placeholder="name@upi" required></label><button class="nc-action full">Submit Withdrawal Request</button></form><div id="ncWithdrawHistory"></div>`;
+ else if(name==='workhistory'&&!isDealer) body.innerHTML=`<div id="ncWorkHistory" class="nc-result">Loading scan history…</div>`;
+ else if(name==='profile') body.innerHTML=`<div class="nc-profile-photo-wrap"><div class="nc-profile-photo-circle"><img id="ncProfilePhotoPreview" alt="Profile photo" style="display:none"><span id="ncProfilePhotoFallback">◎</span></div><label class="nc-photo-pick">Upload / Change Photo<input id="ncProfilePhotoInput" type="file" accept="image/*" onchange="ncPreviewAndSaveProfilePhoto(event)" hidden></label><small class="nc-muted">Profile photo</small></div><form class="nc-form" onsubmit="ncSaveProfile(event)"><label>Name<input id="ncpName" value="${ncEsc(ncCurrentAccount?.name||'')}"></label><label>Mobile<input value="${ncEsc(ncCurrentAccount?.phone||'')}" disabled></label><label class="full">Address / City<input id="ncpAddress" value="${ncEsc(ncCurrentAccount?.address||'')}"></label><label class="full">UPI ID<input id="ncpUpi" placeholder="name@upi"></label><button class="nc-action full">Save Profile</button></form>`;
+ else if(name==='gst') body.innerHTML=`<form class="nc-form" oninput="ncCalcGst()"><label>Amount (₹)<input id="ncGstAmount" type="number" min="0" step="0.01"></label><label>GST Rate<select id="ncGstRate"><option value="5">5%</option><option value="12">12%</option><option value="18" selected>18%</option><option value="28">28%</option></select></label><label>Calculation<select id="ncGstMode"><option value="exclusive">Add GST</option><option value="inclusive">GST Included</option></select></label></form><div id="ncGstResult" class="nc-result">Enter amount.</div>`;
+ else if(name==='epoxy'&&!isDealer) body.innerHTML=`<form class="nc-form" oninput="ncCalcEpoxy()"><label>Area (sq.ft)<input id="nceArea" type="number" min="0" step="0.01"></label><label>Coverage (sq.ft/kg)<input id="nceCoverage" type="number" min="0.01" step="0.01" placeholder="Datasheet value"></label><label>Wastage (%)<input id="nceWaste" type="number" min="0" max="100" value="5"></label></form><div id="ncEpoxyResult" class="nc-result">Enter area and datasheet coverage.</div>`;
+ else body.innerHTML='<div class="nc-result">ಈ feature ಆಯ್ಕೆ ಮಾಡಿದ Roleಗೆ ಲಭ್ಯವಿಲ್ಲ.</div>';
+ if(name==='profile')ncLoadProfilePhoto();
+ if(name==='orders'&&isDealer){} if(name==='khata'&&isDealer)ncRenderKhata(); if(name==='rates'&&isDealer)ncLoadRates(); if(name==='wallet'&&!isDealer)ncLoadWallet();if(name==='workhistory'&&!isDealer)ncLoadWorkHistory();if(name==='withdraw'&&!isDealer)ncLoadWithdrawHistory();
+ window.scrollTo(0,0);
+
+ ncTranslateFeaturePage();
+}
+
+async function ncOpenCreditDetails(){
+  ncOpenFeature('creditdetails');
+  const body=document.getElementById('ncFeatureBody');
+  if(!body)return;
+  body.innerHTML='<div class="nc-result">Credit balance ಮತ್ತು payment details ಲೋಡ್ ಆಗುತ್ತಿದೆ…</div>';
+  const uid=ncCurrentAccount?.uid, phone=String(ncCurrentAccount?.phone||'').replace(/\D/g,'');
+  if(!uid){body.innerHTML='<div class="nc-result">Login session ಸಿಗಲಿಲ್ಲ. ಮತ್ತೆ Login ಮಾಡಿ.</div>';return;}
+  try{
+    const [userSnap,ledgerSnap,upiSnap]=await Promise.all([
+      ncDb.ref('users/'+uid).once('value'),
+      ncDb.ref('dealer_ledger/'+phone).once('value'),
+      ncDb.ref('app_settings/admin_payment').once('value')
+    ]);
+    const user=userSnap.val()||{}, creditLimit=Math.max(0,Number(user.creditLimit||0));
+    const ledger=[];ledgerSnap.forEach(s=>ledger.push(s.val()||{}));
+    let debit=0,paid=0;
+    ledger.forEach(x=>{
+      const st=String(x.status||'').toLowerCase();
+      if(st&&!['posted','approved','confirmed','verified','completed','recorded'].includes(st))return;
+      const typ=String(x.entryType||x.type||'').toLowerCase(), amt=Math.max(0,Number(x.amount||0));
+      if(['udhaari debit','order receipt','order_debit','cod debit','cod_order'].includes(typ))debit+=amt;
+      else if(['cash receipt','cash_received','cash_receipt','upi receipt','upi_received','payment','payment_submission'].includes(typ))paid+=amt;
+    });
+    const due=Math.max(0,debit-paid), available=Math.max(0,creditLimit-due), upi=upiSnap.val()||{};
+    window.ncCreditPaymentContext={uid,phone,due,creditLimit,upi};
+    body.innerHTML=`
+      <div class="nc-result"><b>Credit Overview</b>
+        <div class="nc-credit-row"><span>Credit Limit</span><strong>${ncMoney(creditLimit)}</strong></div>
+        <div class="nc-credit-row"><span>Used / Outstanding Balance</span><strong>${ncMoney(due)}</strong></div>
+        <div class="nc-credit-row"><span>Available Credit</span><strong>${ncMoney(available)}</strong></div>
+      </div>
+      <div class="nc-result" style="margin-top:14px"><b>Pay Online</b>
+        <form class="nc-form" onsubmit="ncStartCreditPayment(event)">
+          <label class="full">Payment Amount (₹)<input id="ncCreditPayAmount" type="number" min="1" max="${due||1}" step="0.01" value="${due>0?due:''}" required></label>
+          ${upi.qrImage?`<div class="full" style="text-align:center"><img src="${upi.qrImage}" alt="Admin UPI QR" style="max-width:210px;max-height:210px;object-fit:contain;background:#fff;padding:8px;border-radius:12px"></div>`:''}
+          <div class="full nc-muted">${upi.upiId?'Admin UPI ID: '+ncEsc(upi.upiId):'Admin UPI ID ಇನ್ನೂ ಸೆಟ್ ಆಗಿಲ್ಲ.'}</div>
+          <button class="nc-action full" type="submit" ${due<=0||(!upi.upiId&&!upi.qrImage)?'disabled':''}>PAY ONLINE</button>
+        </form>
+        <p class="nc-muted">UPI Appನಲ್ಲಿ PIN ನಮೂದಿಸಿ ಪಾವತಿಸಿ. PIN ಅನ್ನು NEOCURE ಕೇಳುವುದಿಲ್ಲ. ಪಾವತಿ ನಂತರ Admin verification ಅಗತ್ಯ.</p>
+        <div id="ncCreditPayStatus"></div>
+      </div>
+      <div id="ncCreditPaymentHistory" class="nc-result" style="margin-top:14px">Payment requests ಲೋಡ್ ಆಗುತ್ತಿವೆ…</div>`;
+    ncLoadCreditPaymentHistory();
+  }catch(e){body.innerHTML='<div class="nc-result">Credit details ಓದಲು ಆಗಲಿಲ್ಲ: '+ncEsc(e.message||e)+' — Firebase Rules ಪರಿಶೀಲಿಸಿ.</div>';}
+}
+async function ncStartCreditPayment(e){
+  e.preventDefault();
+  const ctx=window.ncCreditPaymentContext, amount=Number(document.getElementById('ncCreditPayAmount')?.value||0);
+  const status=document.getElementById('ncCreditPayStatus');
+  if(!ctx||!Number.isFinite(amount)||amount<=0||amount>ctx.due){if(status)status.textContent='ಸರಿಯಾದ payment amount ನಮೂದಿಸಿ.';return;}
+  const upi=ctx.upi||{};
+  if(!upi.upiId){if(status)status.textContent='Admin UPI ID ಲಭ್ಯವಿಲ್ಲ. QR scan ಮಾಡಿ ಪಾವತಿಸಿ.';return;}
+  const txn='CRPAY'+Date.now();
+  const record={id:txn,amount,mode:'UPI Credit Settlement',reference:'',note:'Credit balance settlement',status:'Pending Admin Verification',created:Date.now(),dealerUid:ctx.uid,dealerPhone:ctx.phone};
+  try{
+    const key='nc_dealer_payments_'+ctx.phone, ref=ncDb.ref('appData/'+ctx.uid+'/'+encodeURIComponent(key));
+    const snap=await ref.once('value');let arr=snap.val();if(typeof arr==='string'){try{arr=JSON.parse(arr)}catch(_){arr=[]}}if(!Array.isArray(arr))arr=[];
+    arr.push(record);await ref.set(JSON.stringify(arr));
+    const ledgerRef=ncDb.ref('dealer_ledger/'+ctx.phone+'/'+txn);
+    await ledgerRef.set({id:txn,entryType:'PAYMENT_SUBMISSION',type:'PAYMENT_SUBMISSION',amount,status:'pending',created:Date.now(),reference:'',source:'DEALER_PAYMENT_SUBMISSION'});
+    const params=new URLSearchParams({pa:upi.upiId,pn:'NEOCURE',am:amount.toFixed(2),cu:'INR',tn:'Credit balance payment '+txn});
+    const link='upi://pay?'+params.toString();
+    if(status)status.innerHTML='Payment request ದಾಖಲಿಸಲಾಗಿದೆ. UPI App ತೆರೆಯಲಾಗುತ್ತಿದೆ… <br><a href="'+link.replace(/"/g,'&quot;')+'">UPI App ತೆರೆಯಿರಿ</a>';
+    window.location.href=link;
+    setTimeout(()=>{if(status)status.textContent='UPI Appನಲ್ಲಿ ಪಾವತಿ ಪೂರ್ಣಗೊಳಿಸಿ. ನಂತರ Admin verificationಗಾಗಿ Transaction ID ಸಲ್ಲಿಸಿ.';},1200);
+    ncLoadCreditPaymentHistory();
+  }catch(err){if(status)status.textContent='Payment request save ಆಗಲಿಲ್ಲ: '+(err.code||err.message||err)+' — Firebase Rules ಪರಿಶೀಲಿಸಿ.';}
+}
+async function ncLoadCreditPaymentHistory(){
+  const el=document.getElementById('ncCreditPaymentHistory'),ctx=window.ncCreditPaymentContext;if(!el||!ctx)return;
+  try{
+    const key='nc_dealer_payments_'+ctx.phone,snap=await ncDb.ref('appData/'+ctx.uid+'/'+encodeURIComponent(key)).once('value');
+    let arr=snap.val()||[];if(typeof arr==='string'){try{arr=JSON.parse(arr)}catch(_){arr=[]}}if(!Array.isArray(arr))arr=[];
+    el.innerHTML='<b>Payment History</b>'+(arr.length?arr.slice().reverse().map(x=>`<div class="nc-credit-row"><span>${ncEsc(x.id||'Payment')}<br><small>${ncEsc(x.status||'Pending')}</small></span><strong>${ncMoney(x.amount)}</strong></div>`).join(''):'<p class="nc-muted">Payment history ಇಲ್ಲ.</p>');
+  }catch(e){el.textContent='Payment history ಓದಲು ಆಗಲಿಲ್ಲ: '+(e.message||e);}
+}
+
+function ncCloseFeature(fromPop){document.getElementById('ncFeaturePage').style.display='none';document.querySelectorAll('.main > .welcome,.main > .hero,.main > .section-head,.main > .quick-grid,.main > .content-grid').forEach(x=>x.style.display='');if(!fromPop&&window.ncFeatureHistoryLock){window.ncFeatureHistoryLock=false;if(location.hash==='#nc-feature')history.back();}}
+window.addEventListener('popstate',()=>{const page=document.getElementById('ncFeaturePage');if(page&&page.style.display!=='none'){window.ncFeatureHistoryLock=false;ncCloseFeature(true);}});
+function ncEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function ncMoney(n){return '₹'+Number(n||0).toFixed(2);}
+let ncOrderPricing={rate:0,subtotal:0,gst:0,total:0,gstRate:null};
+function ncProductRateKey(product){
+ const p=String(product||'').toLowerCase();
+ if(p.includes('hardener')) return 'hardener';
+ if(p.includes('primer')) return 'primer';
+ if(p.includes('flooring')||p.includes('kit')) return 'kit';
+ return 'epoxy';
+}
+function ncPackWeightKg(variant){
+ const text=String(variant||'').toLowerCase().replace(/,/g,' ').trim();
+ const m=text.match(/(\d+(?:\.\d+)?)\s*(kg|kgs|kilogram|kilograms|g|gm|gram|grams)\b/);
+ if(!m) return null;
+ const n=Number(m[1]);
+ return /^(g|gm|gram|grams)$/.test(m[2]) ? n/1000 : n;
+}
+async function ncGetDealerRate(product){
+ const uid=ncCurrentAccount&&ncCurrentAccount.uid;
+ if(!uid) throw new Error('Login session ಇಲ್ಲ. ಮತ್ತೆ Login ಮಾಡಿ.');
+ const key=ncProductRateKey(product);
+ const paths=['appData/'+uid+'/'+encodeURIComponent('nc_dealer_rates'),'users/'+uid+'/dealerRates','users/'+uid+'/rates'];
+ for(const path of paths){
+  try{
+   const snap=await ncDb.ref(path).once('value');
+   let v=snap.val();
+   if(typeof v==='string'){try{v=JSON.parse(v)}catch(e){v={}}}
+   if(v&&typeof v==='object'&&Number(v[key])>0) return Number(v[key]);
+  }catch(e){}
+ }
+ return 0;
+}
+async function ncUpdateOrderSummary(){
+ const box=document.getElementById('ncOrderSummary');if(!box)return;
+ const product=document.getElementById('ncoProduct').value,variant=document.getElementById('ncoVariant').value;
+ const qty=Math.max(0,Number(document.getElementById('ncoQty').value||0)),gstRaw=document.getElementById('ncoGst').value;
+ box.innerHTML='<b>Order Summary</b><p>Admin dealer-specific rate ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…</p>';
+ try{
+  const ratePerKg=await ncGetDealerRate(product),packKg=ncPackWeightKg(variant),gstRate=gstRaw===''?null:Number(gstRaw);
+  if(packKg===null){box.innerHTML='<b>Order Summary</b><p class="nc-warn">Pack Size ಅನ್ನು 1 kg / 5 kg / 500 g ಮಾದರಿಯಲ್ಲಿ ನಮೂದಿಸಿ.</p>';return;}
+  const packRate=ratePerKg*packKg,subtotal=packRate*qty,gst=gstRate===null?0:subtotal*gstRate/100,total=subtotal+gst;
+  ncOrderPricing={rate:ratePerKg,packKg,packRate,subtotal,gst,total,gstRate};
+  box.innerHTML=`<b>Order Summary</b><div class="nc-summary-row"><span>Product</span><strong>${ncEsc(product)}</strong></div><div class="nc-summary-row"><span>Pack / Variant</span><strong>${ncEsc(variant||'—')}</strong></div><div class="nc-summary-row"><span>Pack Weight</span><strong>${packKg} kg</strong></div><div class="nc-summary-row"><span>Dealer Rate / kg</span><strong>${ncMoney(ratePerKg)}</strong></div><div class="nc-summary-row"><span>Rate / Pack</span><strong>${ncMoney(packRate)}</strong></div><div class="nc-summary-row"><span>Quantity</span><strong>${qty}</strong></div><div class="nc-summary-row"><span>Subtotal</span><strong>${ncMoney(subtotal)}</strong></div><div class="nc-summary-row"><span>GST ${gstRate===null?'(select rate)':gstRate+'%'}</span><strong>${ncMoney(gst)}</strong></div><div class="nc-summary-row"><span>Payment Mode</span><strong>${ncEsc(document.getElementById('ncoMode').value)}</strong></div><div class="nc-summary-total"><span>Grand Total</span><strong>${ncMoney(total)}</strong></div>${ratePerKg<=0?'<p class="nc-warn">ಈ Dealerಗೆ ಈ Product rate Admin ಇನ್ನೂ ಸೆಟ್ ಮಾಡಿಲ್ಲ.</p>':''}${gstRate===null?'<p class="nc-warn">Final total ಪಡೆಯಲು GST rate ಆಯ್ಕೆಮಾಡಿ.</p>':''}`;
+ }catch(err){box.innerHTML='<b>Order Summary</b><p class="nc-warn">Dealer rate ಪಡೆಯಲು ಆಗಲಿಲ್ಲ: '+ncEsc(err.message||err)+'</p>';}
+}
+async function ncLoadAdminPaymentSettings(){
+ let data={};
+ try{const snap=await ncDb.ref('app_settings/admin_payment').once('value');data=snap.val()||{};}catch(e){}
+ if(!data.upiId||!data.qrImage){try{const local=JSON.parse(localStorage.getItem('neocure_admin_upi_settings')||'{}');data={...local,...data};}catch(e){}}
+ return data;
+}
+function ncBuildUpiUri(upiId,amount,orderId){
+ const params=new URLSearchParams({pa:upiId,pn:'NEOCURE',am:Number(amount).toFixed(2),cu:'INR',tn:'NEOCURE Order '+orderId});
+ return 'upi://pay?'+params.toString();
+}
+async function ncShowOrderPayment(row){
+ const box=document.getElementById('ncOrderPaymentBox');if(!box)return;
+ box.style.display='block';box.innerHTML='<div class="nc-result">Admin UPI ವಿವರಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…</div>';
+ const settings=await ncLoadAdminPaymentSettings();
+ const upi=settings.upiId||'', qr=settings.qrImage||'';
+ const uri=upi?ncBuildUpiUri(upi,row.totalAmount,row.id):'';
+ box.innerHTML=`<div class="nc-result"><b>Online Payment</b><div class="nc-summary-total"><span>Payable Amount</span><strong>${ncMoney(row.totalAmount)}</strong></div>${qr?`<img src="${qr}" alt="NEOCURE UPI QR" style="display:block;max-width:210px;max-height:210px;object-fit:contain;margin:12px auto;background:#fff;padding:8px;border-radius:12px">`:''}${upi?`<p>UPI ID: <b>${ncEsc(upi)}</b></p><a class="nc-action" style="display:block;text-align:center;text-decoration:none" href="${uri}">Open UPI App & Pay ${ncMoney(row.totalAmount)}</a>`:''}${!qr&&!upi?'<p class="nc-warn">Admin UPI QR / UPI ID ಇನ್ನೂ ಸೆಟ್ ಮಾಡಿಲ್ಲ. Admin Settingsನಲ್ಲಿ ಸೇರಿಸಿದ ನಂತರ ಪಾವತಿ ಮಾಡಿ.</p>':''}<p class="nc-muted">UPI Appನಲ್ಲಿ ಪಾವತಿ ಮಾಡಿ. ನಂತರ UTR / Transaction ID ಅನ್ನು Payment Record ಪುಟದಲ್ಲಿ ಸಲ್ಲಿಸಿ. Admin verification ಆದ ನಂತರವೇ payment complete ಆಗುತ್ತದೆ.</p></div>`;
+}
+async function ncSubmitOrder(e){
+ e.preventDefault();
+ try{
+  const product=document.getElementById('ncoProduct').value,variant=document.getElementById('ncoVariant').value.trim(),qty=Number(document.getElementById('ncoQty').value),mode=document.getElementById('ncoMode').value,gstRaw=document.getElementById('ncoGst').value;
+  if(!variant||!Number.isInteger(qty)||qty<=0){notify('Pack size ಮತ್ತು ಸರಿಯಾದ quantity ನಮೂದಿಸಿ.');return;}
+  if(gstRaw===''){notify('GST rate ಆಯ್ಕೆಮಾಡಿ.');return;}
+  const rate=await ncGetDealerRate(product),packKg=ncPackWeightKg(variant);if(rate<=0){notify('ಈ Dealerಗೆ ಈ Product rate Admin ಇನ್ನೂ ಸೆಟ್ ಮಾಡಿಲ್ಲ.');return;}if(packKg===null){notify('Pack Size ಅನ್ನು 1 kg / 5 kg / 500 g ಮಾದರಿಯಲ್ಲಿ ನಮೂದಿಸಿ.');return;}
+  const packRate=rate*packKg,subtotal=packRate*qty,gstRate=Number(gstRaw),gstAmount=subtotal*gstRate/100,totalAmount=subtotal+gstAmount;
+  const id='ORD'+Date.now(),needsApproval=(mode==='COD'||mode==='Udhaari');
+  const row={id,uid:ncCurrentAccount.uid,phone:ncCurrentAccount.phone||'',dealerName:ncCurrentAccount.name||'',product,variant,qty,unitRate:rate,packKg,packRate,subtotal,gstRate,gstAmount,totalAmount,paymentMode:mode,approvalRequired:needsApproval,date:document.getElementById('ncoDate').value,note:document.getElementById('ncoNote').value.trim(),status:needsApproval?'Pending Admin Approval':(mode==='Online Payment'?'Awaiting Online Payment':'Pending Admin Approval'),created:Date.now()};
+  const a=await ncReadData('orders',[]);a.push(row);await ncWriteData('orders',a);
+  // Order is stored in appData/{uid}; Admin reads the same record.
+   
+  const notice=document.getElementById('ncOrderNotice');if(notice){notice.style.display='block';notice.innerHTML=`<b>Order Summary – ${ncEsc(id)}</b><p>${ncEsc(product)} · ${ncEsc(variant)} × ${qty}</p><p>Subtotal: ${ncMoney(subtotal)}<br>GST (${gstRate}%): ${ncMoney(gstAmount)}</p><div class="nc-summary-row"><span>Payment Mode</span><strong>${ncEsc(mode)}</strong></div><div class="nc-summary-total"><span>Total</span><strong>${ncMoney(totalAmount)}</strong></div><p><b>Status: ${ncEsc(row.status)}</b></p>${needsApproval?'<p>ನಿಮ್ಮ Order Admin Approvalಗಾಗಿ ಕಳುಹಿಸಲಾಗಿದೆ. Approval ಆಗುವವರೆಗೆ Pending ಆಗಿರುತ್ತದೆ.</p>':''}`;}
+  if(mode==='Online Payment') await ncShowOrderPayment(row);
+  else {const payBox=document.getElementById('ncOrderPaymentBox');if(payBox)payBox.style.display='none';}
+  await ncRenderOrders();
+  notify(needsApproval?'Order Pending Admin Approval':'Order ಉಳಿಸಲಾಗಿದೆ. Online Payment ಮಾಡಿ.');
+ }catch(err){const msg=String(err&&err.message||err);notify(msg.includes('PERMISSION_DENIED')?'Firebase Permission Denied: Order serverಗೆ save ಆಗಿಲ್ಲ. Database Rules ಪರಿಶೀಲಿಸಬೇಕು.':'Order save ಆಗಲಿಲ್ಲ: '+msg);}
+}
+async function ncRenderOrders(){const el=document.getElementById('ncOrdersList');if(!el)return;try{const a=await ncReadData('orders',[]);el.innerHTML=a.length?a.sort((x,y)=>y.created-x.created).map(x=>{const approved=['approved','order approved','confirmed'].includes(String(x.status||'').toLowerCase())||x.approved===true;return `<div class="nc-result"><b>${ncEsc(x.id)}</b><br>${ncEsc(x.product)} · ${ncEsc(x.variant)} × ${x.qty}<br>Total ₹${Number(x.totalAmount||0).toFixed(2)} · ${ncEsc(x.paymentMode||'—')}<br><small>${ncEsc(x.status)}</small>${approved?`<button class="nc-action" type="button" onclick="ncDownloadInvoice('${String(x.id).replace(/[^a-zA-Z0-9_-]/g,'')}')">Download Invoice</button>`:''}</div>`;}).join(''):'<p class="nc-muted">ಇನ್ನೂ Order ಇಲ್ಲ.</p>';}catch(e){el.textContent='Orders ಓದಲು ಆಗಲಿಲ್ಲ: '+e.message;}}
+async function ncDownloadInvoice(orderId){try{const a=await ncReadData('orders',[]);const x=a.find(o=>String(o.id)===String(orderId));if(!x){notify('Order ಸಿಗಲಿಲ್ಲ');return;}const approved=['approved','order approved','confirmed'].includes(String(x.status||'').toLowerCase())||x.approved===true;if(!approved){notify('Admin approval ಆದ ನಂತರ Invoice download ಮಾಡಬಹುದು.');return;}const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const date=new Date(x.created||Date.now()).toLocaleDateString('en-IN');const invoice=`<!doctype html><html><head><meta charset="utf-8"><title>Invoice ${esc(x.id)}</title><style>body{font-family:Arial,sans-serif;margin:32px;color:#17283b}h1{color:#087f78}.box{border:1px solid #dce6e9;border-radius:12px;padding:18px;margin-top:18px}.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #edf1f3}.total{font-size:20px;font-weight:bold;color:#087f78}</style></head><body><h1>NEOCURE</h1><h2>Order Invoice</h2><p>Invoice / Order ID: ${esc(x.id)}<br>Date: ${esc(date)}<br>Dealer: ${esc(x.dealerName||ncCurrentAccount?.name||'Dealer')}<br>Mobile: ${esc(x.phone||ncCurrentAccount?.phone||'')}</p><div class="box"><div class="row"><span>Product</span><b>${esc(x.product)}</b></div><div class="row"><span>Pack / Variant</span><b>${esc(x.variant)}</b></div><div class="row"><span>Quantity</span><b>${esc(x.qty)}</b></div><div class="row"><span>Dealer Rate / kg</span><b>₹${Number(x.unitRate||0).toFixed(2)}</b></div><div class="row"><span>Rate / Pack</span><b>₹${Number(x.packRate||0).toFixed(2)}</b></div><div class="row"><span>Subtotal</span><b>₹${Number(x.subtotal||0).toFixed(2)}</b></div><div class="row"><span>GST (${Number(x.gstRate||0)}%)</span><b>₹${Number(x.gstAmount||0).toFixed(2)}</b></div><div class="row"><span>Payment Mode</span><b>${esc(x.paymentMode||'—')}</b></div><div class="row total"><span>Grand Total</span><b>₹${Number(x.totalAmount||0).toFixed(2)}</b></div></div><p>Status: ${esc(x.status)}</p><p>NEOCURE · Thank you for your order.</p><p>ಈ Invoice ಅನ್ನು Browserನಲ್ಲಿ ತೆರೆಯಿರಿ ಮತ್ತು Print / Save as PDF ಆಯ್ಕೆಮಾಡಿ.</p></body></html>`;const blob=new Blob([invoice],{type:'text/html'});const url=URL.createObjectURL(blob);const aTag=document.createElement('a');aTag.href=url;aTag.download='NEOCURE_Invoice_'+orderId+'.html';document.body.appendChild(aTag);aTag.click();aTag.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);}catch(e){notify('Invoice download ಆಗಲಿಲ್ಲ: '+(e.message||e));}}
+async function ncAddKhata(e){e.preventDefault();try{const a=await ncReadData('khata',[]);a.push({id:'KH'+Date.now(),party:nckParty.value.trim(),type:nckType.value,amount:Number(nckAmount.value),note:nckNote.value.trim(),date:Date.now()});await ncWriteData('khata',a);e.target.reset();ncRenderKhata();notify('Khata entry ಉಳಿಸಲಾಗಿದೆ');}catch(x){notify('Khata save ಆಗಲಿಲ್ಲ: '+x.message);}}
+async function ncRenderKhata(){const el=document.getElementById('ncKhataList');if(!el)return;try{const a=await ncReadData('khata',[]);const net=a.reduce((n,x)=>n+(x.type==='debit'?Number(x.amount):-Number(x.amount)),0);el.innerHTML=`<div class="nc-result"><b>Net Udhaari: ₹${net.toFixed(2)}</b></div>`+(a.length?a.sort((x,y)=>y.date-x.date).map(x=>`<div class="nc-result"><b>${ncEsc(x.party)}</b><br>${x.type==='debit'?'Debit / Udhaari':'Credit / Payment'} · ₹${Number(x.amount).toFixed(2)}<br><small>${ncEsc(x.note||'')} · ${new Date(x.date).toLocaleString()}</small></div>`).join(''):'<p class="nc-muted">ಇನ್ನೂ Khata entries ಇಲ್ಲ.</p>');}catch(e){el.textContent='Khata ಓದಲು ಆಗಲಿಲ್ಲ: '+e.message;}}
+async function ncSubmitPaymentRecord(e){e.preventDefault();try{const a=await ncReadData('payments',[]);a.push({id:'PAY'+Date.now(),amount:Number(document.getElementById('ncpAmount').value),mode:document.getElementById('ncpMode').value,reference:document.getElementById('ncpRef').value.trim(),note:document.getElementById('ncpNote').value.trim(),status:'Pending Admin Verification',created:Date.now()});await ncWriteData('payments',a);notify('Payment record Admin verificationಗೆ ಕಳುಹಿಸಲಾಗಿದೆ');e.target.reset();}catch(x){notify('Payment save ಆಗಲಿಲ್ಲ: '+x.message);}}
+async function ncLoadRates(){
+ const el=document.getElementById('ncRatesList');if(!el)return;
+ try{
+  const uid=ncCurrentAccount.uid;let rates={};
+  for(const path of ['appData/'+uid+'/'+encodeURIComponent('nc_dealer_rates'),'users/'+uid+'/dealerRates','users/'+uid+'/rates']){
+   const snap=await ncDb.ref(path).once('value');let v=snap.val();
+   if(typeof v==='string'){try{v=JSON.parse(v)}catch(e){v={}}}
+   if(v&&Object.keys(v).length){rates=v;break;}
+  }
+  const labels={epoxy:'Epoxy',hardener:'Hardener',primer:'Primer',kit:'Flooring Kit'};
+  el.innerHTML=Object.keys(labels).some(k=>Number(rates[k])>0)?Object.keys(labels).filter(k=>Number(rates[k])>0).map(k=>`<div class="nc-result">${labels[k]} <b style="float:right">₹${Number(rates[k]).toFixed(2)} / kg</b></div>`).join(''):'<p class="nc-muted">Admin ಇನ್ನೂ ನಿಮ್ಮ ಖಾತೆಗೆ rates ನೀಡಿಲ್ಲ.</p>';
+ }catch(e){el.textContent='Rates ಓದಲು ಆಗಲಿಲ್ಲ: '+e.message;}
+}
+async function ncRedeemCoupon(){const code=document.getElementById('nccCode').value.trim().toUpperCase(),out=document.getElementById('ncCouponResult');if(!code){out.textContent='Coupon code ನಮೂದಿಸಿ.';return;}out.textContent='Coupon ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…';try{let reason='';const tx=await ncDb.ref('coupons/'+code).transaction(cur=>{if(!cur){reason='Coupon ಸಿಗಲಿಲ್ಲ.';return;}if(cur.redeemed===true||cur.used===true||cur.claimed===true||cur.status==='Redeemed'){reason='ಈ Coupon ಈಗಾಗಲೇ Redeem ಆಗಿದೆ.';return;}if(String(cur.status||'').toLowerCase()==='deleted'){reason='Coupon delete ಆಗಿದೆ.';return;}const now=Date.now(),start=Number(cur.validFrom||cur.createdAt||0),end=Number(cur.expiresAt||0);if(start&&now<start){reason='Coupon ಇನ್ನೂ valid ಆಗಿಲ್ಲ.';return;}if(end&&now>end){reason='Coupon expired ಆಗಿದೆ.';return;}cur.status='Redeemed';cur.redeemed=true;cur.claimed=true;cur.claimedBy=ncCurrentAccount.name||ncCurrentAccount.phone;cur.claimedPhone=ncCurrentAccount.phone;cur.claimedUid=ncCurrentAccount.uid;cur.claimedRole='applicator';cur.claimedAt=now;return cur;});if(!tx.committed){out.textContent=reason||'Redeem ಆಗಲಿಲ್ಲ.';return;}const reward=Math.max(0,Number(tx.snapshot.val().reward||0));const balance=Number(localStorage.getItem('nc_reward_balance_'+ncUserPhone())||0)+reward;localStorage.setItem('nc_reward_balance_'+ncUserPhone(),String(balance));await ncWriteData('reward_balance',balance);out.textContent='ಯಶಸ್ವಿ! Coupon '+code+' · Reward ₹'+reward.toFixed(2);notify('Coupon Redeem ಆಯಿತು');}catch(e){out.textContent='Firebase error: '+e.message;}}
+async function ncLoadWallet(){const b=Number(await ncReadData('reward_balance',Number(localStorage.getItem('nc_reward_balance_'+ncUserPhone())||0)));const el=document.getElementById('ncWalletBalance');if(el)el.textContent='₹ '+b.toFixed(2);}
+async function ncSubmitWithdraw(e){e.preventDefault();try{const amount=Number(document.getElementById('ncWithdrawAmount').value),upi=document.getElementById('ncWithdrawUpi').value.trim(),balance=Number(await ncReadData('reward_balance',0));if(!Number.isInteger(amount)||amount<=0||amount>balance){notify('ಸರಿಯಾದ amount ನಮೂದಿಸಿ. Balance ₹'+balance.toFixed(2));return;}const key='withdrawRequests/'+ncCurrentAccount.uid;const ref=ncDb.ref(key);await ref.push({uid:ncCurrentAccount.uid,phone:ncCurrentAccount.phone,role:'applicator',amount,upi,status:'Pending payout',createdAt:Date.now()});await ncWriteData('reward_balance',balance-amount);notify('Withdrawal request Adminಗೆ ಕಳುಹಿಸಲಾಗಿದೆ');ncLoadWithdrawHistory();}catch(x){notify('Withdrawal save ಆಗಲಿಲ್ಲ: '+x.message);}}
+async function ncLoadWithdrawHistory(){const el=document.getElementById('ncWithdrawHistory');if(!el)return;try{const snap=await ncDb.ref('withdrawRequests/'+ncCurrentAccount.uid).once('value'),a=[];snap.forEach(c=>a.push(c.val()));el.innerHTML=a.length?a.sort((x,y)=>y.createdAt-x.createdAt).map(x=>`<div class="nc-result">₹${Number(x.amount).toFixed(2)} · ${ncEsc(x.status)}<br><small>${new Date(x.createdAt).toLocaleString()}</small></div>`).join(''):'<p class="nc-muted">ಇನ್ನೂ withdrawal request ಇಲ್ಲ.</p>';}catch(e){el.textContent='History unavailable: '+e.message;}}
+async function ncLoadWorkHistory(){const el=document.getElementById('ncWorkHistory');if(!el)return;try{const snap=await ncDb.ref('coupons').orderByChild('claimedUid').equalTo(ncCurrentAccount.uid).once('value'),a=[];snap.forEach(c=>a.push({code:c.key,...c.val()}));el.innerHTML=a.length?a.map(x=>`<div class="nc-result"><b>${ncEsc(x.code)}</b><br>Reward ₹${Number(x.reward||0).toFixed(2)} · ${new Date(x.claimedAt||Date.now()).toLocaleString()}</div>`).join(''):'ಇನ್ನೂ Scan history ಇಲ್ಲ.';}catch(e){el.textContent='History ಓದಲು ಆಗಲಿಲ್ಲ: '+e.message;}}
+async 
+async function ncLoadProfilePhoto(){
+ const img=document.getElementById('ncHeaderPhoto'),fallback=document.getElementById('ncHeaderPhotoFallback');
+ if(!ncCurrentAccount?.uid)return;
+ try{
+  // appData/$uid is already permitted for the signed-in owner by the current RTDB rules.
+  let snap=await ncDb.ref('appData/'+ncCurrentAccount.uid+'/profilePhotoData').once('value');
+  let data=snap.val();
+  // Read the legacy location too, so previously saved photos remain visible.
+  if(!data){snap=await ncDb.ref('users/'+ncCurrentAccount.uid+'/photoData').once('value');data=snap.val();}
+  if(data){if(img){img.src=data;img.style.display='block'}if(fallback)fallback.style.display='none';}
+ }catch(e){console.warn('Profile photo read failed',e.message||e);}
+}
+async function ncPreviewAndSaveProfilePhoto(event){
+ const file=event.target.files&&event.target.files[0];if(!file)return;
+ if(!file.type.startsWith('image/')){notify('Image file ಆಯ್ಕೆಮಾಡಿ.');event.target.value='';return;}
+ if(file.size>8*1024*1024){notify('Photo 8 MBಗಿಂತ ಕಡಿಮೆ ಇರಲಿ.');event.target.value='';return;}
+ try{
+  const data=await new Promise((resolve,reject)=>{
+   const reader=new FileReader();reader.onerror=()=>reject(new Error('Photo ಓದಲು ಆಗಲಿಲ್ಲ'));
+   reader.onload=()=>{const image=new Image();image.onerror=()=>reject(new Error('Image ತೆರೆಯಲಾಗಲಿಲ್ಲ'));
+    image.onload=()=>{const canvas=document.createElement('canvas'),scale=Math.min(1,480/Math.max(image.width,image.height));canvas.width=Math.max(1,Math.round(image.width*scale));canvas.height=Math.max(1,Math.round(image.height*scale));const ctx=canvas.getContext('2d');if(!ctx)return reject(new Error('Image processing ಲಭ್ಯವಿಲ್ಲ'));ctx.drawImage(image,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/jpeg',0.72));};
+    image.src=reader.result;};reader.readAsDataURL(file);
+  });
+  const uid=ncAuth.currentUser?.uid||ncCurrentAccount?.uid;if(!uid)throw new Error('Login session ಇಲ್ಲ. ಮತ್ತೆ Login ಮಾಡಿ.');
+  // Save in appData/$uid: the current Realtime Database rules allow the owner to write here.
+  const phone=String(ncCurrentAccount?.phone||'').replace(/\D/g,'');
+   const photoKey=(roleSelect.value==='dealer'?'nc_dealer_photo_':'nc_applicator_photo_')+phone;
+   const updates={};updates['appData/'+uid+'/profilePhotoData']=data;updates['appData/'+uid+'/'+encodeURIComponent(photoKey)]=JSON.stringify(data);
+   await ncDb.ref().update(updates);
+  const preview=document.getElementById('ncProfilePhotoPreview'),fallback=document.getElementById('ncProfilePhotoFallback');
+  if(preview){preview.src=data;preview.style.display='block'}if(fallback)fallback.style.display='none';
+  const head=document.getElementById('ncHeaderPhoto'),headFallback=document.getElementById('ncHeaderPhotoFallback');
+  if(head){head.src=data;head.style.display='block'}if(headFallback)headFallback.style.display='none';
+  notify('Profile photo Firebaseನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ.');
+ }catch(err){notify('Photo save ಆಗಲಿಲ್ಲ: '+(err.message||err));}
+ finally{event.target.value='';}
+}
+async function ncSaveProfile(e){e.preventDefault();try{const profile={name:document.getElementById('ncpName').value.trim(),address:document.getElementById('ncpAddress').value.trim(),upi:document.getElementById('ncpUpi').value.trim(),updatedAt:Date.now()};const uid=ncCurrentAccount.uid,phone=String(ncCurrentAccount.phone||'').replace(/\D/g,'');const role=roleSelect.value==='dealer'?'dealer':'applicator';const key=(role==='dealer'?'nc_dealer_profile_':'nc_applicator_profile_')+phone;const updates={};Object.entries(profile).forEach(([k,v])=>updates['users/'+uid+'/'+k]=v);updates['appData/'+uid+'/'+encodeURIComponent(key)]=JSON.stringify(profile);await ncDb.ref().update(updates);Object.assign(ncCurrentAccount,profile);notify('Profile ಉಳಿಸಲಾಗಿದೆ ಮತ್ತು Firebaseಗೆ Sync ಆಗಿದೆ');}catch(x){notify('Profile save ಆಗಲಿಲ್ಲ: '+x.message);}}
+function ncCalcGst(){const a=Number(document.getElementById('ncGstAmount').value||0),r=Number(document.getElementById('ncGstRate').value),mode=document.getElementById('ncGstMode').value;const taxable=mode==='inclusive'?a/(1+r/100):a,gst=mode==='inclusive'?a-taxable:taxable*r/100,total=taxable+gst;document.getElementById('ncGstResult').innerHTML=`Taxable ₹${taxable.toFixed(2)} · GST ₹${gst.toFixed(2)} · Total <b>₹${total.toFixed(2)}</b>`;}
+function ncCalcEpoxy(){const a=Number(document.getElementById('nceArea').value),c=Number(document.getElementById('nceCoverage').value),w=Number(document.getElementById('nceWaste').value);document.getElementById('ncEpoxyResult').textContent=a>0&&c>0&&w>=0?'Estimated material: '+(a/c*(1+w/100)).toFixed(2)+' kg':'Coverage datasheet value ನಮೂದಿಸಿ.';}
+
+</script>
+</body></html>
