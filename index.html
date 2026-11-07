@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101b2b">
-<title>NEOCURE V105 | Dealer & Applicator</title>
+<title>NEOCURE V106 | Dealer & Applicator</title>
 <style>
 :root{--navy:#101b2b;--navy2:#17283b;--teal:#16b8a6;--lime:#c6ef63;--ink:#152438;--muted:#718096;--paper:#f4f7f8;--white:#fff;--line:#e6ecef;--shadow:0 18px 48px rgba(16,27,43,.12)}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#e9f0f1,#f7f9fa);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
@@ -317,7 +317,7 @@ body.nc-auth-screen #ncBottomNav{display:none!important}
 }
 
 </style>
-<meta name="nc-app-version" content="V105"><meta name="nc-app-build" content="V105-OTP-FIRST-FORGOT-MPIN">
+<meta name="nc-app-version" content="V106"><meta name="nc-app-build" content="V106-OTP-RECAPTCHA-APP-FIX">
 
 <style id="ncV19ResponsivePolish">
 /* NEOCURE V19: responsive visual alignment polish; application logic is unchanged */
@@ -618,6 +618,7 @@ if (window.MutationObserver) {
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <!-- V106 FIX: compat SDK required by firebase.app().functions(...). -->
+<!-- V106 OTP FIX: RecaptchaVerifier receives the secondary Firebase APP, not its Auth instance. -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions-compat.js"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
@@ -1110,14 +1111,15 @@ function firebaseSignOutToLogin(){ ncAuth.signOut().finally(()=>{ncCurrentAccoun
 
 let ncRegConfirmation=null, ncRegOtpVerifier=null, ncRegOtpVerified=false, ncRegPhoneIdToken='', ncRegOtpPhone='';
 let ncPhoneAuth=null;
-try { const appName='neocure-phone-otp'; const secondary=firebase.apps.find(a=>a.name===appName)||firebase.initializeApp(firebaseConfig,appName); ncPhoneAuth=secondary.auth(); } catch(e){ console.warn('Phone OTP secondary auth init:',e); }
+let ncPhoneApp=null;
+try { const appName='neocure-phone-otp'; ncPhoneApp=firebase.apps.find(a=>a.name===appName)||firebase.initializeApp(firebaseConfig,appName); ncPhoneAuth=ncPhoneApp.auth(); } catch(e){ console.warn('Phone OTP secondary auth init:',e); }
 function ncRegOtpMessage(msg,isError=false){const el=document.getElementById('ncRegOtpStatus');if(el){el.textContent=msg;el.style.color=isError?'#b42318':'#087f69';}}
 async function ncSendRegistrationOtp(){
  const phone=ncNormalizePhone(document.getElementById('regMobile').value); if(!/^\d{10}$/.test(phone)){ncRegOtpMessage('Enter a valid 10-digit mobile number first.',true);return;}
  if(!ncPhoneAuth){ncRegOtpMessage('Phone OTP is unavailable. Registration cannot continue without OTP verification.',true);return;}
  const btn=document.getElementById('ncSendRegOtpBtn');btn.disabled=true;
  try{
-  if(!ncRegOtpVerifier) ncRegOtpVerifier=new firebase.auth.RecaptchaVerifier('ncRegRecaptcha',{size:'normal',callback:()=>{},'expired-callback':()=>{ncRegOtpMessage('reCAPTCHA expired. Please send OTP again.',true);}} ,ncPhoneAuth);
+  if(!ncRegOtpVerifier) ncRegOtpVerifier=new firebase.auth.RecaptchaVerifier('ncRegRecaptcha',{size:'normal',callback:()=>{},'expired-callback':()=>{ncRegOtpMessage('reCAPTCHA expired. Please send OTP again.',true);}} ,ncPhoneApp);
   const appVerifier=await ncRegOtpVerifier.render();
   ncRegConfirmation=await ncPhoneAuth.signInWithPhoneNumber('+91'+phone,ncRegOtpVerifier);
   ncRegOtpPhone=phone;document.getElementById('ncRegOtpVerifyRow').style.display='flex';ncRegOtpMessage('OTP sent. Enter the 6-digit code.');
@@ -1187,7 +1189,7 @@ async function ncSendForgotOtp(phone){
  const mount=document.getElementById('ncForgotRecaptcha');
  if(!ncForgotOtpVerifier){
   mount.style.display='block';
-  ncForgotOtpVerifier=new firebase.auth.RecaptchaVerifier('ncForgotRecaptcha',{size:'invisible','expired-callback':()=>{ncForgotOtpVerifier=null;}},ncPhoneAuth);
+  ncForgotOtpVerifier=new firebase.auth.RecaptchaVerifier('ncForgotRecaptcha',{size:'invisible','expired-callback':()=>{ncForgotOtpVerifier=null;}},ncPhoneApp);
  }
  await ncForgotOtpVerifier.render();
  ncForgotOtpConfirmation=await ncPhoneAuth.signInWithPhoneNumber('+91'+phone,ncForgotOtpVerifier);
