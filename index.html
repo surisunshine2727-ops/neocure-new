@@ -768,10 +768,16 @@ async function ncRequestMpinReset(){
  try{
   const fn=firebase.app().functions('asia-southeast1').httpsCallable('createMpinResetRequest');
   const result=await fn({phone:mobile,role});
-  ncSetLoginError('resetSent');
+  const data=result && result.data ? result.data : {};
+  if(data.success!==true) throw new Error('MPIN_RESET_NOT_CONFIRMED');
+  ncSetLoginError(data.alreadyPending ? 'resetPending' : 'resetSent');
  }catch(ex){
   console.error('MPIN reset request failed',ex);
-  ncSetLoginError('resetFailed');
+  const code=String(ex && ex.code || '').toLowerCase();
+  if(code.endsWith('/not-found') || code==='not-found') ncSetLoginError('missingAccount');
+  else if(code.endsWith('/invalid-argument') || code==='invalid-argument') ncSetLoginError('resetPrompt');
+  else if(code.endsWith('/failed-precondition') || code==='failed-precondition') ncSetLoginError('profileMissing');
+  else ncSetLoginError('resetFailed');
  }finally{
   if(btn){btn.disabled=false;btn.textContent=ncMsg('forgot');}
  }
