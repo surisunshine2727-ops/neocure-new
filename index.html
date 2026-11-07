@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101b2b">
-<title>NEOCURE V107 | Dealer & Applicator</title>
+<title>NEOCURE V108 | Dealer & Applicator</title>
 <style>
 :root{--navy:#101b2b;--navy2:#17283b;--teal:#16b8a6;--lime:#c6ef63;--ink:#152438;--muted:#718096;--paper:#f4f7f8;--white:#fff;--line:#e6ecef;--shadow:0 18px 48px rgba(16,27,43,.12)}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#e9f0f1,#f7f9fa);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
@@ -449,7 +449,7 @@ table{width:100%;max-width:100%;border-collapse:collapse}
       <label class="login-field"><span data-i18n="passwordPin">Password / PIN</span><div class="nc-login-input-wrap"><span class="nc-login-input-icon" aria-hidden="true">♙</span><input id="loginPin" type="password" inputmode="numeric" maxlength="4" placeholder="Enter 4-digit MPIN" data-i18n-placeholder="pinPlaceholder" autocomplete="current-password" required><button type="button" class="nc-pin-eye" id="ncTogglePin" aria-label="Show MPIN" onclick="ncToggleLoginPin()">◉</button></div></label>
       <div style="display:flex;justify-content:flex-end;margin:-5px 0 10px"><button type="button" class="register-link" id="forgotMpinBtn" style="margin:0;padding:4px 0" onclick="ncRequestMpinReset()">Forgot MPIN? / MPIN ಮರೆತಿದ್ದೀರಾ?</button></div>
       <label class="nc-remember-row" for="ncRememberMe"><input id="ncRememberMe" type="checkbox"><span data-i18n="rememberMe">Remember me on this device</span></label>
-      <div id="ncForgotRecaptcha" style="margin:8px auto;display:none"></div>
+      <div id="ncForgotRecaptcha" style="margin:12px auto;display:none;min-height:0;max-width:304px"></div>
       <div class="login-error" id="loginError" role="alert"></div>
       <button class="login-submit" type="submit" data-i18n="signIn">SIGN IN →</button>
     </form>
@@ -617,8 +617,7 @@ if (window.MutationObserver) {
 </script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<!-- V107 FIX: load the Firebase v8 Functions SDK that provides firebase.app().functions(...). -->
-<!-- OTP FIX: RecaptchaVerifier receives the secondary Firebase APP, not its Auth instance. -->
+<!-- V108 OTP FIX: visible reCAPTCHA on the secondary Firebase App; rebuild verifier for each OTP attempt. -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
@@ -1185,12 +1184,22 @@ let ncForgotOtpVerifier=null;
 let ncForgotOtpConfirmation=null;
 let ncForgotOtpPhone='';
 async function ncSendForgotOtp(phone){
- if(!ncPhoneAuth) throw new Error('phone-auth-unavailable');
+ if(!ncPhoneAuth||!ncPhoneApp) throw new Error('phone-auth-unavailable');
  const mount=document.getElementById('ncForgotRecaptcha');
- if(!ncForgotOtpVerifier){
-  mount.style.display='block';
-  ncForgotOtpVerifier=new firebase.auth.RecaptchaVerifier('ncForgotRecaptcha',{size:'invisible','expired-callback':()=>{ncForgotOtpVerifier=null;}},ncPhoneApp);
- }
+ if(!mount) throw new Error('recaptcha-container-missing');
+ // Always discard an old/stale verifier before starting a new attempt.
+ try{if(ncForgotOtpVerifier)ncForgotOtpVerifier.clear();}catch(_){}
+ ncForgotOtpVerifier=null;
+ mount.innerHTML='';
+ mount.style.display='block';
+ mount.style.minHeight='78px';
+ // Use a visible checkbox challenge. Invisible reCAPTCHA was failing with
+ // hostname/captcha errors on the Vercel-hosted page.
+ ncForgotOtpVerifier=new firebase.auth.RecaptchaVerifier('ncForgotRecaptcha',{
+  size:'normal',
+  callback:()=>{},
+  'expired-callback':()=>{try{if(ncForgotOtpVerifier)ncForgotOtpVerifier.clear();}catch(_){}ncForgotOtpVerifier=null;mount.innerHTML='';}
+ },ncPhoneApp);
  await ncForgotOtpVerifier.render();
  ncForgotOtpConfirmation=await ncPhoneAuth.signInWithPhoneNumber('+91'+phone,ncForgotOtpVerifier);
  ncForgotOtpPhone=phone;
