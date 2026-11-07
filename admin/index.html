@@ -736,6 +736,59 @@ img,canvas,svg{max-width:100%;height:auto}
 }
 .nc-language-icon option{color:#14252b!important;font-size:16px!important}
 </style>
+<style id="neocure-admin-mobile-table-scroll-fix">
+/* MPIN Reset and other generated admin tables: allow true horizontal swipe on phones. */
+.table-wrap{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior-x:contain;
+  touch-action:pan-x pan-y;
+  scrollbar-width:thin;
+}
+.table-wrap table{
+  width:max-content!important;
+  min-width:780px!important;
+  border-collapse:collapse;
+}
+.table-wrap th,.table-wrap td{white-space:nowrap!important}
+@media(max-width:720px){
+  #ncAdminMpinRequests{width:100%;min-width:0;max-width:100%}
+  #ncAdminMpinRequests .table-wrap{
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    padding-bottom:8px;
+    border:1px solid #1a5360;
+    border-radius:11px;
+  }
+  #ncAdminMpinRequests .table-wrap table{
+    width:max-content!important;
+    min-width:760px!important;
+  }
+  #ncAdminMpinRequests .table-wrap th,
+  #ncAdminMpinRequests .table-wrap td{
+    display:table-cell!important;
+    width:auto!important;
+    min-width:0!important;
+    white-space:nowrap!important;
+    text-align:left!important;
+    padding:11px!important;
+  }
+  #ncAdminMpinRequests .table-wrap thead{display:table-header-group!important}
+  #ncAdminMpinRequests .table-wrap tbody{display:table-row-group!important}
+  #ncAdminMpinRequests .table-wrap tr{
+    display:table-row!important;
+    padding:0!important;margin:0!important;
+    border:0!important;border-radius:0!important;
+    background:transparent!important;
+  }
+  #ncAdminMpinRequests .table-wrap td:before{content:none!important;display:none!important}
+  #ncAdminMpinRequests .table-wrap td .field{min-width:110px!important}
+}
+</style>
 </head>
 <body class="nc-locked">
 <style>
