@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101b2b">
-<title>NEOCURE V16 | Dealer & Applicator</title>
+<title>NEOCURE V105 | Dealer & Applicator</title>
 <style>
 :root{--navy:#101b2b;--navy2:#17283b;--teal:#16b8a6;--lime:#c6ef63;--ink:#152438;--muted:#718096;--paper:#f4f7f8;--white:#fff;--line:#e6ecef;--shadow:0 18px 48px rgba(16,27,43,.12)}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#e9f0f1,#f7f9fa);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
@@ -317,7 +317,7 @@ body.nc-auth-screen #ncBottomNav{display:none!important}
 }
 
 </style>
-<meta name="nc-app-version" content="V100"><meta name="nc-app-build" content="V100-MPIN-RESET-ERROR-DIAGNOSTICS">
+<meta name="nc-app-version" content="V105"><meta name="nc-app-build" content="V105-OTP-FIRST-FORGOT-MPIN">
 
 <style id="ncV19ResponsivePolish">
 /* NEOCURE V19: responsive visual alignment polish; application logic is unchanged */
@@ -449,6 +449,7 @@ table{width:100%;max-width:100%;border-collapse:collapse}
       <label class="login-field"><span data-i18n="passwordPin">Password / PIN</span><div class="nc-login-input-wrap"><span class="nc-login-input-icon" aria-hidden="true">♙</span><input id="loginPin" type="password" inputmode="numeric" maxlength="4" placeholder="Enter 4-digit MPIN" data-i18n-placeholder="pinPlaceholder" autocomplete="current-password" required><button type="button" class="nc-pin-eye" id="ncTogglePin" aria-label="Show MPIN" onclick="ncToggleLoginPin()">◉</button></div></label>
       <div style="display:flex;justify-content:flex-end;margin:-5px 0 10px"><button type="button" class="register-link" id="forgotMpinBtn" style="margin:0;padding:4px 0" onclick="ncRequestMpinReset()">Forgot MPIN? / MPIN ಮರೆತಿದ್ದೀರಾ?</button></div>
       <label class="nc-remember-row" for="ncRememberMe"><input id="ncRememberMe" type="checkbox"><span data-i18n="rememberMe">Remember me on this device</span></label>
+      <div id="ncForgotRecaptcha" style="margin:8px auto;display:none"></div>
       <div class="login-error" id="loginError" role="alert"></div>
       <button class="login-submit" type="submit" data-i18n="signIn">SIGN IN →</button>
     </form>
@@ -616,7 +617,8 @@ if (window.MutationObserver) {
 </script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
+<!-- V106 FIX: compat SDK required by firebase.app().functions(...). -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions-compat.js"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
 const translations={
@@ -653,6 +655,8 @@ const ncLoginMessages={
  ml:{wrongPin:"തെറ്റായ MPIN. വീണ്ടും ശ്രമിക്കുക.",missingAccount:"തിരഞ്ഞെടുത്ത പോർട്ടലിൽ ഈ മൊബൈൽ നമ്പറിന് അക്കൗണ്ട് ഇല്ല.",profileMissing:"അക്കൗണ്ട് പ്രൊഫൈൽ അപൂർണ്ണമാണ്. അഡ്മിനെ ബന്ധപ്പെടുക.",roleMismatch:"ഈ അക്കൗണ്ട് മറ്റൊരു പോർട്ടലിലേതാണ്. ശരിയായ Dealer / Applicator പോർട്ടൽ തിരഞ്ഞെടുക്കുക.",phoneMismatch:"അക്കൗണ്ടിലെ മൊബൈൽ നമ്പർ പൊരുത്തപ്പെടുന്നില്ല. അഡ്മിനെ ബന്ധപ്പെടുക.",resetPrompt:"ആദ്യം രജിസ്റ്റർ ചെയ്ത 10 അക്ക മൊബൈൽ നമ്പർ നൽകുക.",resetPending:"നിങ്ങളുടെ MPIN റീസെറ്റ് അഭ്യർത്ഥന അഡ്മിൻ അംഗീകാരത്തിനായി കാത്തിരിക്കുന്നു.",resetSent:"MPIN റീസെറ്റ് അഭ്യർത്ഥന അഡ്മിന് അയച്ചു.",resetFailed:"റീസെറ്റ് അഭ്യർത്ഥന അയയ്ക്കാനായില്ല. Firebase അനുമതികൾ പരിശോധിക്കുക.",forgot:"MPIN മറന്നോ?",rememberMe:'ഈ ഉപകരണത്തിൽ എന്നെ ഓർമ്മിക്കുക'},
  mr:{wrongPin:"चुकीचा MPIN. कृपया पुन्हा प्रयत्न करा.",missingAccount:"निवडलेल्या पोर्टलमध्ये या मोबाइल क्रमांकाचे खाते नाही.",profileMissing:"खाते प्रोफाइल अपूर्ण आहे. कृपया प्रशासकाशी संपर्क साधा.",roleMismatch:"हे खाते दुसऱ्या पोर्टलचे आहे. योग्य Dealer / Applicator पोर्टल निवडा.",phoneMismatch:"खात्यातील मोबाइल क्रमांक जुळत नाही. प्रशासकाशी संपर्क साधा.",resetPrompt:"प्रथम नोंदणीकृत 10 अंकी मोबाइल क्रमांक टाका.",resetPending:"तुमची MPIN रीसेट विनंती आधीच प्रशासकाच्या मंजुरीसाठी प्रतीक्षेत आहे.",resetSent:"MPIN रीसेट विनंती प्रशासकाला पाठवली आहे.",resetFailed:"रीसेट विनंती पाठवता आली नाही. Firebase परवानग्या तपासा.",forgot:"MPIN विसरलात?",rememberMe:'या डिव्हाइसवर मला लक्षात ठेवा'}
 };
+const ncForgotOtpText = {"en":{"otpSend":"Send SMS OTP","otpCode":"Enter the 6-digit OTP sent to your mobile:","newPin":"Enter your new 4-digit MPIN:","confirmPin":"Confirm your new 4-digit MPIN:","otpSent":"OTP sent.","otpFailed":"OTP could not be sent or verified. Would you like to send a request to Admin for help?","otpResetDone":"MPIN changed successfully. Please sign in with your new MPIN.","pinMismatch":"MPIN entries do not match.","pinInvalid":"Enter exactly 4 digits.","adminHelp":"Send Admin Help Request","otpExpired":"OTP session expired. Please try again."},"kn":{"otpSend":"SMS OTP ಕಳುಹಿಸಿ","otpCode":"ನಿಮ್ಮ ಮೊಬೈಲ್‌ಗೆ ಬಂದ 6 ಅಂಕಿಯ OTP ನಮೂದಿಸಿ:","newPin":"ಹೊಸ 4 ಅಂಕಿಯ MPIN ನಮೂದಿಸಿ:","confirmPin":"ಹೊಸ MPIN ಮತ್ತೊಮ್ಮೆ ನಮೂದಿಸಿ:","otpSent":"OTP ಕಳುಹಿಸಲಾಗಿದೆ.","otpFailed":"OTP ಕಳುಹಿಸಲು ಅಥವಾ ಪರಿಶೀಲಿಸಲು ಆಗಲಿಲ್ಲ. Admin ಸಹಾಯಕ್ಕಾಗಿ Request ಕಳುಹಿಸಬೇಕೇ?","otpResetDone":"MPIN ಯಶಸ್ವಿಯಾಗಿ ಬದಲಾಯಿಸಲಾಗಿದೆ. ಹೊಸ MPIN ಬಳಸಿ Login ಮಾಡಿ.","pinMismatch":"ಎರಡು MPIN ಒಂದೇ ಆಗಿಲ್ಲ.","pinInvalid":"ನಿಖರವಾಗಿ 4 ಅಂಕಿ ನಮೂದಿಸಿ.","adminHelp":"Admin Help Request ಕಳುಹಿಸಿ","otpExpired":"OTP ಅವಧಿ ಮುಗಿದಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."},"hi":{"otpSend":"SMS OTP भेजें","otpCode":"मोबाइल पर आया 6 अंकों का OTP दर्ज करें:","newPin":"नया 4 अंकों का MPIN दर्ज करें:","confirmPin":"नया MPIN फिर से दर्ज करें:","otpSent":"OTP भेज दिया गया।","otpFailed":"OTP भेजा या सत्यापित नहीं हो सका। क्या आप Admin से सहायता का अनुरोध भेजना चाहते हैं?","otpResetDone":"MPIN सफलतापूर्वक बदल गया। नए MPIN से लॉगिन करें।","pinMismatch":"दोनों MPIN मेल नहीं खाते।","pinInvalid":"ठीक 4 अंक दर्ज करें।","adminHelp":"Admin सहायता अनुरोध भेजें","otpExpired":"OTP सत्र समाप्त हो गया। फिर प्रयास करें।"},"te":{"otpSend":"SMS OTP పంపండి","otpCode":"మీ మొబైల్‌కు వచ్చిన 6 అంకెల OTP నమోదు చేయండి:","newPin":"కొత్త 4 అంకెల MPIN నమోదు చేయండి:","confirmPin":"కొత్త MPIN మళ్లీ నమోదు చేయండి:","otpSent":"OTP పంపబడింది.","otpFailed":"OTP పంపడం లేదా ధృవీకరించడం సాధ్యం కాలేదు. Admin సహాయం కోసం అభ్యర్థన పంపాలా?","otpResetDone":"MPIN విజయవంతంగా మార్చబడింది. కొత్త MPINతో లాగిన్ అవ్వండి.","pinMismatch":"రెండు MPINలు సరిపోలలేదు.","pinInvalid":"ఖచ్చితంగా 4 అంకెలు నమోదు చేయండి.","adminHelp":"Admin సహాయ అభ్యర్థన పంపండి","otpExpired":"OTP సెషన్ ముగిసింది. మళ్లీ ప్రయత్నించండి."},"ta":{"otpSend":"SMS OTP அனுப்பு","otpCode":"மொபைலுக்கு வந்த 6 இலக்க OTP-ஐ உள்ளிடவும்:","newPin":"புதிய 4 இலக்க MPIN உள்ளிடவும்:","confirmPin":"புதிய MPIN-ஐ மீண்டும் உள்ளிடவும்:","otpSent":"OTP அனுப்பப்பட்டது.","otpFailed":"OTP அனுப்பவோ சரிபார்க்கவோ முடியவில்லை. Admin உதவி கோரிக்கையை அனுப்பவா?","otpResetDone":"MPIN வெற்றிகரமாக மாற்றப்பட்டது. புதிய MPIN மூலம் உள்நுழையவும்.","pinMismatch":"இரண்டு MPIN-களும் பொருந்தவில்லை.","pinInvalid":"சரியாக 4 இலக்கங்களை உள்ளிடவும்.","adminHelp":"Admin உதவி கோரிக்கையை அனுப்பு","otpExpired":"OTP அமர்வு காலாவதியானது. மீண்டும் முயற்சிக்கவும்."},"ml":{"otpSend":"SMS OTP അയയ്ക്കുക","otpCode":"മൊബൈലിൽ ലഭിച്ച 6 അക്ക OTP നൽകുക:","newPin":"പുതിയ 4 അക്ക MPIN നൽകുക:","confirmPin":"പുതിയ MPIN വീണ്ടും നൽകുക:","otpSent":"OTP അയച്ചു.","otpFailed":"OTP അയയ്ക്കാനോ പരിശോധിക്കാനോ കഴിഞ്ഞില്ല. Admin സഹായ അഭ്യർത്ഥന അയയ്ക്കണോ?","otpResetDone":"MPIN വിജയകരമായി മാറ്റി. പുതിയ MPIN ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യുക.","pinMismatch":"രണ്ട് MPIN-കളും പൊരുത്തപ്പെടുന്നില്ല.","pinInvalid":"കൃത്യമായി 4 അക്കങ്ങൾ നൽകുക.","adminHelp":"Admin സഹായ അഭ്യർത്ഥന അയയ്ക്കുക","otpExpired":"OTP സെഷൻ കാലഹരണപ്പെട്ടു. വീണ്ടും ശ്രമിക്കുക."},"mr":{"otpSend":"SMS OTP पाठवा","otpCode":"मोबाइलवर आलेला 6 अंकी OTP टाका:","newPin":"नवीन 4 अंकी MPIN टाका:","confirmPin":"नवीन MPIN पुन्हा टाका:","otpSent":"OTP पाठवला आहे.","otpFailed":"OTP पाठवता किंवा पडताळता आला नाही. Admin मदतीची विनंती पाठवायची का?","otpResetDone":"MPIN यशस्वीरित्या बदलला. नवीन MPIN वापरून लॉगिन करा.","pinMismatch":"दोन्ही MPIN जुळत नाहीत.","pinInvalid":"नेमके 4 अंक टाका.","adminHelp":"Admin मदत विनंती पाठवा","otpExpired":"OTP सत्र कालबाह्य झाले. पुन्हा प्रयत्न करा."}};
+function ncForgotText(key){const lang=(document.getElementById("language")?.value||"en");return (ncForgotOtpText[lang]||ncForgotOtpText.en)[key]||ncForgotOtpText.en[key]||key;}
 function ncMsg(key){const lang=(document.getElementById('language')?.value||'en');return (ncLoginMessages[lang]||ncLoginMessages.en)[key]||ncLoginMessages.en[key]||key;}
 function ncSetLoginError(key){const el=document.getElementById('loginError');if(el)el.textContent=ncMsg(key);}
 
@@ -1175,47 +1179,66 @@ document.getElementById('registrationForm').addEventListener('submit',async func
 });
 
 
+let ncForgotOtpVerifier=null;
+let ncForgotOtpConfirmation=null;
+let ncForgotOtpPhone='';
+async function ncSendForgotOtp(phone){
+ if(!ncPhoneAuth) throw new Error('phone-auth-unavailable');
+ const mount=document.getElementById('ncForgotRecaptcha');
+ if(!ncForgotOtpVerifier){
+  mount.style.display='block';
+  ncForgotOtpVerifier=new firebase.auth.RecaptchaVerifier('ncForgotRecaptcha',{size:'invisible','expired-callback':()=>{ncForgotOtpVerifier=null;}},ncPhoneAuth);
+ }
+ await ncForgotOtpVerifier.render();
+ ncForgotOtpConfirmation=await ncPhoneAuth.signInWithPhoneNumber('+91'+phone,ncForgotOtpVerifier);
+ ncForgotOtpPhone=phone;
+}
+async function ncSendAdminMpinHelp(phone,role){
+ const fn=firebase.app().functions('asia-southeast1').httpsCallable('createMpinResetRequest');
+ const result=await fn({phone,role});
+ const status=String(result&&result.data&&result.data.status||'').toLowerCase();
+ ncSetLoginError(status==='pending'||status==='already-pending'?'resetPending':'resetSent');
+}
 async function ncRequestMpinReset(){
  const mobile=ncNormalizePhone(document.getElementById('loginMobile').value);
  const role=selectedLoginRole==='applicator'?'applicator':'dealer';
- const err=document.getElementById('loginError');
  const btn=document.getElementById('forgotMpinBtn');
- if(!/^\d{10}$/.test(mobile)){
-  ncSetLoginError('resetPrompt');
-  document.getElementById('loginMobile').focus();return;
- }
- if(btn){btn.disabled=true;btn.textContent='Sending request…';}
+ if(!/^\d{10}$/.test(mobile)){ncSetLoginError('resetPrompt');document.getElementById('loginMobile').focus();return;}
+ if(btn){btn.disabled=true;btn.textContent=ncForgotText('otpSend');}
  try{
-  const fn=firebase.app().functions('asia-southeast1').httpsCallable('createMpinResetRequest');
-  const result=await fn({phone:mobile,role});
-  const status=String(result&&result.data&&result.data.status||'').toLowerCase();
-  if(status==='pending'||status==='already-pending') ncSetLoginError('resetPending');
-  else ncSetLoginError('resetSent');
+  // Step 1: OTP is always attempted first. No Admin request is created at this point.
+  await ncSendForgotOtp(mobile);
+  const code=window.prompt(ncForgotText('otpCode'));
+  if(code===null) return;
+  if(!/^\d{6}$/.test(String(code).trim())) throw new Error('invalid-otp-format');
+  let phoneUser;
+  try{const credential=await ncForgotOtpConfirmation.confirm(String(code).trim());phoneUser=credential.user;}
+  catch(verifyError){console.warn('Forgot MPIN OTP verification failed:',verifyError);throw new Error('otp-verification-failed');}
+  if(ncForgotOtpPhone!==mobile) throw new Error('otp-phone-mismatch');
+  const newPin=window.prompt(ncForgotText('newPin'));
+  if(newPin===null) return;
+  const cleanPin=String(newPin).trim();
+  if(!/^\d{4}$/.test(cleanPin)){alert(ncForgotText('pinInvalid'));return;}
+  const confirmPin=window.prompt(ncForgotText('confirmPin'));
+  if(confirmPin===null) return;
+  if(String(confirmPin).trim()!==cleanPin){alert(ncForgotText('pinMismatch'));return;}
+  const phoneIdToken=await phoneUser.getIdToken(true);
+  const resetFn=firebase.app().functions('asia-southeast1').httpsCallable('resetMpinWithPhoneOtp');
+  await resetFn({phone,mobile,role,newPin:cleanPin,phoneIdToken});
+  ncSetLoginError('otpResetDone');
+  try{await ncPhoneAuth.signOut();}catch(_){}
  }catch(ex){
-  console.error('MPIN reset request failed:', {
-    code: ex && ex.code ? ex.code : 'unknown',
-    message: ex && ex.message ? ex.message : String(ex),
-    details: ex && ex.details ? ex.details : null,
-    role: role,
-    phone: mobile
-  });
-  const code=String(ex && ex.code || 'unknown').replace(/^functions\//,'');
-  const rawMessage=String(ex && ex.message || 'No Firebase error message returned');
-  const guidance={
-    'not-found':'Cloud Function createMpinResetRequest was not found in asia-southeast1. Check deployment name and region.',
-    'permission-denied':'Cloud Function rejected the request. Check its server-side permission / role validation.',
-    'unauthenticated':'The Cloud Function requires authentication, but Forgot MPIN is being called before login.',
-    'failed-precondition':'A required Firebase service or server configuration is missing.',
-    'unavailable':'Firebase Cloud Functions is temporarily unavailable. Check network and function status.',
-    'invalid-argument':'The server rejected the phone number or selected portal role.',
-    'resource-exhausted':'Too many reset requests. Wait and try again.',
-    'internal':'The Cloud Function failed internally. Check its Firebase Functions logs.'
-  };
-  const hint=guidance[code] || 'Share this exact Firebase error with the app developer to diagnose the server-side issue.';
-  const detail='MPIN reset failed ['+code+']. '+hint+'\nFirebase message: '+rawMessage;
-  const errorEl=document.getElementById('loginError');
-  if(errorEl)errorEl.textContent=detail;
+  console.error('Forgot MPIN OTP flow failed:',{code:ex&&ex.code||'unknown',message:ex&&ex.message||String(ex),role});
+  const useAdmin=window.confirm(ncForgotText('otpFailed')+'\n\n'+ncForgotText('adminHelp')+'?');
+  if(useAdmin){
+   try{await ncSendAdminMpinHelp(mobile,role);}
+   catch(helpError){console.error('Admin MPIN help request failed:',helpError);const msg=String(helpError&&helpError.message||helpError);document.getElementById('loginError').textContent='Admin Help Request failed: '+msg;}
+  }
  }finally{
+  try{if(ncForgotOtpVerifier){ncForgotOtpVerifier.clear();ncForgotOtpVerifier=null;}}catch(_){}
+  ncForgotOtpConfirmation=null;ncForgotOtpPhone='';
+  const mount=document.getElementById('ncForgotRecaptcha');if(mount){mount.innerHTML='';mount.style.display='none';}
+  try{if(ncPhoneAuth)await ncPhoneAuth.signOut();}catch(_){}
   if(btn){btn.disabled=false;btn.textContent=ncMsg('forgot');}
  }
 }
