@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101b2b">
-<title>NEOCURE V106 | Dealer & Applicator</title>
+<title>NEOCURE V107 | Dealer & Applicator</title>
 <style>
 :root{--navy:#101b2b;--navy2:#17283b;--teal:#16b8a6;--lime:#c6ef63;--ink:#152438;--muted:#718096;--paper:#f4f7f8;--white:#fff;--line:#e6ecef;--shadow:0 18px 48px rgba(16,27,43,.12)}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#e9f0f1,#f7f9fa);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
@@ -317,7 +317,7 @@ body.nc-auth-screen #ncBottomNav{display:none!important}
 }
 
 </style>
-<meta name="nc-app-version" content="V106"><meta name="nc-app-build" content="V106-OTP-RECAPTCHA-APP-FIX">
+<meta name="nc-app-version" content="V107"><meta name="nc-app-build" content="V107-FIREBASE-FUNCTIONS-SDK-FIX">
 
 <style id="ncV19ResponsivePolish">
 /* NEOCURE V19: responsive visual alignment polish; application logic is unchanged */
@@ -617,9 +617,9 @@ if (window.MutationObserver) {
 </script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<!-- V106 FIX: compat SDK required by firebase.app().functions(...). -->
-<!-- V106 OTP FIX: RecaptchaVerifier receives the secondary Firebase APP, not its Auth instance. -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions-compat.js"></script>
+<!-- V107 FIX: load the Firebase v8 Functions SDK that provides firebase.app().functions(...). -->
+<!-- OTP FIX: RecaptchaVerifier receives the secondary Firebase APP, not its Auth instance. -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
 const translations={
