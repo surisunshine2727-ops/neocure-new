@@ -1,5 +1,5 @@
 <!-- NEOCURE Admin V866: first-login passkey registration is an explicit user gesture; dashboard stays locked until registered. -->
-<!-- NEOCURE Admin V862: Back and Next buttons matched to identical 50x50 dimensions, 15px corners, and 34px centered icons. -->
+<!-- NEOCURE Admin V867: Passkey registration must be explicitly confirmed on this device; existing server credentials do not bypass setup. Back and Next buttons matched to identical 50x50 dimensions, 15px corners, and 34px centered icons. -->
 <!-- NEOCURE Admin V823: after print dialog closes, ask for explicit print/PDF completion confirmation; on approval save printedAt/printedCount to Firebase and show per-coupon and batch print-confirmed date/time. -->
 <!doctype html>
 <html lang="en">
@@ -5771,19 +5771,21 @@ function ncSetupPaymentReminder(){
     .httpsCallable('adminPasskeyRegistrationOptions')({});
    const publicOptions=registrationOptions && registrationOptions.data && registrationOptions.data.options;
    if(!publicOptions)throw new Error('Passkey registration options ಸಿಗಲಿಲ್ಲ.');
-   const alreadyRegistered=Array.isArray(publicOptions.excludeCredentials) && publicOptions.excludeCredentials.length>0;
-   if(alreadyRegistered){
-    try{sessionStorage.removeItem(pendingKey);}catch(_){ }
-    unlock();
-   }else{
-    const registerButton=document.getElementById('ncAdminPasskeyRegister');
-    const hint=document.getElementById('ncAdminPasskeyHint');
-    if(registerButton){registerButton.hidden=false;registerButton.textContent='ಈ ಸಾಧನದಲ್ಲಿ Fingerprint Register ಮಾಡಿ';}
-    if(hint){hint.hidden=false;hint.textContent='Password ಪರಿಶೀಲನೆ ಯಶಸ್ವಿಯಾಗಿದೆ. ಮುಂದುವರಿಯಲು ಕೆಳಗಿನ Register ಬಟನ್ ಒತ್ತಿ.';}
-    loginBtn.textContent='Password Verified';
-    errorBox.textContent='';
-    return;
+   // A credential stored on the server may belong to another phone/browser.
+   // Never treat excludeCredentials as proof that this device is registered.
+   // Always require an explicit user tap to create/attach a passkey here.
+   const registerButton=document.getElementById('ncAdminPasskeyRegister');
+   const hint=document.getElementById('ncAdminPasskeyHint');
+   if(registerButton){registerButton.hidden=false;registerButton.textContent='ಈ ಸಾಧನದಲ್ಲಿ Fingerprint Register ಮಾಡಿ';}
+   if(hint){
+    hint.hidden=false;
+    hint.textContent=(Array.isArray(publicOptions.excludeCredentials)&&publicOptions.excludeCredentials.length)
+     ?'Admin accountನಲ್ಲಿ Passkey ಇದೆ. ಈ ಸಾಧನಕ್ಕೂ ಸೇರಿಸಲು ಕೆಳಗಿನ Register ಬಟನ್ ಒತ್ತಿ.'
+     :'Password ಪರಿಶೀಲನೆ ಯಶಸ್ವಿಯಾಗಿದೆ. ಮುಂದುವರಿಯಲು ಕೆಳಗಿನ Register ಬಟನ್ ಒತ್ತಿ.';
    }
+   loginBtn.textContent='Password Verified';
+   errorBox.textContent='';
+   return;
    if(typeof loadCouponsFromFirebase==='function'){
     Promise.resolve().then(()=>loadCouponsFromFirebase())
      .catch(err=>console.error('Coupon data load:',err));
