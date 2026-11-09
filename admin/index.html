@@ -1,11 +1,11 @@
-<!-- NEOCURE Admin V866: first-login passkey registration is an explicit user gesture; dashboard stays locked until registered. -->
-<!-- NEOCURE Admin V867: Passkey registration must be explicitly confirmed on this device; existing server credentials do not bypass setup. Back and Next buttons matched to identical 50x50 dimensions, 15px corners, and 34px centered icons. -->
+<!-- NEOCURE Admin V868: restore V866 password-login behavior; allow explicit per-device discoverable passkey registration without signing out after success. -->
+<!-- NEOCURE Admin V862: Back and Next buttons matched to identical 50x50 dimensions, 15px corners, and 34px centered icons. -->
 <!-- NEOCURE Admin V823: after print dialog closes, ask for explicit print/PDF completion confirmation; on approval save printedAt/printedCount to Firebase and show per-coupon and batch print-confirmed date/time. -->
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>NEOCURE Admin Workspace V866</title>
+<title>NEOCURE Admin Workspace V868</title>
 <style>
 :root{--bg:#07121e;--side:#081b27;--panel:#0c2635;--panel2:#103343;--line:#205866;--teal:#20d2c5;--gold:#f1cb65;--muted:#a6bec5;--white:#edf6f6;--green:#25bd83;--red:#e05d68;--blue:#3c9ed0}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#07121e,#071c27 60%,#07131f);color:var(--white);font:14px/1.45 Inter,system-ui,Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -3010,7 +3010,7 @@ body.nc-locked{overflow:hidden}body.nc-locked .app{display:none!important}
       <div class="gate-error" id="ncAdminLoginError" aria-live="polite"></div>
       <button id="ncAdminLoginBtn" type="submit"><span class="nc-login-label">Secure Login</span></button>
       <button id="ncAdminPasskeyLogin" type="button" class="nc-admin-passkey-action nc-admin-passkey-icon" aria-label="Fingerprint / Passkey login" title="Fingerprint / Passkey login"><img class="nc-login-fingerprint" alt="" aria-hidden="true" src="data:image/png;base64,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"></button>
-      <button id="ncAdminPasskeyRegister" type="button" class="nc-admin-passkey-action nc-admin-passkey-register" aria-label="Register fingerprint" title="Register fingerprint" hidden>ಈ ಸಾಧನದಲ್ಲಿ Fingerprint Register ಮಾಡಿ</button>
+      <button id="ncAdminPasskeyRegister" type="button" class="nc-admin-passkey-action nc-admin-passkey-register" aria-label="Register fingerprint on this device" title="Register fingerprint on this device">ಈ ಸಾಧನದಲ್ಲಿ Fingerprint Register ಮಾಡಿ</button>
       <div id="ncAdminPasskeyHint" class="nc-admin-passkey-hint" aria-live="polite" hidden></div>
     </form>
 
@@ -5771,21 +5771,32 @@ function ncSetupPaymentReminder(){
     .httpsCallable('adminPasskeyRegistrationOptions')({});
    const publicOptions=registrationOptions && registrationOptions.data && registrationOptions.data.options;
    if(!publicOptions)throw new Error('Passkey registration options ಸಿಗಲಿಲ್ಲ.');
-   // A credential stored on the server may belong to another phone/browser.
-   // Never treat excludeCredentials as proof that this device is registered.
-   // Always require an explicit user tap to create/attach a passkey here.
+   const alreadyRegistered=Array.isArray(publicOptions.excludeCredentials) && publicOptions.excludeCredentials.length>0;
    const registerButton=document.getElementById('ncAdminPasskeyRegister');
    const hint=document.getElementById('ncAdminPasskeyHint');
-   if(registerButton){registerButton.hidden=false;registerButton.textContent='ಈ ಸಾಧನದಲ್ಲಿ Fingerprint Register ಮಾಡಿ';}
-   if(hint){
-    hint.hidden=false;
-    hint.textContent=(Array.isArray(publicOptions.excludeCredentials)&&publicOptions.excludeCredentials.length)
-     ?'Admin accountನಲ್ಲಿ Passkey ಇದೆ. ಈ ಸಾಧನಕ್ಕೂ ಸೇರಿಸಲು ಕೆಳಗಿನ Register ಬಟನ್ ಒತ್ತಿ.'
-     :'Password ಪರಿಶೀಲನೆ ಯಶಸ್ವಿಯಾಗಿದೆ. ಮುಂದುವರಿಯಲು ಕೆಳಗಿನ Register ಬಟನ್ ಒತ್ತಿ.';
+   if(registerButton){
+    registerButton.hidden=false;
+    registerButton.textContent='ಈ ಸಾಧನದಲ್ಲಿ Fingerprint Register ಮಾಡಿ';
    }
-   loginBtn.textContent='Password Verified';
-   errorBox.textContent='';
-   return;
+   if(alreadyRegistered){
+    // A server-side credential may belong to a different phone/browser.
+    // Preserve the known-good V866 password login, while allowing this device
+    // to add its own separate passkey from the login screen.
+    try{sessionStorage.removeItem(pendingKey);}catch(_){ }
+    if(hint){
+     hint.hidden=false;
+     hint.textContent='Admin accountನಲ್ಲಿ Passkey ಇದೆ. ಈ ಮೊಬೈಲ್‌ಗೂ ಪ್ರತ್ಯೇಕವಾಗಿ ಸೇರಿಸಲು Logout ಆದ ನಂತರ Register ಬಟನ್ ಬಳಸಿ.';
+    }
+    unlock();
+   }else{
+    if(hint){
+     hint.hidden=false;
+     hint.textContent='Password ಪರಿಶೀಲನೆ ಯಶಸ್ವಿಯಾಗಿದೆ. ಮುಂದುವರಿಯಲು ಕೆಳಗಿನ Register ಬಟನ್ ಒತ್ತಿ.';
+    }
+    loginBtn.textContent='Password Verified';
+    errorBox.textContent='';
+    return;
+   }
    if(typeof loadCouponsFromFirebase==='function'){
     Promise.resolve().then(()=>loadCouponsFromFirebase())
      .catch(err=>console.error('Coupon data load:',err));
@@ -9344,8 +9355,46 @@ html body #qrstudio #qrpanel-print #ncV803BatchListPage .nc-v803-batch-cards {
   errorEl.textContent='';if(email!==allowedEmail||!password){errorEl.textContent='Passkey register ಮಾಡಲು Admin Email ಮತ್ತು Password ನಮೂದಿಸಿ.';return;}
   if(!window.PublicKeyCredential||!navigator.credentials){errorEl.textContent='ಈ Browserನಲ್ಲಿ Passkey support ಇಲ್ಲ.';return;}
   regBtn.disabled=true;setHint('Admin account ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…');let didSignIn=false;
-  try{const auth=firebase.auth();let user=auth.currentUser;if(!user){const c=await auth.signInWithEmailAndPassword(email,password);user=c.user;didSignIn=true;}await verifyAdminSession(user);const opt=await callable('adminPasskeyRegistrationOptions')({});const cred=await navigator.credentials.create({publicKey:publicKeyOptions(opt.data.options)});if(!cred)throw new Error('Passkey registration cancelled.');const result=await callable('verifyAdminPasskeyRegistration')({credential:credentialJSON(cred)});if(!result.data||result.data.success!==true)throw new Error('Passkey registration verify ಆಗಲಿಲ್ಲ.');setHint('ಈ ಸಾಧನದಲ್ಲಿ Admin Fingerprint / Passkey register ಆಯಿತು.');errorEl.textContent='Passkey register ಯಶಸ್ವಿಯಾಗಿದೆ. ಈಗ Fingerprint ಮೂಲಕ login ಮಾಡಬಹುದು.';errorEl.style.color='#8ce5c0';try{sessionStorage.removeItem('nc_admin_passkey_registration_pending');}catch(_){}await finishLogin(user);
-  }catch(e){console.error('Admin passkey registration:',e);errorEl.textContent=(e&&e.message)||'Passkey registration ವಿಫಲವಾಗಿದೆ.';setHint('Register ಆಗಲಿಲ್ಲ. Browser/website support ಪರಿಶೀಲಿಸಿ.',true);}finally{if(didSignIn){try{await firebase.auth().signOut();}catch(_){}}regBtn.disabled=false;}
+  let registrationSucceeded=false;
+  try{
+   const auth=firebase.auth();
+   let user=auth.currentUser;
+   if(!user){
+    const c=await auth.signInWithEmailAndPassword(email,password);
+    user=c.user;
+    didSignIn=true;
+   }
+   await verifyAdminSession(user);
+   const opt=await callable('adminPasskeyRegistrationOptions')({});
+   if(!opt.data||!opt.data.options)throw new Error('Passkey registration options ಸಿಗಲಿಲ್ಲ.');
+   const createOptions=publicKeyOptions(opt.data.options);
+   // Require a discoverable passkey so Android/Google Password Manager can
+   // offer it later from the fingerprint-only login button on this device.
+   createOptions.authenticatorSelection=Object.assign(
+    {},
+    createOptions.authenticatorSelection||{},
+    {residentKey:'required',requireResidentKey:true,userVerification:'required'}
+   );
+   const cred=await navigator.credentials.create({publicKey:createOptions});
+   if(!cred)throw new Error('Passkey registration cancelled.');
+   const result=await callable('verifyAdminPasskeyRegistration')({credential:credentialJSON(cred)});
+   if(!result.data||result.data.success!==true)throw new Error('Passkey registration server verification ಆಗಲಿಲ್ಲ.');
+   registrationSucceeded=true;
+   try{sessionStorage.removeItem('nc_admin_passkey_registration_pending');}catch(_){}
+   setHint('ಈ ಮೊಬೈಲ್‌ನಲ್ಲಿ Admin Fingerprint / Passkey ಯಶಸ್ವಿಯಾಗಿ register ಆಯಿತು.');
+   errorEl.textContent='Passkey Registration ಯಶಸ್ವಿಯಾಗಿದೆ. ಮುಂದಿನ ಬಾರಿ Fingerprint ಮೂಲಕ Login ಮಾಡಬಹುದು.';
+   errorEl.style.color='#8ce5c0';
+   await finishLogin(user);
+  }catch(e){
+   console.error('Admin passkey registration:',e);
+   errorEl.textContent=(e&&e.message)||'Passkey registration ವಿಫಲವಾಗಿದೆ.';
+   setHint('Register ಆಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',true);
+  }finally{
+   if(didSignIn&&!registrationSucceeded){
+    try{await firebase.auth().signOut();}catch(_){}
+   }
+   regBtn.disabled=false;
+  }
  });
 })();
 </script>
