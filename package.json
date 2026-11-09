@@ -1,11 +1,12 @@
 {
-  "name": "neocure-vercel-secure-qr",
-  "version": "1.0.0",
+  "name": "neocure-functions-passkey-admin",
   "private": true,
   "engines": {
-    "node": "26.x"
+    "node": "20"
   },
   "dependencies": {
-    "firebase-admin": "^13.0.2"
+    "@simplewebauthn/server": "^10.0.1",
+    "firebase-admin": "^13.0.2",
+    "firebase-functions": "^6.0.1"
   }
 }
