@@ -1,11 +1,12 @@
 {
-  "name": "neocure-push-functions",
+  "name": "neocure-functions-passkey-admin",
   "private": true,
-  "engines": { "node": "22" },
-  "main": "index.js",
+  "engines": {
+    "node": "22"
+  },
   "dependencies": {
-    "@simplewebauthn/server": "^13.2.2",
+    "@simplewebauthn/server": "^10.0.1",
     "firebase-admin": "^13.0.2",
-    "firebase-functions": "^6.3.2"
+    "firebase-functions": "^6.0.1"
   }
 }
