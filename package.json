@@ -2,7 +2,7 @@
   "name": "neocure-functions-passkey-admin",
   "private": true,
   "engines": {
-    "node": "20"
+    "node": "26.x"
   },
   "dependencies": {
     "@simplewebauthn/server": "^10.0.1",
