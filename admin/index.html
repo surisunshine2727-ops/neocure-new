@@ -1,10 +1,10 @@
-<!-- NEOCURE Admin V860: Back and Next buttons matched to identical 50x50 dimensions, 15px corners, and 34px centered icons. -->
+<!-- NEOCURE Admin V861: Back and Next buttons matched to identical 50x50 dimensions, 15px corners, and 34px centered icons. -->
 <!-- NEOCURE Admin V823: after print dialog closes, ask for explicit print/PDF completion confirmation; on approval save printedAt/printedCount to Firebase and show per-coupon and batch print-confirmed date/time. -->
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>NEOCURE Admin Workspace V860</title>
+<title>NEOCURE Admin Workspace V861</title>
 <style>
 :root{--bg:#07121e;--side:#081b27;--panel:#0c2635;--panel2:#103343;--line:#205866;--teal:#20d2c5;--gold:#f1cb65;--muted:#a6bec5;--white:#edf6f6;--green:#25bd83;--red:#e05d68;--blue:#3c9ed0}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#07121e,#071c27 60%,#07131f);color:var(--white);font:14px/1.45 Inter,system-ui,Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -2987,6 +2987,14 @@ body.nc-locked{overflow:hidden}body.nc-locked .app{display:none!important}
 }
 </style>
 
+
+<style id="ncAdminPasskeyStyles">
+#ncAdminGate .nc-admin-passkey-action{width:100%;min-height:52px;margin-top:10px;padding:12px 16px;border:1px solid rgba(32,210,197,.55);border-radius:14px;background:linear-gradient(110deg,#103c49,#0d2b39);color:#eaffff;font-weight:800;font-size:15px;cursor:pointer}
+#ncAdminGate .nc-admin-passkey-action:disabled{opacity:.55;cursor:wait}
+#ncAdminGate .nc-admin-passkey-register{background:transparent;color:#f1d477;border-color:rgba(241,212,119,.5)}
+#ncAdminGate .nc-admin-passkey-hint{margin-top:9px;font-size:12px;line-height:1.5;color:#9dbbc2;text-align:center;min-height:18px}
+</style>
+
 <div id="ncAdminGate">
   <div class="gate-card">
     <div class="gate-brand"><div class="gate-logo">N</div><div><b>NEOCURE®</b><small>ADMIN CONTROL CENTRE</small></div></div>
@@ -3000,6 +3008,9 @@ body.nc-locked{overflow:hidden}body.nc-locked .app{display:none!important}
       <div class="gate-options"><label class="remember-label"><input id="ncAdminRemember" type="checkbox"> <span>Remember me</span></label><button class="forgot-link" id="ncAdminForgot" type="button">Forgot password?</button></div>
       <div class="gate-error" id="ncAdminLoginError" aria-live="polite"></div>
       <button id="ncAdminLoginBtn" type="submit"><span class="nc-login-label">Secure Login</span><img class="nc-login-fingerprint" alt="" aria-hidden="true" src="data:image/png;base64,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"></button>
+      <button id="ncAdminPasskeyLogin" type="button" class="nc-admin-passkey-action">Use Fingerprint / Passkey</button>
+      <button id="ncAdminPasskeyRegister" type="button" class="nc-admin-passkey-action nc-admin-passkey-register">Register Fingerprint on This Device</button>
+      <div id="ncAdminPasskeyHint" class="nc-admin-passkey-hint" aria-live="polite">ಮೊದಲು Email ಮತ್ತು Password ಬಳಸಿ Admin login ಮಾಡಿ Passkey register ಮಾಡಬಹುದು.</div>
     </form>
 
   </div>
@@ -5326,6 +5337,9 @@ html body #qrstudio.qr-action-page-open .qr-panel.active{margin-top:0!important;
 html body #qrstudio.qr-action-page-open .qr-section-backbar{margin-top:0!important;margin-bottom:10px!important}
 html body #qrstudio.qr-action-page-open .qr-section-backbar button{min-height:46px!important}
 </style>
+
+
+
 </body></html>`);
  printWin.document.close();
  const printedCodes=selected.map(c=>c.code);
@@ -9233,3 +9247,40 @@ html body #qrstudio #qrpanel-print #ncV803BatchListPage .nc-v803-batch-cards {
 <!-- Admin V880: hard-fix QR Studio action navigation; hide home cards on subpages despite legacy !important CSS. -->
 
 <!-- Admin V881: QR Studio subpages reset scroll to top and header Back returns to QR Studio menu. -->
+
+<script id="ncAdminPasskeyClient">
+(function(){
+ const emailEl=document.getElementById('ncAdminEmail');
+ const passEl=document.getElementById('ncAdminPassword');
+ const errorEl=document.getElementById('ncAdminLoginError');
+ const hintEl=document.getElementById('ncAdminPasskeyHint');
+ const loginBtn=document.getElementById('ncAdminPasskeyLogin');
+ const regBtn=document.getElementById('ncAdminPasskeyRegister');
+ if(!emailEl||!passEl||!errorEl||!loginBtn||!regBtn)return;
+ const allowedEmail='suri.sunshine2727@gmail.com';
+ const b64uToBytes=(s)=>{s=String(s||'').replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';const bin=atob(s);const out=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);return out;};
+ const bytesToB64u=(buf)=>{const a=new Uint8Array(buf);let bin='';for(let i=0;i<a.length;i++)bin+=String.fromCharCode(a[i]);return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');};
+ function publicKeyOptions(o){const x=Object.assign({},o);x.challenge=b64uToBytes(o.challenge);if(o.user)x.user=Object.assign({},o.user,{id:b64uToBytes(o.user.id)});if(o.excludeCredentials)x.excludeCredentials=o.excludeCredentials.map(c=>Object.assign({},c,{id:b64uToBytes(c.id)}));if(o.allowCredentials)x.allowCredentials=o.allowCredentials.map(c=>Object.assign({},c,{id:b64uToBytes(c.id)}));return x;}
+ function credentialJSON(c){const r={id:c.id,rawId:bytesToB64u(c.rawId),type:c.type,clientExtensionResults:c.getClientExtensionResults?c.getClientExtensionResults():{},response:{}};if(c.response.attestationObject){r.response.attestationObject=bytesToB64u(c.response.attestationObject);r.response.clientDataJSON=bytesToB64u(c.response.clientDataJSON);if(c.response.getTransports)r.response.transports=c.response.getTransports();}else{r.response.authenticatorData=bytesToB64u(c.response.authenticatorData);r.response.clientDataJSON=bytesToB64u(c.response.clientDataJSON);r.response.signature=bytesToB64u(c.response.signature);if(c.response.userHandle)r.response.userHandle=bytesToB64u(c.response.userHandle);}return r;}
+ function setHint(t,isError){hintEl.textContent=t;hintEl.style.color=isError?'#ff9c9c':'#9fe7d9';}
+ function callable(name){if(!window.firebase||!firebase.app||!firebase.app().functions)throw new Error('Firebase Functions SDK ಲಭ್ಯವಿಲ್ಲ.');return firebase.app().functions('asia-southeast1').httpsCallable(name);}
+ async function verifyAdminSession(user){if(!user||String(user.email||'').toLowerCase()!==allowedEmail)throw new Error('ಈ ಖಾತೆಗೆ Admin Access ಇಲ್ಲ.');const db=firebase.database();const snap=await db.ref('admins/'+user.uid).once('value');if(snap.val()!==true)throw new Error('Firebase admins UID ಅನುಮತಿ ಪರಿಶೀಲನೆ ವಿಫಲವಾಗಿದೆ.');}
+ async function finishLogin(user){await verifyAdminSession(user);window.ncAdminAuthenticated=true;const gate=document.getElementById('ncAdminGate');if(gate)gate.style.display='none';document.body.classList.remove('nc-locked');const app=document.querySelector('.app');if(app)app.style.display='';const dash=document.getElementById('dashboard');if(dash){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));dash.classList.add('active');}window.scrollTo(0,0);if(typeof ncSetupPaymentReminder==='function')ncSetupPaymentReminder();if(typeof ncAdminLoadDealers==='function')Promise.resolve().then(()=>ncAdminLoadDealers()).catch(console.error);if(typeof loadCouponsFromFirebase==='function')Promise.resolve().then(()=>loadCouponsFromFirebase()).catch(console.error);if(typeof loadPaymentSettings==='function')Promise.resolve().then(()=>loadPaymentSettings()).catch(console.error);}
+ loginBtn.addEventListener('click',async()=>{
+  const email=emailEl.value.trim().toLowerCase();errorEl.textContent='';
+  if(email!==allowedEmail){errorEl.textContent='Admin Email ಸರಿಯಾಗಿ ನಮೂದಿಸಿ.';return;}
+  if(!window.PublicKeyCredential||!navigator.credentials){errorEl.textContent='ಈ Browserನಲ್ಲಿ Fingerprint / Passkey support ಇಲ್ಲ.';return;}
+  loginBtn.disabled=true;setHint('Fingerprint ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…');
+  try{const opt=await callable('adminPasskeyLoginOptions')({email});const cred=await navigator.credentials.get({publicKey:publicKeyOptions(opt.data.options)});if(!cred)throw new Error('Passkey cancelled.');const result=await callable('verifyAdminPasskeyLogin')({email,credential:credentialJSON(cred)});if(!result.data||!result.data.customToken)throw new Error('Passkey verification token ಸಿಗಲಿಲ್ಲ.');const signed=await firebase.auth().signInWithCustomToken(result.data.customToken);await finishLogin(signed.user);setHint('Fingerprint login ಯಶಸ್ವಿಯಾಗಿದೆ.');
+  }catch(e){console.error('Admin passkey login:',e);errorEl.textContent=(e&&e.message)||'Fingerprint login ವಿಫಲವಾಗಿದೆ.';setHint('Passkey login ಆಗಲಿಲ್ಲ. Email/Password ಬಳಸಿ ಪ್ರಯತ್ನಿಸಿ.',true);}finally{loginBtn.disabled=false;}
+ });
+ regBtn.addEventListener('click',async()=>{
+  const email=emailEl.value.trim().toLowerCase(),password=passEl.value;
+  errorEl.textContent='';if(email!==allowedEmail||!password){errorEl.textContent='Passkey register ಮಾಡಲು Admin Email ಮತ್ತು Password ನಮೂದಿಸಿ.';return;}
+  if(!window.PublicKeyCredential||!navigator.credentials){errorEl.textContent='ಈ Browserನಲ್ಲಿ Passkey support ಇಲ್ಲ.';return;}
+  regBtn.disabled=true;setHint('Admin account ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…');let didSignIn=false;
+  try{const auth=firebase.auth();let user=auth.currentUser;if(!user){const c=await auth.signInWithEmailAndPassword(email,password);user=c.user;didSignIn=true;}await verifyAdminSession(user);const opt=await callable('adminPasskeyRegistrationOptions')({});const cred=await navigator.credentials.create({publicKey:publicKeyOptions(opt.data.options)});if(!cred)throw new Error('Passkey registration cancelled.');const result=await callable('verifyAdminPasskeyRegistration')({credential:credentialJSON(cred)});if(!result.data||result.data.success!==true)throw new Error('Passkey registration verify ಆಗಲಿಲ್ಲ.');setHint('ಈ ಸಾಧನದಲ್ಲಿ Admin Fingerprint / Passkey register ಆಯಿತು.');errorEl.textContent='Passkey register ಯಶಸ್ವಿಯಾಗಿದೆ. ಈಗ Fingerprint ಮೂಲಕ login ಮಾಡಬಹುದು.';errorEl.style.color='#8ce5c0';
+  }catch(e){console.error('Admin passkey registration:',e);errorEl.textContent=(e&&e.message)||'Passkey registration ವಿಫಲವಾಗಿದೆ.';setHint('Register ಆಗಲಿಲ್ಲ. Browser/website support ಪರಿಶೀಲಿಸಿ.',true);}finally{if(didSignIn){try{await firebase.auth().signOut();}catch(_){}}regBtn.disabled=false;}
+ });
+})();
+</script>
