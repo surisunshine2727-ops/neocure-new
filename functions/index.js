@@ -566,3 +566,135 @@ exports.verifyPasskeyLogin = onCall({ region: REGION, enforceAppCheck: false }, 
   }
 });
 
+
+
+// -----------------------------------------------------------------------------
+// Admin WebAuthn / Passkey endpoints. Admin access is re-checked server-side
+// against both the fixed allowlisted email and admins/{uid} === true.
+// -----------------------------------------------------------------------------
+exports.adminPasskeyRegistrationOptions = onCall({ region: REGION, enforceAppCheck: false }, async (request) => {
+  try {
+    const uid = await requireAdmin(request);
+    const origin = passkeyOrigin(request);
+    const userRecord = await getAuth().getUser(uid);
+    const credentialsSnap = await getDatabase().ref(`adminPasskeys/${uid}`).get();
+    const excludeCredentials = [];
+    credentialsSnap.forEach(child => {
+      const c = child.val() || {};
+      if (c.credentialID) excludeCredentials.push({ id: c.credentialID, transports: c.transports || [] });
+    });
+    const options = await generateRegistrationOptions({
+      rpName: PASSKEY_RP_NAME,
+      rpID: PASSKEY_RP_ID,
+      userID: Buffer.from(uid),
+      userName: userRecord.email || ADMIN_EMAIL,
+      userDisplayName: 'NEOCURE Admin',
+      attestationType: 'none',
+      excludeCredentials,
+      authenticatorSelection: { residentKey: 'preferred', userVerification: 'preferred' },
+      supportedAlgorithmIDs: [-7, -257]
+    });
+    await getDatabase().ref(`passkeyChallenges/admin-registration/${uid}`).set({ challenge: options.challenge, createdAt: Date.now(), origin });
+    return { options };
+  } catch (error) {
+    console.error('adminPasskeyRegistrationOptions failed', error);
+    if (error instanceof HttpsError) throw error;
+    throw new HttpsError('internal', `Admin passkey registration options failed: ${error.message || 'unknown error'}`);
+  }
+});
+
+exports.verifyAdminPasskeyRegistration = onCall({ region: REGION, enforceAppCheck: false }, async (request) => {
+  try {
+    const uid = await requireAdmin(request);
+    const origin = passkeyOrigin(request);
+    const credential = passkeyJsonCredential(request.data && request.data.credential);
+    const challengeRef = getDatabase().ref(`passkeyChallenges/admin-registration/${uid}`);
+    const pendingSnap = await challengeRef.get();
+    const pending = pendingSnap.val() || {};
+    if (!pending.challenge || Date.now() - Number(pending.createdAt || 0) > PASSKEY_CHALLENGE_TTL_MS) throw new HttpsError('deadline-exceeded', 'Admin Passkey registration session ಮುಗಿದಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
+    if (pending.origin !== origin) throw new HttpsError('permission-denied', 'Passkey website origin ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ.');
+    const verification = await verifyRegistrationResponse({ response: credential, expectedChallenge: pending.challenge, expectedOrigin: origin, expectedRPID: PASSKEY_RP_ID, requireUserVerification: true });
+    if (!verification.verified || !verification.registrationInfo) throw new HttpsError('permission-denied', 'Admin Fingerprint / Passkey verification ವಿಫಲವಾಗಿದೆ.');
+    const info = verification.registrationInfo;
+    const credentialID = Buffer.from(info.credential.id).toString('base64url');
+    await getDatabase().ref(`adminPasskeys/${uid}/${passkeyCredentialKey(credentialID)}`).set({
+      credentialID,
+      credentialPublicKey: Buffer.from(info.credential.publicKey).toString('base64'),
+      counter: Number(info.credential.counter || 0),
+      transports: (credential.response && credential.response.transports) || [],
+      deviceType: info.credentialDeviceType || 'unknown',
+      backedUp: !!info.credentialBackedUp,
+      createdAt: Date.now(),
+      rpID: PASSKEY_RP_ID
+    });
+    await challengeRef.remove();
+    return { success: true, verified: true };
+  } catch (error) {
+    console.error('verifyAdminPasskeyRegistration failed', error);
+    if (error instanceof HttpsError) throw error;
+    throw new HttpsError('internal', `Admin passkey registration verification failed: ${error.message || 'unknown error'}`);
+  }
+});
+
+exports.adminPasskeyLoginOptions = onCall({ region: REGION, enforceAppCheck: false }, async (request) => {
+  try {
+    const email = String(request.data && request.data.email || '').trim().toLowerCase();
+    if (email !== ADMIN_EMAIL.toLowerCase()) throw new HttpsError('permission-denied', 'ಈ Emailಗೆ Admin Passkey ಅನುಮತಿ ಇಲ್ಲ.');
+    const origin = passkeyOrigin(request);
+    let userRecord;
+    try { userRecord = await getAuth().getUserByEmail(ADMIN_EMAIL); }
+    catch (e) { if (e && e.code === 'auth/user-not-found') throw new HttpsError('not-found', 'Admin Firebase account ಸಿಗಲಿಲ್ಲ.'); throw e; }
+    const adminSnap = await getDatabase().ref(`admins/${userRecord.uid}`).get();
+    if (adminSnap.val() !== true) throw new HttpsError('permission-denied', 'ಈ Firebase UIDಗೆ Admin permission ಇಲ್ಲ.');
+    const credentialsSnap = await getDatabase().ref(`adminPasskeys/${userRecord.uid}`).get();
+    const allowCredentials = [];
+    credentialsSnap.forEach(child => { const c = child.val() || {}; if (c.credentialID) allowCredentials.push({ id: c.credentialID, transports: c.transports || [] }); });
+    if (!allowCredentials.length) throw new HttpsError('failed-precondition', 'Admin Fingerprint ಇನ್ನೂ register ಆಗಿಲ್ಲ. ಮೊದಲು Email/Password ಬಳಸಿ register ಮಾಡಿ.');
+    const options = await generateAuthenticationOptions({ rpID: PASSKEY_RP_ID, allowCredentials, userVerification: 'required' });
+    await getDatabase().ref(`passkeyChallenges/admin-login/${userRecord.uid}`).set({ challenge: options.challenge, uid: userRecord.uid, createdAt: Date.now(), origin });
+    return { options };
+  } catch (error) {
+    console.error('adminPasskeyLoginOptions failed', error);
+    if (error instanceof HttpsError) throw error;
+    throw new HttpsError('internal', `Admin passkey login options failed: ${error.message || 'unknown error'}`);
+  }
+});
+
+exports.verifyAdminPasskeyLogin = onCall({ region: REGION, enforceAppCheck: false }, async (request) => {
+  try {
+    const email = String(request.data && request.data.email || '').trim().toLowerCase();
+    if (email !== ADMIN_EMAIL.toLowerCase()) throw new HttpsError('permission-denied', 'Admin Email ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ.');
+    const origin = passkeyOrigin(request);
+    const credential = passkeyJsonCredential(request.data && request.data.credential);
+    const userRecord = await getAuth().getUserByEmail(ADMIN_EMAIL);
+    const adminSnap = await getDatabase().ref(`admins/${userRecord.uid}`).get();
+    if (adminSnap.val() !== true) throw new HttpsError('permission-denied', 'ಈ Firebase UIDಗೆ Admin permission ಇಲ್ಲ.');
+    const challengeRef = getDatabase().ref(`passkeyChallenges/admin-login/${userRecord.uid}`);
+    const pendingSnap = await challengeRef.get();
+    const pending = pendingSnap.val() || {};
+    if (pending.uid !== userRecord.uid || !pending.challenge || Date.now() - Number(pending.createdAt || 0) > PASSKEY_CHALLENGE_TTL_MS) throw new HttpsError('deadline-exceeded', 'Admin Passkey login session ಮುಗಿದಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
+    if (pending.origin !== origin) throw new HttpsError('permission-denied', 'Passkey website origin ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ.');
+    const credentialID = String(credential.id || credential.rawId || '');
+    const credentialRef = getDatabase().ref(`adminPasskeys/${userRecord.uid}/${passkeyCredentialKey(credentialID)}`);
+    const storedSnap = await credentialRef.get();
+    if (!storedSnap.exists()) throw new HttpsError('permission-denied', 'ಈ Fingerprint Admin accountಗೆ register ಆಗಿಲ್ಲ.');
+    const stored = storedSnap.val() || {};
+    const verification = await verifyAuthenticationResponse({
+      response: credential,
+      expectedChallenge: pending.challenge,
+      expectedOrigin: origin,
+      expectedRPID: PASSKEY_RP_ID,
+      credential: { id: stored.credentialID, publicKey: Buffer.from(stored.credentialPublicKey, 'base64'), counter: Number(stored.counter || 0), transports: stored.transports || [] },
+      requireUserVerification: true
+    });
+    if (!verification.verified) throw new HttpsError('permission-denied', 'Admin Fingerprint verification ವಿಫಲವಾಗಿದೆ.');
+    await credentialRef.update({ counter: Number(verification.authenticationInfo.newCounter || 0), lastUsedAt: Date.now() });
+    await challengeRef.remove();
+    const customToken = await getAuth().createCustomToken(userRecord.uid, { adminPasskeyLogin: true });
+    return { success: true, customToken };
+  } catch (error) {
+    console.error('verifyAdminPasskeyLogin failed', error);
+    if (error instanceof HttpsError) throw error;
+    throw new HttpsError('internal', `Admin passkey login verification failed: ${error.message || 'unknown error'}`);
+  }
+});
