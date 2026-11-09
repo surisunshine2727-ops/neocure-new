@@ -2864,7 +2864,7 @@ html body #ncAdminViewportPagebar .nc-admin-pagebar-action .nc-admin-header-refr
  #qrpanel-print #qrPrintWizardV51 .q51-preview-facts{grid-template-columns:repeat(5,minmax(0,1fr))!important}
 }
 </style>
-<meta name="nc-admin-build" content="V881">
+<meta name="nc-admin-build" content="V865">
 <style id="ncV879QrActionPages">
 #qrstudio.qr-action-page-open > .head{display:none!important}
 #qrstudio.qr-action-page-open > .qr-action-page-header{display:flex!important;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px;padding:10px 12px;background:#06232d;border:1px solid rgba(83,205,205,.42);border-radius:16px;position:sticky;top:0;z-index:20}
@@ -5761,9 +5761,70 @@ function ncSetupPaymentReminder(){
    if(remember.checked)localStorage.setItem('nc_admin_email',email);
    else localStorage.removeItem('nc_admin_email');
 
+   // V865: Automatically offer passkey creation after the first successful
+   // password login. If this device already has an Admin credential, skip setup.
+   let passkeySetupMessage='';
+   try{
+    if(window.PublicKeyCredential && navigator.credentials && firebase.app().functions){
+     const passkeyOptions=await firebase.app().functions('asia-southeast1')
+       .httpsCallable('adminPasskeyRegistrationOptions')({});
+     const publicOptions=passkeyOptions && passkeyOptions.data && passkeyOptions.data.options;
+     const alreadyRegistered=!!(publicOptions && Array.isArray(publicOptions.excludeCredentials)
+       && publicOptions.excludeCredentials.length);
+     if(!alreadyRegistered && publicOptions){
+      const decodeB64Url=(value)=>{
+       let text=String(value||'').replace(/-/g,'+').replace(/_/g,'/');
+       while(text.length%4)text+='=';
+       const raw=atob(text),bytes=new Uint8Array(raw.length);
+       for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+       return bytes;
+      };
+      const createOptions=Object.assign({},publicOptions,{
+       challenge:decodeB64Url(publicOptions.challenge)
+      });
+      if(publicOptions.user){
+       createOptions.user=Object.assign({},publicOptions.user,{id:decodeB64Url(publicOptions.user.id)});
+      }
+      if(publicOptions.excludeCredentials){
+       createOptions.excludeCredentials=publicOptions.excludeCredentials.map(item=>
+        Object.assign({},item,{id:decodeB64Url(item.id)}));
+      }
+      const passkeyCredential=await navigator.credentials.create({publicKey:createOptions});
+      if(!passkeyCredential)throw new Error('Passkey creation was cancelled.');
+      const toBase64Url=(buffer)=>{
+       const bytes=new Uint8Array(buffer);let binary='';
+       for(let i=0;i<bytes.length;i++)binary+=String.fromCharCode(bytes[i]);
+       return btoa(binary).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'');
+      };
+      const response=passkeyCredential.response;
+      const credentialPayload={
+       id:passkeyCredential.id,
+       rawId:toBase64Url(passkeyCredential.rawId),
+       type:passkeyCredential.type,
+       clientExtensionResults:passkeyCredential.getClientExtensionResults?passkeyCredential.getClientExtensionResults():{},
+       response:{
+        attestationObject:toBase64Url(response.attestationObject),
+        clientDataJSON:toBase64Url(response.clientDataJSON),
+        transports:response.getTransports?response.getTransports():[]
+       }
+      };
+      const verified=await firebase.app().functions('asia-southeast1')
+       .httpsCallable('verifyAdminPasskeyRegistration')({credential:credentialPayload});
+      if(!verified.data || verified.data.success!==true)throw new Error('Passkey verification failed.');
+      passkeySetupMessage='Admin Fingerprint / Passkey ಈ ಸಾಧನದಲ್ಲಿ ಸಿದ್ಧವಾಗಿದೆ.';
+     }
+    }
+   }catch(passkeyError){
+    console.error('Automatic Admin passkey setup:',passkeyError);
+    passkeySetupMessage='Passkey setup ಆಗಲಿಲ್ಲ. Dashboard ಬಳಸಬಹುದು; ನಂತರ Password login ಮಾಡಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
+   }
+
    // Unlock immediately after authentication. Non-critical data loaders must
    // never keep the login button stuck on "Signing in…".
    unlock();
+   if(passkeySetupMessage){
+    setTimeout(()=>alert(passkeySetupMessage),250);
+   }
    if(typeof loadCouponsFromFirebase==='function'){
     Promise.resolve().then(()=>loadCouponsFromFirebase())
      .catch(err=>console.error('Coupon data load:',err));
@@ -9350,5 +9411,21 @@ html body #qrstudio #qrpanel-print #ncV803BatchListPage .nc-v803-batch-cards {
     height:48px!important;min-height:48px!important;max-height:48px!important;
     flex-basis:48px!important;
   }
+}
+</style>
+
+<style id="ncAdminV865HideAppBehindLogin">
+/* While Admin is locked, only the sign-in gate should be visible. */
+html body.nc-locked .app,
+html body.nc-locked .mask,
+html body.nc-locked .nc-admin-pagebar,
+html body.nc-locked .view>.nc-admin-pagebar{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+html body.nc-locked #ncAdminGate{
+  display:flex!important;
+  z-index:2147483000!important;
 }
 </style>
