@@ -319,3 +319,250 @@ exports.adminResetMpin = onCall({ region: REGION }, async (request) => {
     throw new HttpsError('internal', 'MPIN ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. Firebase Functions Logs ಪರಿಶೀಲಿಸಿ.');
   }
 });
+
+// -----------------------------------------------------------------------------
+// NEOCURE WebAuthn / Passkey (Fingerprint / Face unlock)
+// Credentials and challenges are stored server-side in Realtime Database.
+// Never store MPIN/password or private authenticator keys in this database.
+// -----------------------------------------------------------------------------
+const { randomBytes } = require('crypto');
+const {
+  generateRegistrationOptions,
+  verifyRegistrationResponse,
+  generateAuthenticationOptions,
+  verifyAuthenticationResponse
+} = require('@simplewebauthn/server');
+
+const PASSKEY_RP_NAME = 'NEOCURE';
+const PASSKEY_RP_ID = 'neocure-new.vercel.app';
+const PASSKEY_ORIGINS = ['https://neocure-new.vercel.app'];
+const PASSKEY_CHALLENGE_TTL_MS = 5 * 60 * 1000;
+
+function passkeyOrigin(request) {
+  const origin = String(request.rawRequest && request.rawRequest.headers && request.rawRequest.headers.origin || '').replace(/\/$/, '');
+  if (!PASSKEY_ORIGINS.includes(origin)) {
+    throw new HttpsError('permission-denied', 'Passkeyಗೆ ಅನುಮತಿಸದ website origin.');
+  }
+  return origin;
+}
+
+function passkeyCredentialKey(id) {
+  return String(id || '').replace(/[^A-Za-z0-9_-]/g, '_');
+}
+
+function passkeyBytes(value) {
+  return Buffer.from(String(value || ''), 'base64url');
+}
+
+function passkeyJsonCredential(credential) {
+  if (!credential || !credential.id || !credential.rawId || !credential.response) {
+    throw new HttpsError('invalid-argument', 'Passkey credential ಅಪೂರ್ಣವಾಗಿದೆ.');
+  }
+  return credential;
+}
+
+async function findPortalUser(phone, role) {
+  const accountEmail = `${authRolePrefix(role)}.${phone}@${AUTH_DOMAIN}`;
+  let userRecord;
+  try {
+    userRecord = await getAuth().getUserByEmail(accountEmail);
+  } catch (error) {
+    if (error && error.code === 'auth/user-not-found') {
+      throw new HttpsError('not-found', 'ಈ Mobile Number ಮತ್ತು Portalಗೆ Passkey account ಸಿಗಲಿಲ್ಲ. ಮೊದಲು MPIN ಬಳಸಿ Login ಮಾಡಿ.');
+    }
+    throw error;
+  }
+  const profileSnap = await getDatabase().ref(`users/${userRecord.uid}`).get();
+  if (!profileSnap.exists()) throw new HttpsError('failed-precondition', 'User profile ಸಿಗಲಿಲ್ಲ.');
+  const profile = profileSnap.val() || {};
+  if (profileRole(profile, role) !== role) throw new HttpsError('permission-denied', 'Portal role ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ.');
+  const savedPhone = profilePhone(profile);
+  if (savedPhone && savedPhone !== phone) throw new HttpsError('permission-denied', 'Mobile number ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ.');
+  return { userRecord, profile };
+}
+
+exports.passkeyRegistrationOptions = onCall({ region: REGION, enforceAppCheck: false }, async (request) => {
+  try {
+    if (!request.auth) throw new HttpsError('unauthenticated', 'ಮೊದಲು MPIN ಮೂಲಕ Login ಮಾಡಿ.');
+    const origin = passkeyOrigin(request);
+    const uid = request.auth.uid;
+    const userRecord = await getAuth().getUser(uid);
+    const profileSnap = await getDatabase().ref(`users/${uid}`).get();
+    if (!profileSnap.exists()) throw new HttpsError('failed-precondition', 'User profile ಸಿಗಲಿಲ್ಲ.');
+    const profile = profileSnap.val() || {};
+    const role = profileRole(profile, '');
+    if (!['dealer', 'applicator'].includes(role)) throw new HttpsError('permission-denied', 'Dealer ಅಥವಾ Applicator account ಮಾತ್ರ Passkey register ಮಾಡಬಹುದು.');
+    const phone = profilePhone(profile);
+    if (!/^\d{10}$/.test(phone)) throw new HttpsError('failed-precondition', 'Accountನಲ್ಲಿ ಸರಿಯಾದ 10 ಅಂಕಿಯ mobile number ಇಲ್ಲ.');
+
+    const credentialsSnap = await getDatabase().ref(`passkeys/${uid}`).get();
+    const excludeCredentials = [];
+    credentialsSnap.forEach(child => {
+      const c = child.val() || {};
+      if (c.credentialID) excludeCredentials.push({ id: c.credentialID, transports: c.transports || [] });
+    });
+
+    const options = await generateRegistrationOptions({
+      rpName: PASSKEY_RP_NAME,
+      rpID: PASSKEY_RP_ID,
+      userID: Buffer.from(uid),
+      userName: userRecord.email || `${role}.${phone}`,
+      userDisplayName: String(profile.name || profile.businessName || `${role} ${phone}`).slice(0, 64),
+      attestationType: 'none',
+      excludeCredentials,
+      authenticatorSelection: {
+        residentKey: 'preferred',
+        userVerification: 'preferred'
+      },
+      supportedAlgorithmIDs: [-7, -257]
+    });
+    await getDatabase().ref(`passkeyChallenges/${uid}/registration`).set({
+      challenge: options.challenge,
+      createdAt: Date.now(),
+      origin
+    });
+    return { options };
+  } catch (error) {
+    console.error('passkeyRegistrationOptions failed', { code: error.code || 'unknown', message: error.message || String(error) });
+    if (error instanceof HttpsError) throw error;
+    throw new HttpsError('internal', `Passkey registration options failed: ${error.message || 'unknown error'}`);
+  }
+});
+
+exports.verifyPasskeyRegistration = onCall({ region: REGION, enforceAppCheck: false }, async (request) => {
+  try {
+    if (!request.auth) throw new HttpsError('unauthenticated', 'ಮೊದಲು MPIN ಮೂಲಕ Login ಮಾಡಿ.');
+    const origin = passkeyOrigin(request);
+    const uid = request.auth.uid;
+    const credential = passkeyJsonCredential(request.data && request.data.credential);
+    const challengeRef = getDatabase().ref(`passkeyChallenges/${uid}/registration`);
+    const challengeSnap = await challengeRef.get();
+    const pending = challengeSnap.val() || {};
+    if (!pending.challenge || Date.now() - Number(pending.createdAt || 0) > PASSKEY_CHALLENGE_TTL_MS) {
+      throw new HttpsError('deadline-exceeded', 'Passkey registration session ಮುಗಿದಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
+    }
+    if (pending.origin !== origin) throw new HttpsError('permission-denied', 'Passkey origin ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ.');
+
+    const verification = await verifyRegistrationResponse({
+      response: credential,
+      expectedChallenge: pending.challenge,
+      expectedOrigin: origin,
+      expectedRPID: PASSKEY_RP_ID,
+      requireUserVerification: false
+    });
+    if (!verification.verified || !verification.registrationInfo) {
+      throw new HttpsError('permission-denied', 'Fingerprint / Passkey verification ವಿಫಲವಾಗಿದೆ.');
+    }
+    const info = verification.registrationInfo;
+    const credentialID = Buffer.from(info.credential.id).toString('base64url');
+    const credentialPublicKey = Buffer.from(info.credential.publicKey).toString('base64');
+    const credentialRef = getDatabase().ref(`passkeys/${uid}/${passkeyCredentialKey(credentialID)}`);
+    await credentialRef.set({
+      credentialID,
+      credentialPublicKey,
+      counter: Number(info.credential.counter || 0),
+      transports: (credential.response && credential.response.transports) || [],
+      deviceType: info.credentialDeviceType || 'unknown',
+      backedUp: !!info.credentialBackedUp,
+      createdAt: Date.now(),
+      rpID: PASSKEY_RP_ID
+    });
+    await challengeRef.remove();
+    return { success: true, verified: true };
+  } catch (error) {
+    console.error('verifyPasskeyRegistration failed', { code: error.code || 'unknown', message: error.message || String(error) });
+    if (error instanceof HttpsError) throw error;
+    throw new HttpsError('internal', `Passkey registration verification failed: ${error.message || 'unknown error'}`);
+  }
+});
+
+exports.passkeyLoginOptions = onCall({ region: REGION, enforceAppCheck: false }, async (request) => {
+  try {
+    const phone = normalizePhone(request.data && request.data.phone);
+    const role = normalizePortalRole(request.data && request.data.role);
+    if (!/^\d{10}$/.test(phone)) throw new HttpsError('invalid-argument', 'ಸರಿಯಾದ 10 ಅಂಕಿಯ mobile number ನಮೂದಿಸಿ.');
+    if (!['dealer', 'applicator'].includes(role)) throw new HttpsError('invalid-argument', 'Dealer ಅಥವಾ Applicator role ಆಯ್ಕೆಮಾಡಿ.');
+    const origin = passkeyOrigin(request);
+    const { userRecord } = await findPortalUser(phone, role);
+    const credentialsSnap = await getDatabase().ref(`passkeys/${userRecord.uid}`).get();
+    const allowCredentials = [];
+    credentialsSnap.forEach(child => {
+      const c = child.val() || {};
+      if (c.credentialID) allowCredentials.push({ id: c.credentialID, transports: c.transports || [] });
+    });
+    if (!allowCredentials.length) throw new HttpsError('failed-precondition', 'ಈ accountನಲ್ಲಿ Fingerprint register ಆಗಿಲ್ಲ. MPIN ಮೂಲಕ Login ಮಾಡಿ register ಮಾಡಿ.');
+
+    const options = await generateAuthenticationOptions({
+      rpID: PASSKEY_RP_ID,
+      allowCredentials,
+      userVerification: 'preferred'
+    });
+    const challengeKey = `${role}_${phone}`;
+    await getDatabase().ref(`passkeyChallenges/login/${challengeKey}`).set({
+      challenge: options.challenge,
+      uid: userRecord.uid,
+      createdAt: Date.now(),
+      origin
+    });
+    return { options };
+  } catch (error) {
+    console.error('passkeyLoginOptions failed', { code: error.code || 'unknown', message: error.message || String(error) });
+    if (error instanceof HttpsError) throw error;
+    throw new HttpsError('internal', `Passkey login options failed: ${error.message || 'unknown error'}`);
+  }
+});
+
+exports.verifyPasskeyLogin = onCall({ region: REGION, enforceAppCheck: false }, async (request) => {
+  try {
+    const phone = normalizePhone(request.data && request.data.phone);
+    const role = normalizePortalRole(request.data && request.data.role);
+    if (!/^\d{10}$/.test(phone) || !['dealer', 'applicator'].includes(role)) throw new HttpsError('invalid-argument', 'Mobile number ಅಥವಾ portal role ತಪ್ಪಾಗಿದೆ.');
+    const origin = passkeyOrigin(request);
+    const credential = passkeyJsonCredential(request.data && request.data.credential);
+    const { userRecord, profile } = await findPortalUser(phone, role);
+    const challengeKey = `${role}_${phone}`;
+    const challengeRef = getDatabase().ref(`passkeyChallenges/login/${challengeKey}`);
+    const challengeSnap = await challengeRef.get();
+    const pending = challengeSnap.val() || {};
+    if (pending.uid !== userRecord.uid || !pending.challenge || Date.now() - Number(pending.createdAt || 0) > PASSKEY_CHALLENGE_TTL_MS) {
+      throw new HttpsError('deadline-exceeded', 'Passkey login session ಮುಗಿದಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
+    }
+    if (pending.origin !== origin) throw new HttpsError('permission-denied', 'Passkey origin ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ.');
+
+    const credentialID = String(credential.id || credential.rawId || '');
+    const storedSnap = await getDatabase().ref(`passkeys/${userRecord.uid}/${passkeyCredentialKey(credentialID)}`).get();
+    if (!storedSnap.exists()) throw new HttpsError('permission-denied', 'ಈ Fingerprint accountಗೆ register ಆಗಿಲ್ಲ.');
+    const stored = storedSnap.val() || {};
+    const verification = await verifyAuthenticationResponse({
+      response: credential,
+      expectedChallenge: pending.challenge,
+      expectedOrigin: origin,
+      expectedRPID: PASSKEY_RP_ID,
+      credential: {
+        id: stored.credentialID,
+        publicKey: Buffer.from(stored.credentialPublicKey, 'base64'),
+        counter: Number(stored.counter || 0),
+        transports: stored.transports || []
+      },
+      requireUserVerification: false
+    });
+    if (!verification.verified) throw new HttpsError('permission-denied', 'Fingerprint / Passkey verification ವಿಫಲವಾಗಿದೆ.');
+    await getDatabase().ref(`passkeys/${userRecord.uid}/${passkeyCredentialKey(credentialID)}`).update({
+      counter: Number(verification.authenticationInfo.newCounter || 0),
+      lastUsedAt: Date.now()
+    });
+    await challengeRef.remove();
+
+    const status = String(profile.status || '').toLowerCase();
+    if (!(profile.approved === true || status === 'active')) {
+      throw new HttpsError('permission-denied', 'ಈ account ಇನ್ನೂ Admin approval ಪಡೆಯಬೇಕಿದೆ.');
+    }
+    const customToken = await getAuth().createCustomToken(userRecord.uid, { portalRole: role, passkeyLogin: true });
+    return { success: true, customToken };
+  } catch (error) {
+    console.error('verifyPasskeyLogin failed', { code: error.code || 'unknown', message: error.message || String(error) });
+    if (error instanceof HttpsError) throw error;
+    throw new HttpsError('internal', `Passkey login verification failed: ${error.message || 'unknown error'}`);
+  }
+});
+
