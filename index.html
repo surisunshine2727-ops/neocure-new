@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>NEOCURE Applicator V1466 – Module Card Text Center</title>
+<title>NEOCURE Applicator V1707 – MPIN OTP Reset</title>
 <style>
 :root{--navy:#102f59;--navy2:#1b4778;--ink:#172334;--muted:#697586;--line:#d9dee6;--soft:#f6f8fb;--white:#fff;--danger:#b42318;--ok:#176b45}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#fff;color:var(--ink);font-family:Inter,Roboto,"Segoe UI",Arial,sans-serif}
@@ -2422,11 +2422,10 @@ button{ -webkit-tap-highlight-color:transparent }
     <button class="portal active" type="button" data-role="Dealer">Dealer</button>
     <button class="portal" type="button" data-role="Applicator">Applicator</button>
   </div>
-  <div id="recaptcha-container"></div>
   <p id="regError" class="inline-error"></p>
   <button id="registerBtn" class="primary" type="button">Register</button>
   <div class="bottom">Already registered? <button id="toLogin" class="link" type="button">Log In</button></div>
-  <div class="demo-note">NEOCURE V1702 • FIREBASE AUTH</div>
+  <div class="demo-note">NEOCURE V1707 • FIREBASE AUTH</div>
 </main>
 
 <main id="otpScreen" class="app hidden">
@@ -2474,13 +2473,30 @@ button{ -webkit-tap-highlight-color:transparent }
     <label class="label" for="loginPin">MPIN</label>
     <div class="field"><input id="loginPin" type="password" inputmode="numeric" enterkeyhint="go" autocomplete="current-password" maxlength="4" placeholder="Enter 4-digit MPIN"><button class="eye" type="button" data-eye="loginPin">Show</button></div>
     <div class="row"><label class="remember"><input id="remember" type="checkbox"> Remember Me</label><button id="forgot" class="link" type="button">Forgot MPIN?</button></div>
-    <p id="loginError" class="inline-error"></p>
+    <p id="loginError" class="inline-error" aria-live="polite"></p>
+    <section id="mpinResetPanel" class="hidden" style="margin:12px 0;padding:14px;border:1px solid #cbd5e1;border-radius:14px;background:#f8fafc">
+      <h2 style="margin:0 0 8px;font-size:18px;color:#173b60">Reset MPIN with SMS OTP</h2>
+      <p id="mpinResetStatus" class="sub" style="margin:0 0 10px" aria-live="polite">ಮೊಬೈಲ್ ಸಂಖ್ಯೆಗೆ OTP ಕಳುಹಿಸಲಾಗುತ್ತದೆ.</p>
+      <div id="mpinResetOtpArea" class="hidden">
+        <label class="label" for="mpinResetOtp">6-digit SMS OTP</label>
+        <div class="field"><input id="mpinResetOtp" type="tel" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="Enter OTP"></div>
+        <label class="label" for="mpinResetNew">New 4-digit MPIN</label>
+        <div class="field"><input id="mpinResetNew" type="password" inputmode="numeric" maxlength="4" placeholder="Enter new MPIN"></div>
+        <label class="label" for="mpinResetConfirm">Confirm new MPIN</label>
+        <div class="field"><input id="mpinResetConfirm" type="password" inputmode="numeric" maxlength="4" placeholder="Re-enter new MPIN"></div>
+        <button id="mpinResetVerify" class="primary" type="button">Verify OTP & Reset MPIN</button>
+      </div>
+      <div class="row" style="margin-top:10px;justify-content:flex-end"><button id="mpinResetCancel" class="link" type="button">Cancel</button></div>
+    </section>
     <button id="loginBtn" class="primary" type="button">Log In</button>
     <button id="fingerprintLoginBtn" class="secondary" type="button" style="margin-top:10px">☝ Enable / Use Fingerprint</button>
     <p id="fingerprintMsg" class="demo-note" aria-live="polite">Fingerprint sign-in will be available after secure Firebase Authentication / passkey setup.</p>
     <div class="bottom">New to NEOCURE? <button id="toRegister" class="link" type="button">Create Account</button></div>
   </section>
 </main>
+
+<!-- Shared visible Firebase Phone Auth reCAPTCHA host for registration and MPIN reset. -->
+<div id="recaptcha-container" aria-live="polite" style="margin:10px 0"></div>
 
 <header id="homeHeader" class="app-topbar hidden">
   <div class="brand-mini">NEO<span>CURE</span></div>
@@ -2792,7 +2808,7 @@ window.addEventListener('popstate',(event)=>{
  }
 });
 function digits(el,max){el.addEventListener('input',()=>el.value=el.value.replace(/\\D/g,'').slice(0,max))}
-['regMobile','otpInput','newPin','confirmPin','loginMobile','loginPin'].forEach(id=>digits($(id),id.toLowerCase().includes('mobile')?10:4));
+['regMobile','otpInput','newPin','confirmPin','loginMobile','loginPin'].forEach(id=>digits($(id),id==='otpInput'?6:(id.toLowerCase().includes('mobile')?10:4)));
 document.querySelectorAll('[data-role]').forEach(btn=>btn.addEventListener('click',()=>{selectedRole=btn.dataset.role;document.querySelectorAll('[data-role]').forEach(b=>b.classList.toggle('active',b===btn))}));
 document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{
  const action=btn.dataset.action;
@@ -2895,20 +2911,67 @@ $('loginBtn').onclick=async()=>{
  }catch(e){$('loginError').textContent=window.NEOCURE_AUTH.message(e);}
 };
 $('loginPin').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('loginBtn').click();}});
-$('forgot').onclick=()=>{$('loginError').textContent='MPIN reset requires mobile OTP verification.'};
+$('forgot').onclick=async()=>{
+ const mobile=$('loginMobile').value.trim(),role=selectedLoginRole||'Dealer';
+ const panel=$('mpinResetPanel'),status=$('mpinResetStatus'),otpArea=$('mpinResetOtpArea');
+ $('loginError').textContent='';
+ if(!/^\d{10}$/.test(mobile)){$('loginError').textContent='ಮೊದಲು ನೋಂದಾಯಿತ 10 ಅಂಕಿಯ Mobile Number ನಮೂದಿಸಿ.';return;}
+ panel.classList.remove('hidden');otpArea.classList.add('hidden');
+ $('mpinResetOtp').value='';$('mpinResetNew').value='';$('mpinResetConfirm').value='';
+ status.textContent='reCAPTCHA ಪರಿಶೀಲಿಸಿ. SMS OTP ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ…';
+ try{
+  await window.NEOCURE_AUTH.startPhoneOtp(mobile);
+  otpArea.classList.remove('hidden');
+  status.textContent='SMS OTP ಕಳುಹಿಸಲಾಗಿದೆ. ನಿಮ್ಮ ಮೊಬೈಲ್‌ನ ಸಂದೇಶ ಪರಿಶೀಲಿಸಿ.';
+ }catch(e){status.textContent=window.NEOCURE_AUTH.message(e);}
+};
+$('mpinResetCancel').onclick=()=>{$('mpinResetPanel').classList.add('hidden');$('mpinResetStatus').textContent='';};
+['mpinResetOtp','mpinResetNew','mpinResetConfirm'].forEach(id=>digits($(id),id==='mpinResetOtp'?6:4));
+$('mpinResetVerify').onclick=async()=>{
+ const mobile=$('loginMobile').value.trim(),role=selectedLoginRole||'Dealer';
+ const code=$('mpinResetOtp').value.trim(),pin=$('mpinResetNew').value,confirm=$('mpinResetConfirm').value;
+ const status=$('mpinResetStatus'),btn=$('mpinResetVerify');
+ if(!/^\d{6}$/.test(code)){status.textContent='6 ಅಂಕಿಯ SMS OTP ನಮೂದಿಸಿ.';return;}
+ if(!/^\d{4}$/.test(pin)||pin!==confirm){status.textContent='ಒಂದೇ 4 ಅಂಕಿಯ ಹೊಸ MPIN ಅನ್ನು ಎರಡೂ ಕಡೆ ನಮೂದಿಸಿ.';return;}
+ btn.disabled=true;status.textContent='OTP ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…';
+ try{
+  await window.NEOCURE_AUTH.verifyPhoneOtp(code);
+  status.textContent='OTP ಪರಿಶೀಲನೆ ಯಶಸ್ವಿ. MPIN ಬದಲಾಯಿಸಲಾಗುತ್ತಿದೆ…';
+  await window.NEOCURE_AUTH.resetMpinWithPhoneOtp(mobile,role,pin);
+  $('mpinResetPanel').classList.add('hidden');$('loginPin').value='';
+  $('loginError').textContent='MPIN ಯಶಸ್ವಿಯಾಗಿ ಬದಲಾಯಿಸಲಾಗಿದೆ. ಹೊಸ MPIN ಬಳಸಿ Login ಮಾಡಿ.';
+ }catch(e){status.textContent=window.NEOCURE_AUTH.message(e);}
+ finally{btn.disabled=false;}
+};
 async function requestFingerprintSetup(targetId){
  const target=$(targetId);
+ const button=$('settingsFingerprintBtn');
+ if(!target)return;
  if(!window.isSecureContext || !window.PublicKeyCredential || !navigator.credentials){
-   target.textContent='Fingerprint needs HTTPS hosting and a supported Android browser.';
+   target.textContent='Fingerprintಗೆ HTTPS ಮತ್ತು ಬೆಂಬಲಿತ Android browser ಅಗತ್ಯವಿದೆ.';
    return;
  }
+ if(!window.NEOCURE_AUTH || typeof window.NEOCURE_AUTH.registerPasskey!=='function'){
+   target.textContent='Firebase Passkey service ಲಭ್ಯವಿಲ್ಲ. Functions deployment ಪರಿಶೀಲಿಸಿ.';
+   return;
+ }
+ if(button)button.disabled=true;
+ target.textContent='Fingerprint ಸಾಧನ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…';
  try{
    const available=await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-   target.textContent=available
-    ? 'Fingerprint hardware is available. Complete Firebase passkey server setup to enable secure sign-in.'
-    : 'This device/browser does not expose a fingerprint or screen-lock authenticator.';
+   if(!available){
+     target.textContent='ಈ device/browserನಲ್ಲಿ Fingerprint ಅಥವಾ Screen Lock authenticator ಲಭ್ಯವಿಲ್ಲ.';
+     return;
+   }
+   target.textContent='Fingerprint / Screen Lock ದೃಢೀಕರಣಕ್ಕಾಗಿ ಮುಂದುವರಿಯಿರಿ…';
+   await window.NEOCURE_AUTH.registerPasskey();
+   target.textContent='Fingerprint Login ಯಶಸ್ವಿಯಾಗಿ ಸಕ್ರಿಯವಾಗಿದೆ. ಮುಂದಿನ ಬಾರಿ Login screenನ Fingerprint ಆಯ್ಕೆ ಬಳಸಿ.';
  }catch(e){
-   target.textContent='Fingerprint availability could not be checked in this browser.';
+   target.textContent=(window.NEOCURE_AUTH && window.NEOCURE_AUTH.message)
+     ? window.NEOCURE_AUTH.message(e)
+     : (e && e.message ? e.message : 'Fingerprint ನೋಂದಣಿ ವಿಫಲವಾಗಿದೆ.');
+ }finally{
+   if(button)button.disabled=false;
  }
 }
 $('fingerprintLoginBtn').onclick=async()=>{
@@ -4945,7 +5008,7 @@ const genericPageInfo={
  <button class="settings-tile" type="button" data-settings-page="About NEOCURE"><span class="settings-tile-icon">ⓘ</span><span class="settings-tile-copy"><strong>About NEOCURE</strong><small>App version and support</small></span></button>
  </div>`},
  'Language Settings':{desc:'Select the language used across the app.',body:`<div class="settings-panel"><h2>Choose Language</h2><p>Your selection is saved on this device.</p><div id="settingsLanguageOptions"></div></div>`},
- 'Fingerprint Login':{desc:'Set up fingerprint or device screen-lock sign-in.',body:`<div class="settings-panel"><h2>Fingerprint Login</h2><p>Fingerprint sign-in requires HTTPS hosting and a configured Firebase Authentication / passkey backend.</p><button class="settings-action" id="settingsFingerprintBtn" type="button">Check Fingerprint Availability</button><div class="settings-status" id="settingsFingerprintMsg" aria-live="polite">Not configured yet.</div></div>`},
+ 'Fingerprint Login':{desc:'Set up fingerprint or device screen-lock sign-in.',body:`<div class="settings-panel"><h2>Fingerprint Login</h2><p>ನಿಮ್ಮ ಸಾಧನದ Fingerprint ಅಥವಾ Screen Lock ಬಳಸಿ ಸುರಕ್ಷಿತವಾಗಿ Login ಮಾಡಲು ಇಲ್ಲಿ ಸಕ್ರಿಯಗೊಳಿಸಿ.</p><button class="settings-action" id="settingsFingerprintBtn" type="button">Enable Fingerprint Login</button><div class="settings-status" id="settingsFingerprintMsg" aria-live="polite">Not configured yet.</div></div>`},
  'Security Settings':{desc:'Update your four-digit account MPIN.',body:`<div class="settings-panel"><h2>Change MPIN</h2><p>Enter your current MPIN, then create and confirm a new 4-digit MPIN. Demo mode saves this change only on this device; connect the secured Firebase backend before production use.</p><label class="settings-field" for="settingsCurrentPin">Current MPIN</label><input class="settings-input" id="settingsCurrentPin" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" placeholder="Enter current MPIN"><label class="settings-field" for="settingsNewPin">New MPIN</label><input class="settings-input" id="settingsNewPin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" placeholder="Enter new 4-digit MPIN"><label class="settings-field" for="settingsConfirmPin">Confirm New MPIN</label><input class="settings-input" id="settingsConfirmPin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" placeholder="Re-enter new MPIN"><button class="settings-action" id="settingsSavePin" type="button">Save New MPIN</button><div class="settings-status" id="settingsPinMsg" role="status"></div><p style="margin-top:12px">Forgot your current MPIN? Use Forgot MPIN on the login screen. OTP reset requires the secure Firebase backend to be deployed.</p></div>`},
  'Notification Settings':{desc:'Choose which app notifications you want to receive.',body:`<div class="settings-panel"><h2>Notification Preferences</h2><label class="settings-switch-row">Order updates <input type="checkbox" id="notifyOrders" checked></label><label class="settings-switch-row">Payment updates <input type="checkbox" id="notifyPayments" checked></label><label class="settings-switch-row">Delivery updates <input type="checkbox" id="notifyDelivery" checked></label><button class="settings-action" id="saveNotifySettings" type="button">Save Preferences</button><div class="settings-status" id="notifySettingsMsg"></div></div>`},
  'Account Information':{desc:'Your registration details are protected and cannot be edited here.',body:`<div class="settings-panel"><h2>Registered Account</h2><label class="settings-field">Full Name</label><input class="settings-input settings-readonly" id="settingsAccountName" readonly><label class="settings-field">Mobile Number</label><input class="settings-input settings-readonly" id="settingsAccountMobile" readonly><label class="settings-field">Portal</label><input class="settings-input settings-readonly" id="settingsAccountRole" readonly><p style="margin-top:12px">Registered name and mobile number cannot be changed from the Dealer / Applicator app.</p></div>`},
@@ -10557,7 +10620,7 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   messagingSenderId:"651603399266",
   appId:"1:651603399266:web:6a5004ed3e95283f81773b"
  };
- let app,auth,db,storage,functions,confirmation=null,recaptcha=null;
+ let app,auth,db,storage,functions,confirmation=null,recaptcha=null,recaptchaHost=null;
  try{
   app=firebase.apps.length?firebase.app():firebase.initializeApp(firebaseConfig);
   auth=firebase.auth();db=firebase.database();storage=firebase.storage();
@@ -10590,12 +10653,11 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
  }
  let recaptchaElementSerial=0;
  function resetRecaptcha(){
-  const oldHost=document.getElementById('recaptcha-container');
+  const oldHost=recaptchaHost||document.getElementById('recaptcha-container')||document.querySelector('[id^="recaptcha-container-"]');
   try{if(recaptcha)recaptcha.clear();}catch(e){console.warn('reCAPTCHA cleanup:',e);}
-  recaptcha=null;
+  recaptcha=null;recaptchaHost=null;
   if(oldHost && oldHost.parentNode){
-   // Google reCAPTCHA remembers rendered widget IDs on the original element.
-   // Replacing the actual DOM node prevents "already been rendered" on retries.
+   // Replace the actual element because Firebase/Google binds a widget ID to it.
    const freshHost=document.createElement('div');
    freshHost.id='recaptcha-container';
    freshHost.setAttribute('aria-live','polite');
@@ -10607,8 +10669,9 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   // reCAPTCHA tokens are single-use. Always create a brand-new verifier for each SMS attempt.
   resetRecaptcha();
   confirmation=null;
-  const host=document.getElementById('recaptcha-container');
+  const host=document.getElementById('recaptcha-container')||document.querySelector('[id^="recaptcha-container-"]');
   if(!host)throw new Error('reCAPTCHA container ಸಿಗಲಿಲ್ಲ. Page reload ಮಾಡಿ.');
+  recaptchaHost=host;
   // Phone Auth reCAPTCHA must run on an allowed HTTP(S) origin.
   // A downloaded content:// or file:// HTML page is not a valid production origin.
   const protocol=String(window.location.protocol||'').toLowerCase();
@@ -10675,6 +10738,17 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
    await auth.signOut();throw new Error('Account mobile number ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ.');
   }
   return {name:profile.name||'',uid:cred.user.uid};
+ }
+ async function resetMpinWithPhoneOtp(mobile,role,newPin){
+  if(!auth||!auth.currentUser||!auth.currentUser.phoneNumber)throw new Error('ಮೊದಲು SMS OTP ಪರಿಶೀಲಿಸಿ.');
+  const phone=String(mobile||'').replace(/\D/g,'').slice(-10);
+  const verified=String(auth.currentUser.phoneNumber||'').replace(/\D/g,'').slice(-10);
+  if(!/^\d{10}$/.test(phone)||verified!==phone)throw new Error('OTP ಪರಿಶೀಲಿಸಿದ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ.');
+  if(!/^\d{4}$/.test(String(newPin||'')))throw new Error('ಹೊಸ MPIN 4 ಅಂಕಿಗಳಾಗಿರಬೇಕು.');
+  const result=await functions.httpsCallable('resetMpinWithPhoneOtp')({phone,role:String(role||'').toLowerCase(),newPin:String(newPin)});
+  if(!result.data||result.data.success!==true)throw new Error('Server MPIN reset ದೃಢೀಕರಣ ಸಿಗಲಿಲ್ಲ.');
+  await auth.signOut();
+  return true;
  }
  async function uploadUserFile(path,file,metadata){
   if(!auth.currentUser)throw new Error('Upload ಮಾಡಲು ಮೊದಲು login ಮಾಡಿ.');
@@ -10747,8 +10821,8 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   return {name:profile.name||'',mobile:phone,role:portal==='applicator'?'Applicator':'Dealer',uid:cred.user.uid};
  }
 
- window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,uploadUserFile,registerPasskey,passkeyLogin,message,auth,db,storage};
- window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V1703'};
+ window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,resetMpinWithPhoneOtp,uploadUserFile,registerPasskey,passkeyLogin,message,auth,db,storage};
+ window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V1707'};
 })();
 </script>
 
@@ -11602,7 +11676,7 @@ window.NEOCURE_V1491={
 
 <script id="neocure-v1492-dynamic-applicator-back">
 window.NEOCURE_V1496={
- version:'V1703',
+ version:'V1707',
  base:'V1491',
  fix:'popstate restores dynamic Applicator workspace routes using openApplicatorPage',
  routes:['Work Category: ','Rate Book: ','Work History: '],
@@ -11611,3 +11685,5 @@ window.NEOCURE_V1496={
 </script>
 
 <!-- V1703: Connects WebAuthn passkey registration/login to deployed Firebase callable functions. -->
+
+<!-- NEOCURE V1706: Profile Settings fingerprint button now performs WebAuthn passkey registration. -->
