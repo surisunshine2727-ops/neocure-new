@@ -2407,7 +2407,7 @@ button{ -webkit-tap-highlight-color:transparent }
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
 </head>
 <body>
-<div class="firebase-build-notice" id="firebaseBuildNotice">Preview mode: registration and MPIN login are stored only on this device. Secure Firebase login is not connected yet.</div>
+<div class="firebase-build-notice" id="firebaseBuildNotice">NEOCURE V1702: Firebase Phone Authentication and secure account login.</div>
 
 <main id="registerScreen" class="app">
   <div class="brand">NEO<span>CURE</span></div>
@@ -2422,10 +2422,11 @@ button{ -webkit-tap-highlight-color:transparent }
     <button class="portal active" type="button" data-role="Dealer">Dealer</button>
     <button class="portal" type="button" data-role="Applicator">Applicator</button>
   </div>
+  <div id="recaptcha-container"></div>
   <p id="regError" class="inline-error"></p>
   <button id="registerBtn" class="primary" type="button">Register</button>
   <div class="bottom">Already registered? <button id="toLogin" class="link" type="button">Log In</button></div>
-  <div class="demo-note">NEOCURE V1497 • FIREBASE AUTH</div>
+  <div class="demo-note">NEOCURE V1702 • FIREBASE AUTH</div>
 </main>
 
 <main id="otpScreen" class="app hidden">
@@ -2433,10 +2434,10 @@ button{ -webkit-tap-highlight-color:transparent }
   <h1>Verify Mobile Number</h1>
   <p class="sub">Enter the one-time password to verify your number</p>
   <label class="label" for="otpInput">OTP</label>
-  <div class="field"><input id="otpInput" type="tel" inputmode="numeric" maxlength="4" placeholder="Enter 4-digit OTP"></div>
+  <div class="field"><input id="otpInput" type="tel" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit OTP"></div>
   <p id="otpError" class="inline-error"></p>
   <button id="verifyOtp" class="primary" type="button">Verify OTP</button>
-  <div id="recaptcha-container"></div><div class="demo-note">SMS OTP ಮೂಲಕ ಮೊಬೈಲ್ ಪರಿಶೀಲನೆ</div>
+  <div class="demo-note">SMS OTP ಮೂಲಕ ಮೊಬೈಲ್ ಪರಿಶೀಲನೆ</div>
 </main>
 
 <main id="setPinScreen" class="app hidden">
@@ -10539,8 +10540,11 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   const code=e&&e.code||'';
   const map={
    'auth/invalid-phone-number':'ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಸರಿಯಾಗಿಲ್ಲ.',
-   'auth/captcha-check-failed':'reCAPTCHA ಪರಿಶೀಲನೆ ವಿಫಲವಾಗಿದೆ. ಪುಟವನ್ನು Refresh ಮಾಡಿ ಮತ್ತೆ Register ಒತ್ತಿ.',
+   'auth/captcha-check-failed':'reCAPTCHA ಪರಿಶೀಲನೆ ವಿಫಲವಾಗಿದೆ. Vercel HTTPS domainನಲ್ಲಿ ಹೊಸದಾಗಿ ಪ್ರಯತ್ನಿಸಿ.',
    'auth/recaptcha-expired':'reCAPTCHA ಅವಧಿ ಮುಗಿದಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
+   'auth/internal-error':'Firebase Phone Auth ಒಳಗಿನ error. Vercel HTTPS domain Authorized Domainsನಲ್ಲಿ ಇದೆಯೇ, Phone provider ON ಇದೆಯೇ, API key restrictions ಸರಿಯಿದೆಯೇ ಪರಿಶೀಲಿಸಬೇಕು.',
+   'auth/app-not-authorized':'ಈ domain/API keyಗೆ Firebase Authentication ಅನುಮತಿ ಇಲ್ಲ. Authorized domains ಮತ್ತು API key restrictions ಪರಿಶೀಲಿಸಿ.',
+   'auth/invalid-app-credential':'reCAPTCHA credential ಮಾನ್ಯವಿಲ್ಲ. ಹೊಸದಾಗಿ page load ಮಾಡಿ visible verification ಪೂರ್ಣಗೊಳಿಸಿ.',
    'auth/too-many-requests':'ಹೆಚ್ಚು ಪ್ರಯತ್ನಗಳಾಗಿವೆ. ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ.',
    'auth/invalid-verification-code':'OTP ತಪ್ಪಾಗಿದೆ. ಮತ್ತೆ ಪರಿಶೀಲಿಸಿ.',
    'auth/code-expired':'OTP ಅವಧಿ ಮುಗಿದಿದೆ. ಹೊಸ OTP ಪಡೆಯಿರಿ.',
@@ -10555,11 +10559,19 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   };
   return map[code]||(e&&e.message)||'ಕಾರ್ಯ ಪೂರ್ಣಗೊಳಿಸಲಾಗಲಿಲ್ಲ. Firebase ಪರಿಶೀಲಿಸಿ.';
  }
+ let recaptchaElementSerial=0;
  function resetRecaptcha(){
+  const oldHost=document.getElementById('recaptcha-container');
   try{if(recaptcha)recaptcha.clear();}catch(e){console.warn('reCAPTCHA cleanup:',e);}
   recaptcha=null;
-  const host=document.getElementById('recaptcha-container');
-  if(host)host.innerHTML='';
+  if(oldHost && oldHost.parentNode){
+   // Google reCAPTCHA remembers rendered widget IDs on the original element.
+   // Replacing the actual DOM node prevents "already been rendered" on retries.
+   const freshHost=document.createElement('div');
+   freshHost.id='recaptcha-container';
+   freshHost.setAttribute('aria-live','polite');
+   oldHost.parentNode.replaceChild(freshHost,oldHost);
+  }
  }
  async function startPhoneOtp(mobile){
   if(!auth)throw new Error('Firebase initialize ಆಗಿಲ್ಲ. Internet ಮತ್ತು Firebase config ಪರಿಶೀಲಿಸಿ.');
@@ -10568,7 +10580,18 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   confirmation=null;
   const host=document.getElementById('recaptcha-container');
   if(!host)throw new Error('reCAPTCHA container ಸಿಗಲಿಲ್ಲ. Page reload ಮಾಡಿ.');
-  recaptcha=new firebase.auth.RecaptchaVerifier(host,{size:'invisible',callback:function(){},'expired-callback':function(){resetRecaptcha();}});
+  // Phone Auth reCAPTCHA must run on an allowed HTTP(S) origin.
+  // A downloaded content:// or file:// HTML page is not a valid production origin.
+  const protocol=String(window.location.protocol||'').toLowerCase();
+  if(protocol!=='https:' && protocol!=='http:'){
+   throw new Error('ಈ HTML ಅನ್ನು ನೇರವಾಗಿ Downloadsನಿಂದ ತೆರೆಯಲಾಗಿದೆ. ನಿಜವಾದ SMS OTP ಪರೀಕ್ಷಿಸಲು Vercel HTTPS linkನಲ್ಲಿ ತೆರೆಯಿರಿ. Firebaseಗೆ local content:// page ಮಾನ್ಯ origin ಅಲ್ಲ.');
+  }
+  host.id='recaptcha-container-'+(++recaptchaElementSerial);
+  recaptcha=new firebase.auth.RecaptchaVerifier(host.id,{
+   size:'normal',
+   callback:function(){},
+   'expired-callback':function(){resetRecaptcha();}
+  });
   try{
    await recaptcha.render();
    confirmation=await auth.signInWithPhoneNumber(phoneE164(mobile),recaptcha);
@@ -10632,7 +10655,7 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   return {path:snap.ref.fullPath,url:await snap.ref.getDownloadURL()};
  }
  window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,uploadUserFile,message,auth,db,storage};
- window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V1497-R1'};
+ window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V1702'};
 })();
 </script>
 
@@ -11486,7 +11509,7 @@ window.NEOCURE_V1491={
 
 <script id="neocure-v1492-dynamic-applicator-back">
 window.NEOCURE_V1496={
- version:'V1497',
+ version:'V1702',
  base:'V1491',
  fix:'popstate restores dynamic Applicator workspace routes using openApplicatorPage',
  routes:['Work Category: ','Rate Book: ','Work History: '],
