@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>NEOCURE Applicator V1708 – Full Screen MPIN Reset</title>
+<title>NEOCURE Applicator V1709 – Full Screen MPIN Reset</title>
 <style>
 :root{--navy:#102f59;--navy2:#1b4778;--ink:#172334;--muted:#697586;--line:#d9dee6;--soft:#f6f8fb;--white:#fff;--danger:#b42318;--ok:#176b45}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#fff;color:var(--ink);font-family:Inter,Roboto,"Segoe UI",Arial,sans-serif}
@@ -617,7 +617,7 @@ h1{font-size:27px;line-height:1.2;letter-spacing:-.55px;margin:0 0 7px;font-weig
 }
 
 
-/* V1708: Forgot MPIN is a dedicated full-screen step, not an inline panel. */
+/* V1709: Forgot MPIN is a dedicated full-screen step, not an inline panel. */
 #mpinResetPanel.mpin-reset-screen{
   display:none;
   position:fixed!important;
@@ -694,6 +694,10 @@ h1{font-size:27px;line-height:1.2;letter-spacing:-.55px;margin:0 0 7px;font-weig
 #mpinResetStatus:empty{display:none}
 #mpinResetOtpArea{margin-top:10px}
 #mpinResetOtpArea.hidden{display:none!important}
+.recaptcha-visible-host{display:flex;justify-content:center;align-items:center;min-height:0;margin:14px 0 10px;overflow:visible}
+.recaptcha-visible-host:empty{display:none}
+.recaptcha-visible-host iframe{max-width:100%}
+
 .mpin-reset-cancel-row{
   display:flex;justify-content:center;margin-top:13px;
 }
@@ -2576,6 +2580,7 @@ button{ -webkit-tap-highlight-color:transparent }
         <div class="mpin-reset-card">
           <h2>Reset MPIN with SMS OTP</h2>
           <p class="sub">ನಿಮ್ಮ ನೋಂದಾಯಿತ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಗೆ SMS OTP ಕಳುಹಿಸಲಾಗುತ್ತದೆ. OTP ಪರಿಶೀಲಿಸಿದ ನಂತರ ಹೊಸ MPIN ಹೊಂದಿಸಬಹುದು.</p>
+          <div id="recaptcha-container" class="recaptcha-visible-host" aria-live="polite"></div>
           <p id="mpinResetStatus" class="sub" aria-live="polite">ಮೊಬೈಲ್ ಸಂಖ್ಯೆಗೆ OTP ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ…</p>
           <div id="mpinResetOtpArea" class="hidden">
             <label class="label" for="mpinResetOtp">6-digit SMS OTP</label>
@@ -2596,9 +2601,6 @@ button{ -webkit-tap-highlight-color:transparent }
     <div class="bottom">New to NEOCURE? <button id="toRegister" class="link" type="button">Create Account</button></div>
   </section>
 </main>
-
-<!-- Shared visible Firebase Phone Auth reCAPTCHA host for registration and MPIN reset. -->
-<div id="recaptcha-container" aria-live="polite" style="margin:10px 0"></div>
 
 <header id="homeHeader" class="app-topbar hidden">
   <div class="brand-mini">NEO<span>CURE</span></div>
@@ -3020,7 +3022,7 @@ $('forgot').onclick=async()=>{
  if(!/^\d{10}$/.test(mobile)){$('loginError').textContent='ಮೊದಲು ನೋಂದಾಯಿತ 10 ಅಂಕಿಯ Mobile Number ನಮೂದಿಸಿ.';return;}
  panel.classList.remove('hidden');otpArea.classList.add('hidden');
  $('mpinResetOtp').value='';$('mpinResetNew').value='';$('mpinResetConfirm').value='';
- status.textContent='reCAPTCHA ಪರಿಶೀಲಿಸಿ. SMS OTP ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ…';
+ status.textContent='ಕೆಳಗೆ ಕಾಣಿಸುವ Google reCAPTCHA ಪರಿಶೀಲನೆಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ. ನಂತರ SMS OTP ಕಳುಹಿಸಲಾಗುತ್ತದೆ…';
  try{
   await window.NEOCURE_AUTH.startPhoneOtp(mobile);
   otpArea.classList.remove('hidden');
@@ -10790,6 +10792,8 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   });
   try{
    await recaptcha.render();
+   // Keep Google's visible checkbox/challenge in view on mobile reset screen.
+   host.scrollIntoView({behavior:'smooth',block:'center'});
    confirmation=await auth.signInWithPhoneNumber(phoneE164(mobile),recaptcha);
    resetRecaptcha();
    return true;
