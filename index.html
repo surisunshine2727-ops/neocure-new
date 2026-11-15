@@ -2407,7 +2407,7 @@ button{ -webkit-tap-highlight-color:transparent }
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
 </head>
 <body>
-<div class="firebase-build-notice" id="firebaseBuildNotice">NEOCURE V1704: Firebase Phone Authentication and secure account login.</div>
+<div class="firebase-build-notice" id="firebaseBuildNotice">NEOCURE V1703: Firebase Authentication, Storage helper and Passkey login.</div>
 
 <main id="registerScreen" class="app">
   <div class="brand">NEO<span>CURE</span></div>
@@ -2426,7 +2426,7 @@ button{ -webkit-tap-highlight-color:transparent }
   <p id="regError" class="inline-error"></p>
   <button id="registerBtn" class="primary" type="button">Register</button>
   <div class="bottom">Already registered? <button id="toLogin" class="link" type="button">Log In</button></div>
-  <div class="demo-note">NEOCURE V1704 • FIREBASE AUTH</div>
+  <div class="demo-note">NEOCURE V1702 • FIREBASE AUTH</div>
 </main>
 
 <main id="otpScreen" class="app hidden">
@@ -2434,7 +2434,7 @@ button{ -webkit-tap-highlight-color:transparent }
   <h1>Verify Mobile Number</h1>
   <p class="sub">Enter the one-time password to verify your number</p>
   <label class="label" for="otpInput">OTP</label>
-  <div class="field"><input id="otpInput" type="tel" inputmode="numeric" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="Enter 6-digit OTP"></div>
+  <div class="field"><input id="otpInput" type="tel" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit OTP"></div>
   <p id="otpError" class="inline-error"></p>
   <button id="verifyOtp" class="primary" type="button">Verify OTP</button>
   <div class="demo-note">SMS OTP ಮೂಲಕ ಮೊಬೈಲ್ ಪರಿಶೀಲನೆ</div>
@@ -2792,7 +2792,7 @@ window.addEventListener('popstate',(event)=>{
  }
 });
 function digits(el,max){el.addEventListener('input',()=>el.value=el.value.replace(/\\D/g,'').slice(0,max))}
-['regMobile','otpInput','newPin','confirmPin','loginMobile','loginPin'].forEach(id=>digits($(id),id==='regMobile'||id==='loginMobile'?10:id==='otpInput'?6:4));
+['regMobile','otpInput','newPin','confirmPin','loginMobile','loginPin'].forEach(id=>digits($(id),id.toLowerCase().includes('mobile')?10:4));
 document.querySelectorAll('[data-role]').forEach(btn=>btn.addEventListener('click',()=>{selectedRole=btn.dataset.role;document.querySelectorAll('[data-role]').forEach(b=>b.classList.toggle('active',b===btn))}));
 document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{
  const action=btn.dataset.action;
@@ -2911,7 +2911,22 @@ async function requestFingerprintSetup(targetId){
    target.textContent='Fingerprint availability could not be checked in this browser.';
  }
 }
-$('fingerprintLoginBtn').onclick=()=>requestFingerprintSetup('fingerprintMsg');
+$('fingerprintLoginBtn').onclick=async()=>{
+ const btn=$('fingerprintLoginBtn'),msg=$('fingerprintMsg');
+ const mobile=$('loginMobile').value.trim(),role=selectedLoginRole||'Dealer';
+ btn.disabled=true;msg.style.display='block';msg.textContent='Fingerprint ಪರಿಶೀಲನೆ ನಡೆಯುತ್ತಿದೆ…';
+ try{
+  const result=await window.NEOCURE_AUTH.passkeyLogin(mobile,role);
+  currentAccount={name:result.name,mobile:result.mobile,role:result.role,uid:result.uid};
+  msg.textContent='Fingerprint Login ಯಶಸ್ವಿಯಾಗಿದೆ.';
+  if(String(result.role).toLowerCase()==='applicator'){
+   $('applicatorWelcome').textContent='Welcome, '+(result.name||'');
+   $('applicatorAvatar').textContent=(result.name||'A').trim().charAt(0).toUpperCase();
+   show('applicatorDashboard');
+  }else{show('homeScreen');renderDashboardCredit();renderDashboardProfilePhoto();}
+ }catch(e){$('loginError').textContent=window.NEOCURE_AUTH.message(e);msg.textContent=e.message||'Fingerprint Login ವಿಫಲವಾಗಿದೆ.';}
+ finally{btn.disabled=false;}
+};
 
 $('headerLogout').onclick=()=>{currentAccount=null;history.replaceState({screen:'loginScreen'},'', '#loginScreen');openLogin();};
 
@@ -2931,6 +2946,7 @@ const applicatorPageInfo={
  'Applicator Profile':'Manage your Applicator profile and contact details.',
  'Applicator Help':'Get help with Applicator account, coupon scans and rewards.',
  'Profile & Settings':'Manage your Applicator profile, language and security preferences.',
+ 'Fingerprint Login':'Register this device fingerprint/passkey for secure future login.',
  'Help & Support':'Report a problem or get help with your Applicator account.'
 };
 
@@ -4806,7 +4822,20 @@ function openApplicatorPage(action,pushHistory=true){
     const a=currentAccount||{};let saved={};try{saved=JSON.parse(localStorage.getItem('neocure_applicator_profile_'+String(a.mobile||'guest'))||'{}')}catch(e){}
     $('genericContent').innerHTML=`<section class="app-combined-section"><h2>My Profile</h2><div class="app-profile-fields"><label>Registered Name<input id="appProfileName" value="${safeText(a.name||'')}" readonly></label><label>Mobile Number<input value="${safeText(a.mobile||'')}" readonly></label><label>Portal<input value="Applicator" readonly></label><label>Work / Business Name<input id="appProfileWork" value="${safeText(saved.work||a.businessName||'')}" placeholder="Enter work / business name"></label><label>Address<textarea id="appProfileAddress" rows="2" placeholder="Enter address">${safeText(saved.address||a.address||'')}</textarea></label><button type="button" class="app-combined-save" id="appProfileSave">Save Profile</button><p id="appProfileMsg" role="status"></p></div></section><section class="app-combined-section"><h2>Settings</h2><div class="settings-grid"><button class="settings-tile" type="button" data-app-setting="Language Settings"><strong>Language Settings</strong><small>Choose app language</small></button><button class="settings-tile" type="button" data-app-setting="Fingerprint Login"><strong>Fingerprint Login</strong><small>Device sign-in option</small></button><button class="settings-tile" type="button" data-app-setting="Security Settings"><strong>Security Settings</strong><small>Change MPIN / reset</small></button><button class="settings-tile" type="button" data-app-setting="Notification Settings"><strong>Notification Settings</strong><small>Order and payment alerts</small></button><button class="settings-tile" type="button" data-app-setting="Account Information"><strong>Account Information</strong><small>Registered details</small></button><button class="settings-tile" type="button" data-app-setting="About NEOCURE"><strong>About NEOCURE</strong><small>App version and support</small></button></div></section>`;
     $('appProfileSave').onclick=()=>{const data={work:$('appProfileWork').value.trim(),address:$('appProfileAddress').value.trim()};localStorage.setItem('neocure_applicator_profile_'+String(a.mobile||'guest'),JSON.stringify(data));$('appProfileMsg').textContent='Profile saved on this device.';};
-    $('genericContent').querySelectorAll('[data-app-setting]').forEach(b=>b.addEventListener('click',()=>openGenericPage(b.dataset.appSetting,true)));
+    $('genericContent').querySelectorAll('[data-app-setting]').forEach(b=>b.addEventListener('click',()=>b.dataset.appSetting==='Fingerprint Login'?openApplicatorPage('Fingerprint Login',true):openGenericPage(b.dataset.appSetting,true)));
+  }else if(action==='Fingerprint Login'){
+    $('genericContent').innerHTML=`<section class="app-combined-section"><h2>Fingerprint / Passkey</h2>
+      <p style="color:#687789;line-height:1.55">ಈ ಸಾಧನದಲ್ಲಿ Fingerprint ಅಥವಾ Screen Lock ಬಳಸಿ ಮುಂದಿನ ಬಾರಿ NEOCUREಗೆ ಸುರಕ್ಷಿತವಾಗಿ Login ಆಗಬಹುದು. ಮೊದಲು MPIN ಮೂಲಕ Login ಆಗಿರಬೇಕು.</p>
+      <button type="button" class="app-combined-save" id="appRegisterPasskey">Enable Fingerprint Login</button>
+      <p id="appPasskeyStatus" role="status" aria-live="polite" style="margin:10px 0 0;color:#687789"></p>
+      <p style="font-size:12px;color:#8792a0;line-height:1.5">Passkey ನಿಮ್ಮ device/browserನಲ್ಲಿ ಸಂಗ್ರಹವಾಗುತ್ತದೆ. Device support ಇಲ್ಲದಿದ್ದರೆ MPIN Login ಮುಂದುವರಿಯುತ್ತದೆ.</p>
+    </section>`;
+    $('appRegisterPasskey').onclick=async()=>{
+      const btn=$('appRegisterPasskey'),status=$('appPasskeyStatus');btn.disabled=true;status.textContent='Fingerprint registration ನಡೆಯುತ್ತಿದೆ…';
+      try{await window.NEOCURE_AUTH.registerPasskey();status.textContent='Fingerprint / Passkey ಯಶಸ್ವಿಯಾಗಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ.';}
+      catch(e){status.textContent=window.NEOCURE_AUTH.message(e);}
+      finally{btn.disabled=false;}
+    };
   }else if(action==='Coupon & Scan Help'){
     $('genericContent').innerHTML=`<section class="app-combined-section"><h2>Coupon & Scan Help</h2><div class="app-help-detail"><h3>1. Scan only NEOCURE coupons</h3><p>Use the Scan Coupon option in the Applicator Portal and keep the complete QR code visible inside the camera frame.</p><h3>2. Wait for secure verification</h3><p>Reading a QR code does not redeem the coupon. The system must verify that the coupon was generated by NEOCURE and is valid for use.</p><h3>3. Check the result</h3><p>Follow the on-screen result after verification. A coupon that is already redeemed, cancelled or invalid cannot be claimed again.</p><h3>4. If scanning does not work</h3><p>Clean the camera lens, improve the lighting, hold the phone steady and try again. If the issue continues, return to Help & Support and submit a problem report with the details.</p></section>`;
   }else if(action==='Rewards Help'){
@@ -10559,11 +10588,14 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   };
   return map[code]||(e&&e.message)||'ಕಾರ್ಯ ಪೂರ್ಣಗೊಳಿಸಲಾಗಲಿಲ್ಲ. Firebase ಪರಿಶೀಲಿಸಿ.';
  }
+ let recaptchaElementSerial=0;
  function resetRecaptcha(){
   const oldHost=document.getElementById('recaptcha-container');
   try{if(recaptcha)recaptcha.clear();}catch(e){console.warn('reCAPTCHA cleanup:',e);}
   recaptcha=null;
   if(oldHost && oldHost.parentNode){
+   // Google reCAPTCHA remembers rendered widget IDs on the original element.
+   // Replacing the actual DOM node prevents "already been rendered" on retries.
    const freshHost=document.createElement('div');
    freshHost.id='recaptcha-container';
    freshHost.setAttribute('aria-live','polite');
@@ -10572,26 +10604,27 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
  }
  async function startPhoneOtp(mobile){
   if(!auth)throw new Error('Firebase initialize ಆಗಿಲ್ಲ. Internet ಮತ್ತು Firebase config ಪರಿಶೀಲಿಸಿ.');
-  // Discard any previous widget and create one stable, fresh host for this attempt.
+  // reCAPTCHA tokens are single-use. Always create a brand-new verifier for each SMS attempt.
   resetRecaptcha();
   confirmation=null;
   const host=document.getElementById('recaptcha-container');
   if(!host)throw new Error('reCAPTCHA container ಸಿಗಲಿಲ್ಲ. Page reload ಮಾಡಿ.');
+  // Phone Auth reCAPTCHA must run on an allowed HTTP(S) origin.
+  // A downloaded content:// or file:// HTML page is not a valid production origin.
   const protocol=String(window.location.protocol||'').toLowerCase();
   if(protocol!=='https:' && protocol!=='http:'){
-   throw new Error('ನಿಜವಾದ SMS OTP ಪರೀಕ್ಷಿಸಲು Vercel HTTPS linkನಲ್ಲಿ ತೆರೆಯಿರಿ.');
+   throw new Error('ಈ HTML ಅನ್ನು ನೇರವಾಗಿ Downloadsನಿಂದ ತೆರೆಯಲಾಗಿದೆ. ನಿಜವಾದ SMS OTP ಪರೀಕ್ಷಿಸಲು Vercel HTTPS linkನಲ್ಲಿ ತೆರೆಯಿರಿ. Firebaseಗೆ local content:// page ಮಾನ್ಯ origin ಅಲ್ಲ.');
   }
-  recaptcha=new firebase.auth.RecaptchaVerifier('recaptcha-container',{
+  host.id='recaptcha-container-'+(++recaptchaElementSerial);
+  recaptcha=new firebase.auth.RecaptchaVerifier(host.id,{
    size:'normal',
    callback:function(){},
-   'expired-callback':function(){console.warn('reCAPTCHA expired; retry registration.');}
+   'expired-callback':function(){resetRecaptcha();}
   });
   try{
-   // render() only creates the widget. Keep the verifier alive while Firebase
-   // completes signInWithPhoneNumber; do not clear it immediately afterwards.
    await recaptcha.render();
-   const sent=await auth.signInWithPhoneNumber(phoneE164(mobile),recaptcha);
-   confirmation=sent;
+   confirmation=await auth.signInWithPhoneNumber(phoneE164(mobile),recaptcha);
+   resetRecaptcha();
    return true;
   }catch(e){
    resetRecaptcha();
@@ -10602,13 +10635,13 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
  async function verifyPhoneOtp(code){
   if(!confirmation)throw new Error('OTP request ಸಿಗಲಿಲ್ಲ. Register ಮಾಡಿ ಮತ್ತೆ OTP ಪಡೆಯಿರಿ.');
   const activeConfirmation=confirmation;
+  confirmation=null;
   try{
    await activeConfirmation.confirm(code);
-   confirmation=null;
    resetRecaptcha();
    return true;
   }catch(e){
-   // Keep the same confirmation result and verifier available for a mistyped OTP.
+   // If the OTP is mistyped, Firebase's confirmation object remains usable; restore it for retry.
    confirmation=activeConfirmation;
    throw e;
   }
@@ -10650,8 +10683,72 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   const snap=await ref.put(file,metadata||{});
   return {path:snap.ref.fullPath,url:await snap.ref.getDownloadURL()};
  }
- window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,uploadUserFile,message,auth,db,storage};
- window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V1704'};
+ 
+ function b64uToBytes(value){
+  const s=String(value||'').replace(/-/g,'+').replace(/_/g,'/');
+  const padded=s+'='.repeat((4-s.length%4)%4),raw=atob(padded);
+  return Uint8Array.from(raw,c=>c.charCodeAt(0));
+ }
+ function bytesToB64u(value){
+  if(!value)return undefined;
+  const bytes=new Uint8Array(value);let raw='';
+  for(let i=0;i<bytes.length;i++)raw+=String.fromCharCode(bytes[i]);
+  return btoa(raw).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+ }
+ function credentialToJSON(credential){
+  const r=credential.response||{};
+  const out={id:credential.id,rawId:bytesToB64u(credential.rawId),type:credential.type,
+   response:{clientDataJSON:bytesToB64u(r.clientDataJSON)}};
+  if(r.attestationObject)out.response.attestationObject=bytesToB64u(r.attestationObject);
+  if(r.authenticatorData)out.response.authenticatorData=bytesToB64u(r.authenticatorData);
+  if(r.signature)out.response.signature=bytesToB64u(r.signature);
+  if(r.userHandle)out.response.userHandle=bytesToB64u(r.userHandle);
+  if(typeof r.getTransports==='function')out.response.transports=r.getTransports();
+  return out;
+ }
+ async function registerPasskey(){
+  if(!auth||!auth.currentUser)throw new Error('ಮೊದಲು MPIN ಮೂಲಕ Login ಮಾಡಿ.');
+  if(!window.isSecureContext||!window.PublicKeyCredential||!navigator.credentials)
+   throw new Error('Fingerprint/Passkeyಗೆ HTTPS ಮತ್ತು ಬೆಂಬಲಿತ Android browser ಅಗತ್ಯ.');
+  const available=await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+  if(!available)throw new Error('ಈ deviceನಲ್ಲಿ fingerprint ಅಥವಾ screen-lock authenticator ಲಭ್ಯವಿಲ್ಲ.');
+  const start=await functions.httpsCallable('passkeyRegistrationOptions')({});
+  const options=start.data&&start.data.options;
+  if(!options)throw new Error('Passkey registration options ಸಿಗಲಿಲ್ಲ.');
+  options.challenge=b64uToBytes(options.challenge);
+  if(options.user&&options.user.id)options.user.id=b64uToBytes(options.user.id);
+  if(options.excludeCredentials)options.excludeCredentials=options.excludeCredentials.map(x=>({...x,id:b64uToBytes(x.id)}));
+  const credential=await navigator.credentials.create({publicKey:options});
+  if(!credential)throw new Error('Fingerprint registration ರದ್ದುಪಡಿಸಲಾಗಿದೆ.');
+  await functions.httpsCallable('verifyPasskeyRegistration')({credential:credentialToJSON(credential)});
+  return true;
+ }
+ async function passkeyLogin(mobile,role){
+  if(!window.isSecureContext||!window.PublicKeyCredential||!navigator.credentials)
+   throw new Error('Fingerprint Loginಗೆ HTTPS ಮತ್ತು ಬೆಂಬಲಿತ browser ಅಗತ್ಯ.');
+  const phone=String(mobile||'').replace(/\D/g,'').slice(-10);
+  if(!/^\d{10}$/.test(phone))throw new Error('ಮೊದಲು ನೋಂದಾಯಿತ 10 ಅಂಕಿಯ mobile ನಮೂದಿಸಿ.');
+  const portal=String(role||'Dealer').toLowerCase();
+  const start=await functions.httpsCallable('passkeyLoginOptions')({phone,role:portal});
+  const options=start.data&&start.data.options;
+  if(!options)throw new Error('Passkey login options ಸಿಗಲಿಲ್ಲ.');
+  options.challenge=b64uToBytes(options.challenge);
+  if(options.allowCredentials)options.allowCredentials=options.allowCredentials.map(x=>({...x,id:b64uToBytes(x.id)}));
+  const assertion=await navigator.credentials.get({publicKey:options});
+  if(!assertion)throw new Error('Fingerprint Login ರದ್ದುಪಡಿಸಲಾಗಿದೆ.');
+  const done=await functions.httpsCallable('verifyPasskeyLogin')({phone,role:portal,credential:credentialToJSON(assertion)});
+  if(!done.data||!done.data.customToken)throw new Error('Firebase custom token ಸಿಗಲಿಲ್ಲ.');
+  const cred=await auth.signInWithCustomToken(done.data.customToken);
+  const snap=await db.ref('users/'+cred.user.uid).once('value'),profile=snap.val()||{};
+  if(String(profile.role||'').toLowerCase()!==portal ||
+     String(profile.phone||'').replace(/\D/g,'').slice(-10)!==phone){
+    await auth.signOut();throw new Error('Passkey account details ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ.');
+  }
+  return {name:profile.name||'',mobile:phone,role:portal==='applicator'?'Applicator':'Dealer',uid:cred.user.uid};
+ }
+
+ window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,uploadUserFile,registerPasskey,passkeyLogin,message,auth,db,storage};
+ window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V1703'};
 })();
 </script>
 
@@ -11505,10 +11602,12 @@ window.NEOCURE_V1491={
 
 <script id="neocure-v1492-dynamic-applicator-back">
 window.NEOCURE_V1496={
- version:'V1704',
+ version:'V1703',
  base:'V1491',
  fix:'popstate restores dynamic Applicator workspace routes using openApplicatorPage',
  routes:['Work Category: ','Rate Book: ','Work History: '],
  note:'Static syntax validation only; test Android Chrome Back on device'
 };
 </script>
+
+<!-- V1703: Connects WebAuthn passkey registration/login to deployed Firebase callable functions. -->
