@@ -2407,7 +2407,7 @@ button{ -webkit-tap-highlight-color:transparent }
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
 </head>
 <body>
-<div class="firebase-build-notice" id="firebaseBuildNotice">NEOCURE V1702: Firebase Phone Authentication and secure account login.</div>
+<div class="firebase-build-notice" id="firebaseBuildNotice">NEOCURE V1703: Firebase Phone Authentication and secure account login.</div>
 
 <main id="registerScreen" class="app">
   <div class="brand">NEO<span>CURE</span></div>
@@ -2426,7 +2426,7 @@ button{ -webkit-tap-highlight-color:transparent }
   <p id="regError" class="inline-error"></p>
   <button id="registerBtn" class="primary" type="button">Register</button>
   <div class="bottom">Already registered? <button id="toLogin" class="link" type="button">Log In</button></div>
-  <div class="demo-note">NEOCURE V1702 • FIREBASE AUTH</div>
+  <div class="demo-note">NEOCURE V1703 • FIREBASE AUTH</div>
 </main>
 
 <main id="otpScreen" class="app hidden">
@@ -10559,14 +10559,11 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   };
   return map[code]||(e&&e.message)||'ಕಾರ್ಯ ಪೂರ್ಣಗೊಳಿಸಲಾಗಲಿಲ್ಲ. Firebase ಪರಿಶೀಲಿಸಿ.';
  }
- let recaptchaElementSerial=0;
  function resetRecaptcha(){
   const oldHost=document.getElementById('recaptcha-container');
   try{if(recaptcha)recaptcha.clear();}catch(e){console.warn('reCAPTCHA cleanup:',e);}
   recaptcha=null;
   if(oldHost && oldHost.parentNode){
-   // Google reCAPTCHA remembers rendered widget IDs on the original element.
-   // Replacing the actual DOM node prevents "already been rendered" on retries.
    const freshHost=document.createElement('div');
    freshHost.id='recaptcha-container';
    freshHost.setAttribute('aria-live','polite');
@@ -10575,27 +10572,26 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
  }
  async function startPhoneOtp(mobile){
   if(!auth)throw new Error('Firebase initialize ಆಗಿಲ್ಲ. Internet ಮತ್ತು Firebase config ಪರಿಶೀಲಿಸಿ.');
-  // reCAPTCHA tokens are single-use. Always create a brand-new verifier for each SMS attempt.
+  // Discard any previous widget and create one stable, fresh host for this attempt.
   resetRecaptcha();
   confirmation=null;
   const host=document.getElementById('recaptcha-container');
   if(!host)throw new Error('reCAPTCHA container ಸಿಗಲಿಲ್ಲ. Page reload ಮಾಡಿ.');
-  // Phone Auth reCAPTCHA must run on an allowed HTTP(S) origin.
-  // A downloaded content:// or file:// HTML page is not a valid production origin.
   const protocol=String(window.location.protocol||'').toLowerCase();
   if(protocol!=='https:' && protocol!=='http:'){
-   throw new Error('ಈ HTML ಅನ್ನು ನೇರವಾಗಿ Downloadsನಿಂದ ತೆರೆಯಲಾಗಿದೆ. ನಿಜವಾದ SMS OTP ಪರೀಕ್ಷಿಸಲು Vercel HTTPS linkನಲ್ಲಿ ತೆರೆಯಿರಿ. Firebaseಗೆ local content:// page ಮಾನ್ಯ origin ಅಲ್ಲ.');
+   throw new Error('ನಿಜವಾದ SMS OTP ಪರೀಕ್ಷಿಸಲು Vercel HTTPS linkನಲ್ಲಿ ತೆರೆಯಿರಿ.');
   }
-  host.id='recaptcha-container-'+(++recaptchaElementSerial);
-  recaptcha=new firebase.auth.RecaptchaVerifier(host.id,{
+  recaptcha=new firebase.auth.RecaptchaVerifier('recaptcha-container',{
    size:'normal',
    callback:function(){},
-   'expired-callback':function(){resetRecaptcha();}
+   'expired-callback':function(){console.warn('reCAPTCHA expired; retry registration.');}
   });
   try{
+   // render() only creates the widget. Keep the verifier alive while Firebase
+   // completes signInWithPhoneNumber; do not clear it immediately afterwards.
    await recaptcha.render();
-   confirmation=await auth.signInWithPhoneNumber(phoneE164(mobile),recaptcha);
-   resetRecaptcha();
+   const sent=await auth.signInWithPhoneNumber(phoneE164(mobile),recaptcha);
+   confirmation=sent;
    return true;
   }catch(e){
    resetRecaptcha();
@@ -10606,13 +10602,13 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
  async function verifyPhoneOtp(code){
   if(!confirmation)throw new Error('OTP request ಸಿಗಲಿಲ್ಲ. Register ಮಾಡಿ ಮತ್ತೆ OTP ಪಡೆಯಿರಿ.');
   const activeConfirmation=confirmation;
-  confirmation=null;
   try{
    await activeConfirmation.confirm(code);
+   confirmation=null;
    resetRecaptcha();
    return true;
   }catch(e){
-   // If the OTP is mistyped, Firebase's confirmation object remains usable; restore it for retry.
+   // Keep the same confirmation result and verifier available for a mistyped OTP.
    confirmation=activeConfirmation;
    throw e;
   }
@@ -10655,7 +10651,7 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   return {path:snap.ref.fullPath,url:await snap.ref.getDownloadURL()};
  }
  window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,uploadUserFile,message,auth,db,storage};
- window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V1702'};
+ window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V1703'};
 })();
 </script>
 
@@ -11509,7 +11505,7 @@ window.NEOCURE_V1491={
 
 <script id="neocure-v1492-dynamic-applicator-back">
 window.NEOCURE_V1496={
- version:'V1702',
+ version:'V1703',
  base:'V1491',
  fix:'popstate restores dynamic Applicator workspace routes using openApplicatorPage',
  routes:['Work Category: ','Rate Book: ','Work History: '],
