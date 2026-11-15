@@ -10539,6 +10539,8 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   const code=e&&e.code||'';
   const map={
    'auth/invalid-phone-number':'ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಸರಿಯಾಗಿಲ್ಲ.',
+   'auth/captcha-check-failed':'reCAPTCHA ಪರಿಶೀಲನೆ ವಿಫಲವಾಗಿದೆ. ಪುಟವನ್ನು Refresh ಮಾಡಿ ಮತ್ತೆ Register ಒತ್ತಿ.',
+   'auth/recaptcha-expired':'reCAPTCHA ಅವಧಿ ಮುಗಿದಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
    'auth/too-many-requests':'ಹೆಚ್ಚು ಪ್ರಯತ್ನಗಳಾಗಿವೆ. ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ.',
    'auth/invalid-verification-code':'OTP ತಪ್ಪಾಗಿದೆ. ಮತ್ತೆ ಪರಿಶೀಲಿಸಿ.',
    'auth/code-expired':'OTP ಅವಧಿ ಮುಗಿದಿದೆ. ಹೊಸ OTP ಪಡೆಯಿರಿ.',
@@ -10553,19 +10555,44 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   };
   return map[code]||(e&&e.message)||'ಕಾರ್ಯ ಪೂರ್ಣಗೊಳಿಸಲಾಗಲಿಲ್ಲ. Firebase ಪರಿಶೀಲಿಸಿ.';
  }
+ function resetRecaptcha(){
+  try{if(recaptcha)recaptcha.clear();}catch(e){console.warn('reCAPTCHA cleanup:',e);}
+  recaptcha=null;
+  const host=document.getElementById('recaptcha-container');
+  if(host)host.innerHTML='';
+ }
  async function startPhoneOtp(mobile){
   if(!auth)throw new Error('Firebase initialize ಆಗಿಲ್ಲ. Internet ಮತ್ತು Firebase config ಪರಿಶೀಲಿಸಿ.');
-  if(!recaptcha){
-   recaptcha=new firebase.auth.RecaptchaVerifier('recaptcha-container',{size:'invisible',callback:function(){},'expired-callback':function(){recaptcha=null;}});
+  // reCAPTCHA tokens are single-use. Always create a brand-new verifier for each SMS attempt.
+  resetRecaptcha();
+  confirmation=null;
+  const host=document.getElementById('recaptcha-container');
+  if(!host)throw new Error('reCAPTCHA container ಸಿಗಲಿಲ್ಲ. Page reload ಮಾಡಿ.');
+  recaptcha=new firebase.auth.RecaptchaVerifier(host,{size:'invisible',callback:function(){},'expired-callback':function(){resetRecaptcha();}});
+  try{
    await recaptcha.render();
+   confirmation=await auth.signInWithPhoneNumber(phoneE164(mobile),recaptcha);
+   resetRecaptcha();
+   return true;
+  }catch(e){
+   resetRecaptcha();
+   confirmation=null;
+   throw e;
   }
-  confirmation=await auth.signInWithPhoneNumber(phoneE164(mobile),recaptcha);
-  return true;
  }
  async function verifyPhoneOtp(code){
   if(!confirmation)throw new Error('OTP request ಸಿಗಲಿಲ್ಲ. Register ಮಾಡಿ ಮತ್ತೆ OTP ಪಡೆಯಿರಿ.');
-  await confirmation.confirm(code);
-  return true;
+  const activeConfirmation=confirmation;
+  confirmation=null;
+  try{
+   await activeConfirmation.confirm(code);
+   resetRecaptcha();
+   return true;
+  }catch(e){
+   // If the OTP is mistyped, Firebase's confirmation object remains usable; restore it for retry.
+   confirmation=activeConfirmation;
+   throw e;
+  }
  }
  async function finishRegistration(pending,pin){
   const user=auth.currentUser;
@@ -10605,7 +10632,7 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   return {path:snap.ref.fullPath,url:await snap.ref.getDownloadURL()};
  }
  window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,uploadUserFile,message,auth,db,storage};
- window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V1497'};
+ window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V1497-R1'};
 })();
 </script>
 
