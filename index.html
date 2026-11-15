@@ -2407,7 +2407,7 @@ button{ -webkit-tap-highlight-color:transparent }
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-functions-compat.js"></script>
 </head>
 <body>
-<div class="firebase-build-notice" id="firebaseBuildNotice">NEOCURE V1703: Firebase Phone Authentication and secure account login.</div>
+<div class="firebase-build-notice" id="firebaseBuildNotice">NEOCURE V1704: Firebase Phone Authentication and secure account login.</div>
 
 <main id="registerScreen" class="app">
   <div class="brand">NEO<span>CURE</span></div>
@@ -2426,7 +2426,7 @@ button{ -webkit-tap-highlight-color:transparent }
   <p id="regError" class="inline-error"></p>
   <button id="registerBtn" class="primary" type="button">Register</button>
   <div class="bottom">Already registered? <button id="toLogin" class="link" type="button">Log In</button></div>
-  <div class="demo-note">NEOCURE V1703 • FIREBASE AUTH</div>
+  <div class="demo-note">NEOCURE V1704 • FIREBASE AUTH</div>
 </main>
 
 <main id="otpScreen" class="app hidden">
@@ -2434,7 +2434,7 @@ button{ -webkit-tap-highlight-color:transparent }
   <h1>Verify Mobile Number</h1>
   <p class="sub">Enter the one-time password to verify your number</p>
   <label class="label" for="otpInput">OTP</label>
-  <div class="field"><input id="otpInput" type="tel" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit OTP"></div>
+  <div class="field"><input id="otpInput" type="tel" inputmode="numeric" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="Enter 6-digit OTP"></div>
   <p id="otpError" class="inline-error"></p>
   <button id="verifyOtp" class="primary" type="button">Verify OTP</button>
   <div class="demo-note">SMS OTP ಮೂಲಕ ಮೊಬೈಲ್ ಪರಿಶೀಲನೆ</div>
@@ -2792,7 +2792,7 @@ window.addEventListener('popstate',(event)=>{
  }
 });
 function digits(el,max){el.addEventListener('input',()=>el.value=el.value.replace(/\\D/g,'').slice(0,max))}
-['regMobile','otpInput','newPin','confirmPin','loginMobile','loginPin'].forEach(id=>digits($(id),id.toLowerCase().includes('mobile')?10:4));
+['regMobile','otpInput','newPin','confirmPin','loginMobile','loginPin'].forEach(id=>digits($(id),id==='regMobile'||id==='loginMobile'?10:id==='otpInput'?6:4));
 document.querySelectorAll('[data-role]').forEach(btn=>btn.addEventListener('click',()=>{selectedRole=btn.dataset.role;document.querySelectorAll('[data-role]').forEach(b=>b.classList.toggle('active',b===btn))}));
 document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{
  const action=btn.dataset.action;
@@ -10651,7 +10651,7 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   return {path:snap.ref.fullPath,url:await snap.ref.getDownloadURL()};
  }
  window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,uploadUserFile,message,auth,db,storage};
- window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V1703'};
+ window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V1704'};
 })();
 </script>
 
@@ -11505,7 +11505,7 @@ window.NEOCURE_V1491={
 
 <script id="neocure-v1492-dynamic-applicator-back">
 window.NEOCURE_V1496={
- version:'V1703',
+ version:'V1704',
  base:'V1491',
  fix:'popstate restores dynamic Applicator workspace routes using openApplicatorPage',
  routes:['Work Category: ','Rate Book: ','Work History: '],
