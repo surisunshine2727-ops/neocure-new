@@ -4452,6 +4452,24 @@ button:disabled{opacity:.48!important;filter:saturate(.55);box-shadow:none!impor
 .mpin-reset-recaptcha-area iframe{max-width:100%;visibility:visible!important}
 </style>
 
+
+<style id="v2159-3-fingerprint-login-feedback">
+#loginScreen #fingerprintLoginBtn{
+  opacity:1!important;filter:none!important;cursor:pointer!important;
+  background:#f1f7f7!important;color:#31566a!important;
+  border:1.5px solid #d6e5e4!important;
+}
+#loginScreen #fingerprintLoginBtn:disabled{opacity:.62!important;cursor:wait!important}
+#loginScreen #fingerprintMsg[style*="display: block"],
+#loginScreen #fingerprintMsg[style*="display:block"]{
+  display:block!important;visibility:visible!important;
+  margin:9px 2px 0!important;padding:9px 11px!important;
+  border-radius:10px!important;background:#f3f8fb!important;
+  color:#314b60!important;font-size:13px!important;line-height:1.45!important;
+  white-space:normal!important;
+}
+</style>
+
 </head>
 <body>
 <div class="firebase-build-notice" id="firebaseBuildNotice">NEOCURE V2153/2.3: Dealer Business Details registration step.</div>
@@ -4674,7 +4692,7 @@ button:disabled{opacity:.48!important;filter:saturate(.55);box-shadow:none!impor
 <span>Log In</span>
 </button>
 <button class="secondary" id="fingerprintLoginBtn" style="margin-top:10px" type="button">☝ Enable / Use Fingerprint</button>
-<p aria-live="polite" class="demo-note" id="fingerprintMsg">Fingerprint sign-in will be available after secure Firebase Authentication / passkey setup.</p>
+<p aria-live="polite" class="demo-note" id="fingerprintMsg">Fingerprint Login ಸಿದ್ಧವಾಗಿದೆ. Login ಮಾಡಲು Fingerprint ಬಟನ್ ಒತ್ತಿ.</p>
 <div class="bottom">New to NEOCURE? <button class="link" id="toRegister" type="button">Create Account</button></div>
 </section>
 </main>
@@ -5444,7 +5462,13 @@ $('fingerprintLoginBtn').onclick=async()=>{
    $('applicatorAvatar').textContent=(result.name||'A').trim().charAt(0).toUpperCase();try{const ap=JSON.parse(localStorage.getItem('neocure_applicator_profile_'+String(result.mobile||''))||'{}');if(ap.profilePhoto)$('applicatorAvatar').innerHTML=`<img src="${ap.profilePhoto}" alt="Profile photo">`;}catch(e){}
    show('applicatorDashboard');
   }else{show('homeScreen');renderDashboardCredit();renderDashboardProfilePhoto();}
- }catch(e){$('loginError').textContent=window.NEOCURE_AUTH.message(e);msg.textContent=e.message||'Fingerprint Login ವಿಫಲವಾಗಿದೆ.';}
+ }catch(e){
+  const detail=(window.NEOCURE_AUTH&&window.NEOCURE_AUTH.message)
+    ?window.NEOCURE_AUTH.message(e)
+    :(e&&e.message?e.message:'Fingerprint Login ವಿಫಲವಾಗಿದೆ.');
+  $('loginError').textContent=detail;
+  msg.textContent=detail;
+ }
  finally{btn.disabled=false;}
 };
 
@@ -20819,3 +20843,4 @@ window.NEOCURE_V2080={version:'V2080',base:'V2079',fixes:['Header and item rows 
 </style>
 <!-- V2152: final pass of exact-match UI translations and dynamic quantity label localization; application workflows preserved. -->
 \n<!-- V2159/2: bound Firebase reCAPTCHA render and SMS request waits; show explicit timeout instead of indefinite freeze. -->\n
+<!-- V2159/3: Fingerprint Login diagnostic feedback visible; passkey backend calls unchanged. -->
