@@ -4489,6 +4489,23 @@ button:disabled{opacity:.48!important;filter:saturate(.55);box-shadow:none!impor
 #loginScreen #fingerprintMsg{display:block!important;visibility:visible!important;opacity:1!important}
 </style>
 
+
+<style id="v2159-6-fingerprint-independent-control">
+#loginScreen #fingerprintLoginBtnV2{
+ display:block!important;visibility:visible!important;opacity:1!important;
+ filter:none!important;pointer-events:auto!important;cursor:pointer!important;
+ background:#f1f7f7!important;color:#31566a!important;
+ border:1.5px solid #cbdedc!important;min-height:54px!important;
+}
+#loginScreen #fingerprintLoginBtnV2:disabled{opacity:.7!important;cursor:wait!important}
+#loginScreen #fingerprintMsg{
+ display:block!important;visibility:visible!important;opacity:1!important;
+ min-height:18px!important;padding:8px 10px!important;margin:8px 2px 0!important;
+ border-radius:9px!important;background:#f3f8fa!important;color:#344f63!important;
+ font-size:13px!important;line-height:1.45!important;white-space:normal!important;
+}
+</style>
+
 </head>
 <body>
 <div class="firebase-build-notice" id="firebaseBuildNotice">NEOCURE V2153/2.3: Dealer Business Details registration step.</div>
@@ -20900,3 +20917,64 @@ window.NEOCURE_V2080={version:'V2080',base:'V2079',fixes:['Header and item rows 
 <!-- V2159/4: passkey callable stages report progress and bounded timeout; Firebase flow preserved. -->
 
 <!-- V2159/5: new isolated login button ID/handler; blur phone input and clear selection before WebAuthn. -->
+
+<script id="v2159-6-independent-fingerprint-click">
+(function(){
+ function bindFingerprint(){
+  const btn=document.getElementById('fingerprintLoginBtnV2');
+  const msg=document.getElementById('fingerprintMsg');
+  if(!btn||btn.dataset.v21596Bound==='1')return;
+  btn.dataset.v21596Bound='1';
+  const showStatus=(text)=>{
+   if(msg){msg.textContent=text;msg.style.display='block';msg.style.visibility='visible';}
+  };
+  btn.disabled=false;
+  btn.addEventListener('click',async function(event){
+   event.preventDefault();
+   event.stopImmediatePropagation();
+   const mobileField=document.getElementById('loginMobile');
+   const mobile=mobileField?String(mobileField.value||'').trim():'';
+   const role=(window.selectedLoginRole||'Dealer');
+   if(mobileField)mobileField.blur();
+   try{if(window.getSelection)window.getSelection().removeAllRanges();}catch(_){}
+   btn.disabled=true;
+   showStatus('Fingerprint Button click ಸ್ವೀಕರಿಸಲಾಗಿದೆ. Passkey Login ಆರಂಭಿಸಲಾಗುತ್ತಿದೆ…');
+   try{
+    if(!window.NEOCURE_AUTH||typeof window.NEOCURE_AUTH.passkeyLogin!=='function'){
+     throw new Error('Passkey Login module ಲಭ್ಯವಿಲ್ಲ. Page scripts initialize ಆಗಿಲ್ಲ.');
+    }
+    showStatus('Firebase Passkey options ಕೇಳಲಾಗುತ್ತಿದೆ…');
+    const result=await window.NEOCURE_AUTH.passkeyLogin(mobile,role);
+    if(!result||!result.uid)throw new Error('Passkey Login ಫಲಿತಾಂಶ ಅಪೂರ್ಣವಾಗಿದೆ.');
+    if(typeof currentAccount!=='undefined'){
+     currentAccount={name:result.name||'',mobile:result.mobile||mobile,role:result.role||role,uid:result.uid};
+    }
+    showStatus('Fingerprint Login ಯಶಸ್ವಿಯಾಗಿದೆ. Dashboard ತೆರೆಯಲಾಗುತ್ತಿದೆ…');
+    if(String(result.role||role).toLowerCase()==='applicator'){
+     const welcome=document.getElementById('applicatorWelcome');
+     const avatar=document.getElementById('applicatorAvatar');
+     if(welcome)welcome.textContent='Welcome, '+(result.name||'');
+     if(avatar)avatar.textContent=(result.name||'A').trim().charAt(0).toUpperCase();
+     if(typeof show==='function')show('applicatorDashboard');
+    }else{
+     if(typeof show==='function')show('homeScreen');
+     if(typeof renderDashboardCredit==='function')renderDashboardCredit();
+     if(typeof renderDashboardProfilePhoto==='function')renderDashboardProfilePhoto();
+    }
+   }catch(error){
+    const detail=(window.NEOCURE_AUTH&&typeof window.NEOCURE_AUTH.message==='function')
+      ?window.NEOCURE_AUTH.message(error)
+      :(error&&error.message?error.message:String(error));
+    showStatus('Fingerprint Login Error: '+detail);
+   }finally{
+    btn.disabled=false;
+   }
+  },true);
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindFingerprint,{once:true});
+ else bindFingerprint();
+})();
+</script>
+
+
+<!-- V2159/6: independent capturing click handler with visible status; reuses existing passkey auth method. -->
