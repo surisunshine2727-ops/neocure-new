@@ -4443,6 +4443,15 @@ button:disabled{opacity:.48!important;filter:saturate(.55);box-shadow:none!impor
   #otpScreen .otp-footnote{margin-top:8px!important}
 }
 </style>
+
+<style id="v2159-1-forgot-mpin-visible-recaptcha">
+.mpin-reset-recaptcha-area{display:block;min-height:92px;margin:12px 0 8px;padding:10px;border:1px solid #dce8f2;border-radius:12px;background:#f8fbff;overflow:visible}
+.mpin-reset-recaptcha-area #mpinResetRecaptchaSlot{display:flex;justify-content:center;align-items:center;min-height:78px;width:100%;overflow:visible}
+.mpin-reset-recaptcha-area #mpinResetRecaptchaSlot>div{max-width:100%;margin:0 auto}
+.mpin-reset-recaptcha-hint{margin:5px 0 0;color:#687b8e;font-size:12px;line-height:1.4;text-align:center}
+.mpin-reset-recaptcha-area iframe{max-width:100%;visibility:visible!important}
+</style>
+
 </head>
 <body>
 <div class="firebase-build-notice" id="firebaseBuildNotice">NEOCURE V2153/2.3: Dealer Business Details registration step.</div>
@@ -4604,6 +4613,10 @@ button:disabled{opacity:.48!important;filter:saturate(.55);box-shadow:none!impor
 <span aria-hidden="true" class="mpin-reset-field-icon">☎</span>
 <input autocomplete="tel" id="mpinResetMobile" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit mobile number" type="tel"/>
 </div>
+<div class="mpin-reset-recaptcha-area">
+  <div id="mpinResetRecaptchaSlot" aria-live="polite"></div>
+  <p class="mpin-reset-recaptcha-hint">Complete Google verification if it appears, then send the OTP.</p>
+</div>
 <button class="mpin-reset-primary" id="mpinResetSend" type="button">
 <span>Send Verification OTP</span><span aria-hidden="true">→</span>
 </button>
@@ -4666,7 +4679,7 @@ button:disabled{opacity:.48!important;filter:saturate(.55);box-shadow:none!impor
 </section>
 </main>
 <!-- Shared visible Firebase Phone Auth reCAPTCHA host for registration and MPIN reset. -->
-<div aria-live="polite" id="recaptcha-container" style="margin:10px 0"></div>
+<div id="recaptcha-home-anchor"></div><div aria-live="polite" id="recaptcha-container" style="margin:10px 0"></div>
 <header class="app-topbar hidden" id="homeHeader">
 <div aria-label="NEOCURE" class="header-brand-lockup">
 <svg aria-hidden="true" class="neocure-header-mark" fill="none" viewbox="0 0 48 48">
@@ -5313,6 +5326,9 @@ document.querySelectorAll('#mpinResetPanel [data-reset-eye]').forEach(btn=>{
  });
 });
 $('forgot').onclick=()=>{
+ const recaptchaHost=document.getElementById('recaptcha-container')||document.querySelector('[id^="recaptcha-container-"]');
+ const recaptchaSlot=$('mpinResetRecaptchaSlot');
+ if(recaptchaHost&&recaptchaSlot)recaptchaSlot.appendChild(recaptchaHost);
  const loginMobile=$('loginMobile').value.trim();
  mpinResetRole=selectedLoginRole||'Dealer';
  mpinResetPhone=/^\d{10}$/.test(loginMobile)?loginMobile:'';
@@ -5328,14 +5344,15 @@ async function mpinResetSendOtp(isResend=false){
  if(!/^\d{10}$/.test(mobile)){$('mpinResetStatus').textContent='ನೋಂದಾಯಿತ 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ.';return;}
  mpinResetPhone=mobile;
  const btn=isResend?$('mpinResetResend'):$('mpinResetSend');
- btn.disabled=true;$('mpinResetStatus').textContent='SMS OTP ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ…';
+ btn.disabled=true;$('mpinResetStatus').textContent='Google verification ಪೂರ್ಣಗೊಳಿಸಿ. ನಂತರ SMS OTP ಕಳುಹಿಸಲಾಗುತ್ತದೆ…';
  try{
   await window.NEOCURE_AUTH.startPhoneOtp(mpinResetPhone);
   $('mpinResetSentTo').textContent='OTP sent to +91 '+mpinResetPhone;
   $('mpinResetStatus').textContent='SMS OTP ಕಳುಹಿಸಲಾಗಿದೆ. ನಿಮ್ಮ ಸಂದೇಶ ಪರಿಶೀಲಿಸಿ.';
   mpinResetSetStep('otp');mpinResetStartTimer();$('mpinResetOtpAutofill').focus();
  }catch(e){
-  $('mpinResetStatus').textContent=window.NEOCURE_AUTH.message(e);
+  const raw=String(e&&e.message||'');
+  $('mpinResetStatus').textContent=raw.includes('ಸಮಯ ಮೀರಿದೆ')?raw:window.NEOCURE_AUTH.message(e);
   btn.disabled=false;
  }
 }
@@ -5371,6 +5388,9 @@ $('mpinResetSave').onclick=async()=>{
 const closeMpinReset=()=>{
  mpinResetStopTimer();$('mpinResetPanel').classList.add('hidden');
  $('mpinResetStatus').textContent='';
+ const host=document.getElementById('recaptcha-container')||document.querySelector('[id^="recaptcha-container-"]');
+ const anchor=$('recaptcha-home-anchor');
+ if(host&&anchor){host.id='recaptcha-container';anchor.parentNode.insertBefore(host,anchor.nextSibling);}
 };
 $('mpinResetCancel').onclick=closeMpinReset;
 $('mpinResetBack').onclick=()=>{
@@ -17853,19 +17873,24 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
    oldHost.parentNode.replaceChild(freshHost,oldHost);
   }
  }
+ function waitForPhoneAuth(promise,label,timeoutMs=18000){
+  let timer;
+  return Promise.race([
+   Promise.resolve(promise),
+   new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(label+' ಸಮಯ ಮೀರಿದೆ. Internet, Google reCAPTCHA ಮತ್ತು Firebase Phone Authentication settings ಪರಿಶೀಲಿಸಿ; ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.')),timeoutMs);})
+  ]).finally(()=>clearTimeout(timer));
+ }
  async function startPhoneOtp(mobile){
   if(!auth)throw new Error('Firebase initialize ಆಗಿಲ್ಲ. Internet ಮತ್ತು Firebase config ಪರಿಶೀಲಿಸಿ.');
-  // reCAPTCHA tokens are single-use. Always create a brand-new verifier for each SMS attempt.
+  // A previous attempt may have left a stale single-use verifier; always recreate it.
   resetRecaptcha();
   confirmation=null;
   const host=document.getElementById('recaptcha-container')||document.querySelector('[id^="recaptcha-container-"]');
   if(!host)throw new Error('reCAPTCHA container ಸಿಗಲಿಲ್ಲ. Page reload ಮಾಡಿ.');
   recaptchaHost=host;
-  // Phone Auth reCAPTCHA must run on an allowed HTTP(S) origin.
-  // A downloaded content:// or file:// HTML page is not a valid production origin.
   const protocol=String(window.location.protocol||'').toLowerCase();
   if(protocol!=='https:' && protocol!=='http:'){
-   throw new Error('ಈ HTML ಅನ್ನು ನೇರವಾಗಿ Downloadsನಿಂದ ತೆರೆಯಲಾಗಿದೆ. ನಿಜವಾದ SMS OTP ಪರೀಕ್ಷಿಸಲು Vercel HTTPS linkನಲ್ಲಿ ತೆರೆಯಿರಿ. Firebaseಗೆ local content:// page ಮಾನ್ಯ origin ಅಲ್ಲ.');
+   throw new Error('ಈ HTML ಅನ್ನು Downloadsನಿಂದ ತೆರೆಯಲಾಗಿದೆ. SMS OTP ಪರೀಕ್ಷಿಸಲು Vercel HTTPS link ಬಳಸಿ.');
   }
   host.id='recaptcha-container-'+(++recaptchaElementSerial);
   recaptcha=new firebase.auth.RecaptchaVerifier(host.id,{
@@ -17874,8 +17899,13 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
    'expired-callback':function(){resetRecaptcha();}
   });
   try{
-   await recaptcha.render();
-   confirmation=await auth.signInWithPhoneNumber(phoneE164(mobile),recaptcha);
+   $('mpinResetStatus').textContent='Google reCAPTCHA ತೆರೆಯಲಾಗುತ್ತಿದೆ…';
+   await waitForPhoneAuth(recaptcha.render(),'Google reCAPTCHA ತೆರೆಯಲು',18000);
+   $('mpinResetStatus').textContent='Google verification ನಂತರ SMS OTP ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ…';
+   confirmation=await waitForPhoneAuth(
+    auth.signInWithPhoneNumber(phoneE164(mobile),recaptcha),
+    'Firebase SMS OTP ಕಳುಹಿಸಲು',18000
+   );
    resetRecaptcha();
    return true;
   }catch(e){
@@ -20788,3 +20818,4 @@ window.NEOCURE_V2080={version:'V2080',base:'V2079',fixes:['Header and item rows 
 @media(max-width:380px){#applicatorDashboard .app-welcome #applicatorAvatar{flex-basis:68px!important;width:68px!important;min-width:68px!important;max-width:68px!important;height:68px!important;min-height:68px!important;max-height:68px!important}}
 </style>
 <!-- V2152: final pass of exact-match UI translations and dynamic quantity label localization; application workflows preserved. -->
+\n<!-- V2159/2: bound Firebase reCAPTCHA render and SMS request waits; show explicit timeout instead of indefinite freeze. -->\n
