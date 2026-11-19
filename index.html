@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#ffffff" name="theme-color"/>
-<title>NEOCURE Applicator V2152</title>
+<title>NEOCURE Applicator V2159</title>
 <style>
 :root{--navy:#102f59;--navy2:#1b4778;--ink:#172334;--muted:#697586;--line:#d9dee6;--soft:#f6f8fb;--white:#fff;--danger:#b42318;--ok:#176b45}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#fff;color:var(--ink);font-family:Inter,Roboto,"Segoe UI",Arial,sans-serif}
@@ -4446,7 +4446,7 @@ button:disabled{opacity:.48!important;filter:saturate(.55);box-shadow:none!impor
 </head>
 <body>
 <div class="firebase-build-notice" id="firebaseBuildNotice">NEOCURE V2153/2.3: Dealer Business Details registration step.</div>
-<main class="app" id="registerScreen">
+<main class="app hidden" id="registerScreen">
 <div class="brand">NEO<span>CURE</span></div>
 <h1>Create Account</h1>
 <p class="sub">Choose your portal and register</p>
@@ -4551,7 +4551,7 @@ button:disabled{opacity:.48!important;filter:saturate(.55);box-shadow:none!impor
 </div>
 </section>
 </main>
-<main class="app hidden login-screen" id="loginScreen">
+<main class="app login-screen" id="loginScreen">
 <section aria-label="NEOCURE welcome" class="login-hero">
 <div class="hero-ghost">NEOCURE</div>
 <div class="hero-brand"><span class="neocure-wordmark-navy">NEO</span><span class="hero-brand-accent">CURE</span></div>
@@ -4894,7 +4894,7 @@ function refreshDealerOrderLockUI(){
 function accounts(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return {}}}
 function saveAccounts(data){localStorage.setItem(KEY,JSON.stringify(data))}
 const SCREEN_IDS=['registerScreen','otpScreen','setPinScreen','dealerBusinessDetailsScreen','loginScreen','homeScreen','applicatorDashboard','genericPage','quotationHistory','customerChat','customerManagement','savedDocumentsPage','savedDocCustomersPage','savedDocListPage','savedDocDetailPage','savedDocHistoryPage','savedDocMonthPage'];
-let activeScreen='registerScreen';
+let activeScreen='loginScreen';
 // V1126: remember the exact page that opened My Saved Items.
 let v1126SavedItemsReturnScreen='genericPage';
 function show(id, push=true){
@@ -4935,7 +4935,7 @@ function show(id, push=true){
  if(push){history.pushState({screen:id},'', '#'+id);}
  window.scrollTo(0,0);
 }
-history.replaceState({screen:'registerScreen'},'', '#registerScreen');
+history.replaceState({screen:'loginScreen'},'', '#loginScreen');
 window.addEventListener('popstate',(event)=>{
  // V1488: Handle quotation document layers HERE, in the primary router.
  // This listener is registered before the quotation module's local listener.
