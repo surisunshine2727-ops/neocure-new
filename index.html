@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#ffffff" name="theme-color"/>
-<title>NEOCURE Dealer / Applicator V2200/1</title>
+<title>NEOCURE Dealer / Applicator V2200/2</title>
 <style>
 :root{--navy:#102f59;--navy2:#1b4778;--ink:#172334;--muted:#697586;--line:#d9dee6;--soft:#f6f8fb;--white:#fff;--danger:#b42318;--ok:#176b45}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#fff;color:var(--ink);font-family:Inter,Roboto,"Segoe UI",Arial,sans-serif}
@@ -17998,13 +17998,31 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   if(typeof r.getTransports==='function')out.response.transports=r.getTransports();
   return out;
  }
+ // V2200/2: one stable random identifier per browser installation. This is not a physical handset ID.
+ function getPasskeyDeviceId(){
+  const storageKey='neocure_passkey_device_id_v1';
+  try{
+   let deviceId=localStorage.getItem(storageKey)||'';
+   if(/^[A-Za-z0-9_-]{20,100}$/.test(deviceId))return deviceId;
+   if(!window.crypto||typeof window.crypto.getRandomValues!=='function')
+    throw new Error('Secure random generator is unavailable.');
+   const bytes=new Uint8Array(32);
+   window.crypto.getRandomValues(bytes);
+   deviceId=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
+   localStorage.setItem(storageKey,deviceId);
+   return deviceId;
+  }catch(error){
+   throw new Error('ಈ browserನಲ್ಲಿ Passkey device ಗುರುತನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. Browser storage ಅನುಮತಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
+  }
+ }
  async function registerPasskey(){
   if(!auth||!auth.currentUser)throw new Error('ಮೊದಲು MPIN ಮೂಲಕ Login ಮಾಡಿ.');
   if(!window.isSecureContext||!window.PublicKeyCredential||!navigator.credentials)
    throw new Error('Fingerprint/Passkeyಗೆ HTTPS ಮತ್ತು ಬೆಂಬಲಿತ Android browser ಅಗತ್ಯ.');
   const available=await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
   if(!available)throw new Error('ಈ deviceನಲ್ಲಿ fingerprint ಅಥವಾ screen-lock authenticator ಲಭ್ಯವಿಲ್ಲ.');
-  const start=await functions.httpsCallable('passkeyRegistrationOptions')({});
+  const deviceId=getPasskeyDeviceId();
+  const start=await functions.httpsCallable('passkeyRegistrationOptions')({deviceId});
   const options=start.data&&start.data.options;
   if(!options)throw new Error('Passkey registration options ಸಿಗಲಿಲ್ಲ.');
   options.challenge=b64uToBytes(options.challenge);
@@ -18012,7 +18030,7 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   if(options.excludeCredentials)options.excludeCredentials=options.excludeCredentials.map(x=>({...x,id:b64uToBytes(x.id)}));
   const credential=await navigator.credentials.create({publicKey:options});
   if(!credential)throw new Error('Fingerprint registration ರದ್ದುಪಡಿಸಲಾಗಿದೆ.');
-  await functions.httpsCallable('verifyPasskeyRegistration')({credential:credentialToJSON(credential)});
+  await functions.httpsCallable('verifyPasskeyRegistration')({deviceId,credential:credentialToJSON(credential)});
   return true;
  }
  async function passkeyLogin(mobile,role){
@@ -20869,4 +20887,4 @@ window.NEOCURE_V2080={version:'V2080',base:'V2079',fixes:['Header and item rows 
 #loginScreen #fingerprintMsg{display:block!important;visibility:visible!important;opacity:1!important;min-height:0!important;margin:8px 2px 0!important;padding:0!important;color:#38566d!important;font-size:12px!important;font-weight:600!important;line-height:1.45!important;overflow-wrap:anywhere!important}
 </style>
 
-<!-- V2200/1: align passkey post-login profile validation with backend role/phone aliases and custom token claim. -->
+<!-- V2200/2: stable browser-installation deviceId is sent to both passkey registration endpoints; retains V2200/1 profile validation. -->
