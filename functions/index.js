@@ -361,6 +361,30 @@ function passkeyJsonCredential(credential) {
   return credential;
 }
 
+// Supports both SimpleWebAuthn v10 registrationInfo fields and newer nested fields.
+function passkeyRegistrationCredentialData(info) {
+  const nested = info && info.credential ? info.credential : null;
+  const rawId = nested && nested.id ? nested.id : info && info.credentialID;
+  const rawPublicKey = nested && nested.publicKey ? nested.publicKey : info && info.credentialPublicKey;
+  const rawCounter = nested && Number.isFinite(Number(nested.counter))
+    ? nested.counter
+    : (info && info.counter);
+
+  if (!rawId || !rawPublicKey) {
+    throw new HttpsError('internal', 'Passkey registration response missing credential ID or public key.');
+  }
+
+  const credentialID = typeof rawId === 'string'
+    ? rawId
+    : Buffer.from(rawId).toString('base64url');
+  const credentialPublicKey = Buffer.from(rawPublicKey).toString('base64');
+  return {
+    credentialID,
+    credentialPublicKey,
+    counter: Number(rawCounter || 0)
+  };
+}
+
 async function findPortalUser(phone, role) {
   const accountEmail = `${authRolePrefix(role)}.${phone}@${AUTH_DOMAIN}`;
   let userRecord;
@@ -454,13 +478,13 @@ exports.verifyPasskeyRegistration = onCall({ region: REGION, enforceAppCheck: fa
       throw new HttpsError('permission-denied', 'Fingerprint / Passkey verification ವಿಫಲವಾಗಿದೆ.');
     }
     const info = verification.registrationInfo;
-    const credentialID = Buffer.from(info.credential.id).toString('base64url');
-    const credentialPublicKey = Buffer.from(info.credential.publicKey).toString('base64');
+    const registered = passkeyRegistrationCredentialData(info);
+    const { credentialID, credentialPublicKey, counter } = registered;
     const credentialRef = getDatabase().ref(`passkeys/${uid}/${passkeyCredentialKey(credentialID)}`);
     await credentialRef.set({
       credentialID,
       credentialPublicKey,
-      counter: Number(info.credential.counter || 0),
+      counter,
       transports: (credential.response && credential.response.transports) || [],
       deviceType: info.credentialDeviceType || 'unknown',
       backedUp: !!info.credentialBackedUp,
@@ -616,11 +640,12 @@ exports.verifyAdminPasskeyRegistration = onCall({ region: REGION, enforceAppChec
     const verification = await verifyRegistrationResponse({ response: credential, expectedChallenge: pending.challenge, expectedOrigin: origin, expectedRPID: PASSKEY_RP_ID, requireUserVerification: true });
     if (!verification.verified || !verification.registrationInfo) throw new HttpsError('permission-denied', 'Admin Fingerprint / Passkey verification ವಿಫಲವಾಗಿದೆ.');
     const info = verification.registrationInfo;
-    const credentialID = Buffer.from(info.credential.id).toString('base64url');
+    const registered = passkeyRegistrationCredentialData(info);
+    const { credentialID, credentialPublicKey, counter } = registered;
     await getDatabase().ref(`adminPasskeys/${uid}/${passkeyCredentialKey(credentialID)}`).set({
       credentialID,
-      credentialPublicKey: Buffer.from(info.credential.publicKey).toString('base64'),
-      counter: Number(info.credential.counter || 0),
+      credentialPublicKey,
+      counter,
       transports: (credential.response && credential.response.transports) || [],
       deviceType: info.credentialDeviceType || 'unknown',
       backedUp: !!info.credentialBackedUp,
