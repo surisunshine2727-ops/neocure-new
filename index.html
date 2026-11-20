@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#ffffff" name="theme-color"/>
-<title>NEOCURE Applicator V2159/7</title>
+<title>NEOCURE Dealer / Applicator V2200/1</title>
 <style>
 :root{--navy:#102f59;--navy2:#1b4778;--ink:#172334;--muted:#697586;--line:#d9dee6;--soft:#f6f8fb;--white:#fff;--danger:#b42318;--ok:#176b45}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#fff;color:var(--ink);font-family:Inter,Roboto,"Segoe UI",Arial,sans-serif}
@@ -18062,9 +18062,15 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   if(!done.data||!done.data.customToken)throw new Error('verifyPasskeyLoginನಿಂದ Firebase custom token ಸಿಗಲಿಲ್ಲ.');
   const cred=await withTimeout(auth.signInWithCustomToken(done.data.customToken),'Firebase Custom Token Login',15000);
   const snap=await withTimeout(db.ref('users/'+cred.user.uid).once('value'),'Dealer profile read',12000),profile=snap.val()||{};
-  if(String(profile.role||'').toLowerCase()!==portal ||
-     String(profile.phone||'').replace(/\D/g,'').slice(-10)!==phone){
-    await auth.signOut();throw new Error('Passkey account details ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ.');
+  // Match the same profile aliases accepted by the Firebase Functions backend.
+  // The custom token also carries portalRole, so legacy profiles without a role
+  // field can still be checked against the server-verified account role.
+  const tokenResult=await withTimeout(cred.user.getIdTokenResult(),'Firebase role claim read',10000);
+  const savedRole=String(profile.role||profile.accountRole||profile.portalRole||tokenResult.claims.portalRole||'').trim().toLowerCase();
+  const normalizedSavedRole=(savedRole==='worker'||savedRole==='application')?'applicator':savedRole;
+  const savedPhone=String(profile.phone||profile.mobile||profile.mobileNumber||profile.phoneNumber||profile.contactNumber||'').replace(/\D/g,'').slice(-10);
+  if(normalizedSavedRole!==portal || (savedPhone && savedPhone!==phone)){
+    await auth.signOut();throw new Error('Passkey account details ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ. Portal Role ಅಥವಾ Mobile ವಿವರ ಪರಿಶೀಲಿಸಿ.');
   }
   return {name:profile.name||'',mobile:phone,role:portal==='applicator'?'Applicator':'Dealer',uid:cred.user.uid};
  }
@@ -20862,3 +20868,5 @@ window.NEOCURE_V2080={version:'V2080',base:'V2079',fixes:['Header and item rows 
 #loginScreen #fingerprintLoginBtnV2:disabled{opacity:.68!important;cursor:wait!important}
 #loginScreen #fingerprintMsg{display:block!important;visibility:visible!important;opacity:1!important;min-height:0!important;margin:8px 2px 0!important;padding:0!important;color:#38566d!important;font-size:12px!important;font-weight:600!important;line-height:1.45!important;overflow-wrap:anywhere!important}
 </style>
+
+<!-- V2200/1: align passkey post-login profile validation with backend role/phone aliases and custom token claim. -->
