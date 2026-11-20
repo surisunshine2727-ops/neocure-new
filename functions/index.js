@@ -423,7 +423,7 @@ exports.passkeyRegistrationOptions = onCall({ region: REGION, enforceAppCheck: f
     const excludeCredentials = [];
     credentialsSnap.forEach(child => {
       const c = child.val() || {};
-      if (c.credentialID) excludeCredentials.push({ id: c.credentialID, transports: c.transports || [] });
+      if (c.credentialID) excludeCredentials.push({ id: Buffer.from(c.credentialID, 'base64url'), transports: c.transports || [] });
     });
 
     const options = await generateRegistrationOptions({
@@ -512,7 +512,7 @@ exports.passkeyLoginOptions = onCall({ region: REGION, enforceAppCheck: false },
     const allowCredentials = [];
     credentialsSnap.forEach(child => {
       const c = child.val() || {};
-      if (c.credentialID) allowCredentials.push({ id: c.credentialID, transports: c.transports || [] });
+      if (c.credentialID) allowCredentials.push({ id: Buffer.from(c.credentialID, 'base64url'), transports: c.transports || [] });
     });
     if (!allowCredentials.length) throw new HttpsError('failed-precondition', 'ಈ accountನಲ್ಲಿ Fingerprint register ಆಗಿಲ್ಲ. MPIN ಮೂಲಕ Login ಮಾಡಿ register ಮಾಡಿ.');
 
@@ -562,9 +562,9 @@ exports.verifyPasskeyLogin = onCall({ region: REGION, enforceAppCheck: false }, 
       expectedChallenge: pending.challenge,
       expectedOrigin: origin,
       expectedRPID: PASSKEY_RP_ID,
-      credential: {
-        id: stored.credentialID,
-        publicKey: Buffer.from(stored.credentialPublicKey, 'base64'),
+      authenticator: {
+        credentialID: Buffer.from(stored.credentialID, 'base64url'),
+        credentialPublicKey: Buffer.from(stored.credentialPublicKey, 'base64'),
         counter: Number(stored.counter || 0),
         transports: stored.transports || []
       },
@@ -605,7 +605,7 @@ exports.adminPasskeyRegistrationOptions = onCall({ region: REGION, enforceAppChe
     const excludeCredentials = [];
     credentialsSnap.forEach(child => {
       const c = child.val() || {};
-      if (c.credentialID) excludeCredentials.push({ id: c.credentialID, transports: c.transports || [] });
+      if (c.credentialID) excludeCredentials.push({ id: Buffer.from(c.credentialID, 'base64url'), transports: c.transports || [] });
     });
     const options = await generateRegistrationOptions({
       rpName: PASSKEY_RP_NAME,
@@ -673,7 +673,7 @@ exports.adminPasskeyLoginOptions = onCall({ region: REGION, enforceAppCheck: fal
     if (adminSnap.val() !== true) throw new HttpsError('permission-denied', 'ಈ Firebase UIDಗೆ Admin permission ಇಲ್ಲ.');
     const credentialsSnap = await getDatabase().ref(`adminPasskeys/${userRecord.uid}`).get();
     const allowCredentials = [];
-    credentialsSnap.forEach(child => { const c = child.val() || {}; if (c.credentialID) allowCredentials.push({ id: c.credentialID, transports: c.transports || [] }); });
+    credentialsSnap.forEach(child => { const c = child.val() || {}; if (c.credentialID) allowCredentials.push({ id: Buffer.from(c.credentialID, 'base64url'), transports: c.transports || [] }); });
     if (!allowCredentials.length) throw new HttpsError('failed-precondition', 'Admin Fingerprint ಇನ್ನೂ register ಆಗಿಲ್ಲ. ಮೊದಲು Email/Password ಬಳಸಿ register ಮಾಡಿ.');
     const options = await generateAuthenticationOptions({ rpID: PASSKEY_RP_ID, allowCredentials, userVerification: 'required' });
     await getDatabase().ref(`passkeyChallenges/admin-login/${userRecord.uid}`).set({ challenge: options.challenge, uid: userRecord.uid, createdAt: Date.now(), origin });
@@ -709,7 +709,12 @@ exports.verifyAdminPasskeyLogin = onCall({ region: REGION, enforceAppCheck: fals
       expectedChallenge: pending.challenge,
       expectedOrigin: origin,
       expectedRPID: PASSKEY_RP_ID,
-      credential: { id: stored.credentialID, publicKey: Buffer.from(stored.credentialPublicKey, 'base64'), counter: Number(stored.counter || 0), transports: stored.transports || [] },
+      authenticator: {
+        credentialID: Buffer.from(stored.credentialID, 'base64url'),
+        credentialPublicKey: Buffer.from(stored.credentialPublicKey, 'base64'),
+        counter: Number(stored.counter || 0),
+        transports: stored.transports || []
+      },
       requireUserVerification: true
     });
     if (!verification.verified) throw new HttpsError('permission-denied', 'Admin Fingerprint verification ವಿಫಲವಾಗಿದೆ.');
