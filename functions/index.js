@@ -350,6 +350,16 @@ function passkeyCredentialKey(id) {
   return String(id || '').replace(/[^A-Za-z0-9_-]/g, '_');
 }
 
+// Device ID is generated and stored by the Dealer / Applicator app per browser installation.
+// It is an installation identifier, NOT a hardware-backed physical device identifier.
+function normalizePasskeyDeviceId(value) {
+  const deviceId = String(value || '').trim();
+  if (!/^[A-Za-z0-9_-]{20,100}$/.test(deviceId)) {
+    throw new HttpsError('invalid-argument', 'Passkey device ID ತಪ್ಪಾಗಿದೆ. App refresh ಮಾಡಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
+  }
+  return deviceId;
+}
+
 function passkeyBytes(value) {
   return Buffer.from(String(value || ''), 'base64url');
 }
@@ -410,6 +420,7 @@ exports.passkeyRegistrationOptions = onCall({ region: REGION, enforceAppCheck: f
     if (!request.auth) throw new HttpsError('unauthenticated', 'ಮೊದಲು MPIN ಮೂಲಕ Login ಮಾಡಿ.');
     const origin = passkeyOrigin(request);
     const uid = request.auth.uid;
+    const deviceId = normalizePasskeyDeviceId(request.data && request.data.deviceId);
     const userRecord = await getAuth().getUser(uid);
     const profileSnap = await getDatabase().ref(`users/${uid}`).get();
     if (!profileSnap.exists()) throw new HttpsError('failed-precondition', 'User profile ಸಿಗಲಿಲ್ಲ.');
@@ -420,6 +431,14 @@ exports.passkeyRegistrationOptions = onCall({ region: REGION, enforceAppCheck: f
     if (!/^\d{10}$/.test(phone)) throw new HttpsError('failed-precondition', 'Accountನಲ್ಲಿ ಸರಿಯಾದ 10 ಅಂಕಿಯ mobile number ಇಲ್ಲ.');
 
     const credentialsSnap = await getDatabase().ref(`passkeys/${uid}`).get();
+    let deviceAlreadyRegistered = false;
+    credentialsSnap.forEach(child => {
+      const saved = child.val() || {};
+      if (saved.deviceId === deviceId) deviceAlreadyRegistered = true;
+    });
+    if (deviceAlreadyRegistered) {
+      throw new HttpsError('already-exists', 'ಈ ಮೊಬೈಲ್ / Browserನಲ್ಲಿ Passkey ಈಗಾಗಲೇ Register ಆಗಿದೆ.');
+    }
     const excludeCredentials = [];
     credentialsSnap.forEach(child => {
       const c = child.val() || {};
@@ -443,7 +462,8 @@ exports.passkeyRegistrationOptions = onCall({ region: REGION, enforceAppCheck: f
     await getDatabase().ref(`passkeyChallenges/${uid}/registration`).set({
       challenge: options.challenge,
       createdAt: Date.now(),
-      origin
+      origin,
+      deviceId
     });
     return { options };
   } catch (error) {
@@ -459,6 +479,7 @@ exports.verifyPasskeyRegistration = onCall({ region: REGION, enforceAppCheck: fa
     const origin = passkeyOrigin(request);
     const uid = request.auth.uid;
     const credential = passkeyJsonCredential(request.data && request.data.credential);
+    const deviceId = normalizePasskeyDeviceId(request.data && request.data.deviceId);
     const challengeRef = getDatabase().ref(`passkeyChallenges/${uid}/registration`);
     const challengeSnap = await challengeRef.get();
     const pending = challengeSnap.val() || {};
@@ -466,6 +487,7 @@ exports.verifyPasskeyRegistration = onCall({ region: REGION, enforceAppCheck: fa
       throw new HttpsError('deadline-exceeded', 'Passkey registration session ಮುಗಿದಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
     }
     if (pending.origin !== origin) throw new HttpsError('permission-denied', 'Passkey origin ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ.');
+    if (pending.deviceId !== deviceId) throw new HttpsError('permission-denied', 'Passkey device ID ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ. ಮತ್ತೆ Registration ಪ್ರಾರಂಭಿಸಿ.');
 
     const verification = await verifyRegistrationResponse({
       response: credential,
@@ -480,8 +502,9 @@ exports.verifyPasskeyRegistration = onCall({ region: REGION, enforceAppCheck: fa
     const info = verification.registrationInfo;
     const registered = passkeyRegistrationCredentialData(info);
     const { credentialID, credentialPublicKey, counter } = registered;
-    const credentialRef = getDatabase().ref(`passkeys/${uid}/${passkeyCredentialKey(credentialID)}`);
-    await credentialRef.set({
+    const credentialKey = passkeyCredentialKey(credentialID);
+    const passkeysRef = getDatabase().ref(`passkeys/${uid}`);
+    const newCredential = {
       credentialID,
       credentialPublicKey,
       counter,
@@ -489,8 +512,35 @@ exports.verifyPasskeyRegistration = onCall({ region: REGION, enforceAppCheck: fa
       deviceType: info.credentialDeviceType || 'unknown',
       backedUp: !!info.credentialBackedUp,
       createdAt: Date.now(),
-      rpID: PASSKEY_RP_ID
-    });
+      rpID: PASSKEY_RP_ID,
+      deviceId
+    };
+
+    // Atomically claim this installation ID and add its credential.
+    // This prevents two concurrent registrations from the same app/browser installation.
+    let transactionReason = 'duplicate-device';
+    const transaction = await passkeysRef.transaction(current => {
+      const records = current && typeof current === 'object' ? current : {};
+      if (records[credentialKey]) {
+        transactionReason = 'duplicate-credential';
+        return;
+      }
+      for (const saved of Object.values(records)) {
+        if (saved && saved.deviceId === deviceId) {
+          transactionReason = 'duplicate-device';
+          return;
+        }
+      }
+      records[credentialKey] = newCredential;
+      return records;
+    }, undefined, false);
+
+    if (!transaction.committed) {
+      if (transactionReason === 'duplicate-credential') {
+        throw new HttpsError('already-exists', 'ಈ Passkey ಈಗಾಗಲೇ Register ಆಗಿದೆ.');
+      }
+      throw new HttpsError('already-exists', 'ಈ ಮೊಬೈಲ್ / Browserನಲ್ಲಿ ಈಗಾಗಲೇ ಒಂದು Passkey Register ಆಗಿದೆ.');
+    }
     await challengeRef.remove();
     return { success: true, verified: true };
   } catch (error) {
