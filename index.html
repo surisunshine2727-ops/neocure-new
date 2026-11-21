@@ -5,6 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#ffffff" name="theme-color"/>
+<script>if(location.hostname==="cure-new.vercel.app"){location.replace("https://neocure-new.vercel.app"+location.pathname+location.search+location.hash)}</script>
 <title>NEOCURE Dealer / Applicator V2200/1</title>
 <style>
 :root{--navy:#102f59;--navy2:#1b4778;--ink:#172334;--muted:#697586;--line:#d9dee6;--soft:#f6f8fb;--white:#fff;--danger:#b42318;--ok:#176b45}
@@ -5409,8 +5410,7 @@ async function requestFingerprintSetup(targetId){
    }
    target.textContent='Fingerprint / Screen Lock ದೃಢೀಕರಣಕ್ಕಾಗಿ ಮುಂದುವರಿಯಿರಿ…';
    await window.NEOCURE_AUTH.registerPasskey();
-   target.textContent='Fingerprint / Passkey Firebaseನಲ್ಲಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ. Login screenನಲ್ಲಿ ಇದೇ account portal ಆಯ್ಕೆಮಾಡಿ Fingerprint ಬಟನ್ ಒತ್ತಿ.';
-   if(button)button.textContent='Register This Device Again';
+   target.textContent='Fingerprint Login ಯಶಸ್ವಿಯಾಗಿ ಸಕ್ರಿಯವಾಗಿದೆ. ಮುಂದಿನ ಬಾರಿ Login screenನ Fingerprint ಆಯ್ಕೆ ಬಳಸಿ.';
  }catch(e){
    target.textContent=(window.NEOCURE_AUTH && window.NEOCURE_AUTH.message)
      ? window.NEOCURE_AUTH.message(e)
@@ -5418,21 +5418,6 @@ async function requestFingerprintSetup(targetId){
  }finally{
    if(button)button.disabled=false;
  }
-}
-async function refreshFingerprintSettings(){
- const status=$('settingsFingerprintMsg'),button=$('settingsFingerprintBtn');
- if(!status||!button)return;
- if(!currentAccount||!currentAccount.mobile){status.textContent='Account ಮಾಹಿತಿ ಸಿಗಲಿಲ್ಲ. MPIN ಮೂಲಕ ಮತ್ತೆ Login ಮಾಡಿ.';return;}
- status.textContent='Firebaseನಲ್ಲಿ ಈ accountನ Passkey ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…';
- button.disabled=true;button.textContent='Checking Passkey…';
- try{
-  const configured=await window.NEOCURE_AUTH.passkeyStatus(currentAccount.mobile,currentAccount.role||'Dealer');
-  if(configured){button.textContent='Register This Device Again';status.textContent='ಈ accountಗೆ Passkey Firebaseನಲ್ಲಿ ಇದೆ. ಇದು ಈ deviceನಲ್ಲಿ ಅಥವಾ ಬೇರೆ website domainನಲ್ಲಿ ಇರಬಹುದು. Login ಮಾಡುವಾಗ ಇದೇ website link ಮತ್ತು portal ಬಳಸಿ.';}
-  else{button.textContent='Enable Fingerprint Login';status.textContent='ಈ accountಗೆ Firebaseನಲ್ಲಿ Passkey ಇನ್ನೂ ನೋಂದಾಯಿಸಿಲ್ಲ. ಈ deviceನಲ್ಲಿ Register This Device ಒತ್ತಿ.';}
- }catch(e){
-  button.textContent='Register This Device';
-  status.textContent='Passkey ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಲಾಗಲಿಲ್ಲ: '+((window.NEOCURE_AUTH&&window.NEOCURE_AUTH.message)?window.NEOCURE_AUTH.message(e):(e.message||'Firebase ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ.'));
- }finally{button.disabled=false;}
 }
 $('fingerprintLoginBtnV2').onclick=async(event)=>{
  if(event){event.preventDefault();event.stopPropagation();}
@@ -5442,11 +5427,11 @@ $('fingerprintLoginBtnV2').onclick=async(event)=>{
  if(mobileField){mobileField.blur();mobileField.setAttribute('autocomplete','off');}
  try{if(window.getSelection)window.getSelection().removeAllRanges();}catch(_){}
  const mobile=$('loginMobile').value.trim(),role=selectedLoginRole||'Dealer';
- btn.disabled=true;btn.setAttribute('aria-busy','true');if(msg){msg.style.display='block';msg.style.visibility='visible';msg.textContent='Fingerprint ಬಟನ್ ಕೆಲಸ ಮಾಡುತ್ತಿದೆ. Firebase Passkey ಪರಿಶೀಲನೆ ಪ್ರಾರಂಭಿಸಲಾಗಿದೆ…';}
+  btn.disabled=true;if(msg){msg.style.display='block';msg.style.visibility='visible';msg.textContent='Fingerprint ಪರಿಶೀಲನೆ ನಡೆಯುತ್ತಿದೆ…';}
  try{
   const result=await window.NEOCURE_AUTH.passkeyLogin(mobile,role);
   currentAccount={name:result.name,mobile:result.mobile,role:result.role,uid:result.uid};
-  msg.style.display='block';msg.style.visibility='visible';msg.textContent='Fingerprint Login ಯಶಸ್ವಿಯಾಗಿದೆ.';
+   if(msg){msg.style.display='block';msg.style.visibility='visible';msg.textContent='Fingerprint Login ಯಶಸ್ವಿಯಾಗಿದೆ.';}
   if(String(result.role).toLowerCase()==='applicator'){
    $('applicatorWelcome').textContent='Welcome, '+(result.name||'');
    $('applicatorAvatar').textContent=(result.name||'A').trim().charAt(0).toUpperCase();try{const ap=JSON.parse(localStorage.getItem('neocure_applicator_profile_'+String(result.mobile||''))||'{}');if(ap.profilePhoto)$('applicatorAvatar').innerHTML=`<img src="${ap.profilePhoto}" alt="Profile photo">`;}catch(e){}
@@ -5457,9 +5442,9 @@ $('fingerprintLoginBtnV2').onclick=async(event)=>{
     ?window.NEOCURE_AUTH.message(e)
     :(e&&e.message?e.message:'Fingerprint Login ವಿಫಲವಾಗಿದೆ.');
   $('loginError').textContent=detail;
-  if(msg)msg.textContent=detail;
+   if(msg)msg.textContent=detail;
  }
- finally{btn.disabled=false;btn.removeAttribute('aria-busy');}
+ finally{btn.disabled=false;}
 };
 
 $('headerLogout').onclick=()=>{stopDealerApprovalWatch();currentAccount=null;history.replaceState({screen:'loginScreen'},'', '#loginScreen');openLogin();};
@@ -8485,7 +8470,7 @@ function openGenericPage(action,pushHistory=true){
    const wrap=$('settingsLanguageOptions'),chosen=localStorage.getItem('neocure_v1007_language')||'English';
    ['English','Kannada','Hindi','Telugu','Tamil','Malayalam','Marathi'].forEach(lang=>{const b=document.createElement('button');b.type='button';b.className='settings-option'+(lang===chosen?' active':'');b.innerHTML='<span>'+lang+'</span><span>'+(lang===chosen?'✓':'')+'</span>';b.onclick=()=>{applyLanguage(lang);wrap.querySelectorAll('button').forEach(x=>{x.classList.toggle('active',x.dataset.lang===lang);x.lastElementChild.textContent=x.dataset.lang===lang?'✓':''});};b.dataset.lang=lang;wrap.appendChild(b);});
  }
- if(action==='Fingerprint Login'){$('settingsFingerprintBtn').onclick=()=>requestFingerprintSetup('settingsFingerprintMsg');refreshFingerprintSettings();}
+ if(action==='Fingerprint Login')$('settingsFingerprintBtn').onclick=()=>requestFingerprintSetup('settingsFingerprintMsg');
  if(action==='Security Settings'){
    ['settingsCurrentPin','settingsNewPin','settingsConfirmPin'].forEach(id=>digits($(id),4));
    $('settingsSavePin').onclick=()=>{
@@ -13792,7 +13777,6 @@ window.NEOCURE_V1050_BUILD={revision:'V1050/1',basedOn:'V1049/8',fixes:['Removed
  const $=id=>document.getElementById(id);
  document.addEventListener('click',function(ev){
    const btn=ev.target && ev.target.closest ? ev.target.closest('#cmMakeQuote') : null;
-   if(!btn)return;
    ev.preventDefault();ev.stopPropagation();
    if(typeof ev.stopImmediatePropagation==='function')ev.stopImmediatePropagation();
    const detail=$('cmDetailBody');
@@ -18023,27 +18007,15 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   const start=await functions.httpsCallable('passkeyRegistrationOptions')({});
   const options=start.data&&start.data.options;
   if(!options)throw new Error('Passkey registration options ಸಿಗಲಿಲ್ಲ.');
-  if(!options.rp||options.rp.id!==location.hostname)
-   throw new Error('ಈ website ಮತ್ತು Passkey domain ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ. NEOCURE link ಪರಿಶೀಲಿಸಿ.');
   options.challenge=b64uToBytes(options.challenge);
   if(options.user&&options.user.id)options.user.id=b64uToBytes(options.user.id);
   if(options.excludeCredentials)options.excludeCredentials=options.excludeCredentials.map(x=>({...x,id:b64uToBytes(x.id)}));
+  if(location.hostname!=='neocure-new.vercel.app')throw new Error('Passkeyಗಾಗಿ neocure-new.vercel.app ಇದೇ domain ಬಳಸಿ.');
+  if(!options.rp||options.rp.id!==location.hostname)throw new Error('Passkey domain ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ. Page refresh ಮಾಡಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
   const credential=await navigator.credentials.create({publicKey:options});
   if(!credential)throw new Error('Fingerprint registration ರದ್ದುಪಡಿಸಲಾಗಿದೆ.');
   await functions.httpsCallable('verifyPasskeyRegistration')({credential:credentialToJSON(credential)});
   return true;
- }
- async function passkeyStatus(mobile,role){
-  const phone=String(mobile||'').replace(/\D/g,'').slice(-10);
-  if(!/^\d{10}$/.test(phone))throw new Error('Passkey ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಲು ನೋಂದಾಯಿತ 10 ಅಂಕಿಯ mobile number ಬೇಕು.');
-  const portal=String(role||'Dealer').toLowerCase();
-  try{
-   const result=await functions.httpsCallable('passkeyLoginOptions')({phone,role:portal});
-   return !!(result.data&&result.data.options&&result.data.options.challenge);
-  }catch(e){
-   if(e&&e.code==='functions/failed-precondition')return false;
-   throw e;
-  }
  }
  async function passkeyLogin(mobile,role){
   const status=document.getElementById('fingerprintMsg');
@@ -18068,41 +18040,23 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   const options=start.data&&start.data.options;
   if(!options)throw new Error('passkeyLoginOptions ಪ್ರತಿಕ್ರಿಯೆಯಲ್ಲಿ options ಸಿಗಲಿಲ್ಲ.');
   if(!options.challenge)throw new Error('Passkey challenge ಸಿಗಲಿಲ್ಲ.');
-  if(!['cure-new.vercel.app','neocure-new.vercel.app'].includes(location.hostname))
-   throw new Error('ಈ website domainಗೆ Passkey login ಅನುಮತಿ ಇಲ್ಲ.');
-  // This app registers discoverable passkeys, so Android discovers them by
-  // RP ID. Do not forward Firebase's allowCredentials value: callable
-  // serialization may turn an empty/non-array value into an invalid WebAuthn
-  // sequence and cause CredentialsContainer.get() to fail before prompting.
-  const requestOptions={
-   challenge:b64uToBytes(options.challenge),
-   rpId:location.hostname,
-   timeout:60000,
-   userVerification:'required'
-  };
-  // Firebase callable data should preserve arrays, but normalize its
-  // serialization before passing the descriptors to WebAuthn.
-  let allowed=options.allowCredentials;
-  if(!Array.isArray(allowed)&&allowed&&typeof allowed==='object'){
-   const keys=Object.keys(allowed);
-   if(keys.length&&keys.every(key=>/^\d+$/.test(key)))
-    allowed=keys.sort((a,b)=>Number(a)-Number(b)).map(key=>allowed[key]);
-  }
-  if(Array.isArray(allowed)){
-   const descriptors=allowed.filter(item=>item&&typeof item.id==='string'&&item.id);
-   if(descriptors.length){
-    requestOptions.allowCredentials=descriptors.map(item=>({
-     type:'public-key',id:b64uToBytes(item.id),
-     ...(Array.isArray(item.transports)?{transports:item.transports.filter(x=>typeof x==='string')}: {})
-    }));
+   if(location.hostname!=='neocure-new.vercel.app')throw new Error('Passkeyಗಾಗಿ neocure-new.vercel.app ಇದೇ domain ಬಳಸಿ.');
+   const requestOptions={challenge:b64uToBytes(options.challenge),rpId:location.hostname,timeout:60000,userVerification:'required'};
+   let allowed=options.allowCredentials;
+   if(!Array.isArray(allowed)&&allowed&&typeof allowed==='object'){
+    const keys=Object.keys(allowed);
+    if(keys.length&&keys.every(k=>/^\d+$/.test(k)))allowed=keys.sort((a,b)=>Number(a)-Number(b)).map(k=>allowed[k]);
    }
-  }
+   if(Array.isArray(allowed)){
+    const descriptors=allowed.filter(x=>x&&typeof x.id==='string'&&x.id);
+    if(descriptors.length)requestOptions.allowCredentials=descriptors.map(x=>({type:'public-key',id:b64uToBytes(x.id),...(Array.isArray(x.transports)?{transports:x.transports.filter(t=>typeof t==='string')}: {})}));
+   }
   showStatus('Google Passkey / Fingerprint ದೃಢೀಕರಣ ತೆರೆಯಲಾಗುತ್ತಿದೆ…');
   let assertion;
   try{
    assertion=await navigator.credentials.get({publicKey:requestOptions});
   }catch(e){
-   if(e&&e.name==='NotAllowedError')throw new Error('ಈ website domainಗೆ deviceನಲ್ಲಿ Passkey ಸಿಗಲಿಲ್ಲ ಅಥವಾ prompt ರದ್ದುಪಡಿಸಲಾಗಿದೆ. cure-new.vercel.app ಮತ್ತು neocure-new.vercel.app ಬೇರೆ domainಗಳು. MPIN ಮೂಲಕ Login ಮಾಡಿ, ಇದೇ linkನ Settingsನಲ್ಲಿ ಈ deviceಗೆ ಮತ್ತೆ Register ಮಾಡಿ.');
+   if(e&&e.name==='NotAllowedError')throw new Error('Passkey prompt ರದ್ದುಪಡಿಸಲಾಗಿದೆ ಅಥವಾ ಸಮಯ ಮೀರಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
    if(e&&e.name==='NotSupportedError')throw new Error('ಈ deviceನಲ್ಲಿ ಈ Passkey ವಿಧಾನ ಬೆಂಬಲಿತವಿಲ್ಲ.');
    throw e;
   }
@@ -18131,7 +18085,7 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   return {name:profile.name||'',mobile:phone,role:portal==='applicator'?'Applicator':'Dealer',uid:cred.user.uid};
  }
 
- window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,resetMpinWithPhoneOtp,uploadUserFile,registerPasskey,passkeyStatus,passkeyLogin,message,auth,db,storage};
+ window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,resetMpinWithPhoneOtp,uploadUserFile,registerPasskey,passkeyLogin,message,auth,db,storage};
  window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V1707'};
 })();
 </script>
