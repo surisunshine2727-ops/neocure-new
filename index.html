@@ -5421,9 +5421,9 @@ async function refreshFingerprintSettingsStatus(){
  button.disabled=true;button.textContent='Checking…';
  try{
   const check=await window.NEOCURE_AUTH.passkeyStatus(mobile,role);
-  if(check&&check.registered){
+  if(check&&check.serverCredentialExists){
    button.textContent='Register This Device';button.disabled=false;
-   target.textContent='ಈ accountಗೆ Passkey Firebaseನಲ್ಲಿ ಯಶಸ್ವಿಯಾಗಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ. ಈ ಪುಟದಿಂದ ಈ ಫೋನ್‌ನಲ್ಲಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಲಾಗುವುದಿಲ್ಲ. Passkey ನೋಂದಾಯಿಸಿದ ಇದೇ ಫೋನ್‌ನಲ್ಲಿ Fingerprint Login ಪ್ರಯತ್ನಿಸಿ. ಬೇರೆ ಸಾಧನ ಸೇರಿಸಲು Register This Device ಒತ್ತಿ.';
+   target.textContent='Firebaseನಲ್ಲಿ ಹಿಂದಿನ Passkey ದಾಖಲೆ ಇದೆ. ಆದರೆ ಈ ಫೋನ್‌ನ Google Password Managerನಲ್ಲಿ Passkey ಇದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಲಾಗುವುದಿಲ್ಲ. ಈ ಫೋನ್‌ನಲ್ಲಿ ಹೊಸ Passkey ನೋಂದಾಯಿಸಲು Register This Device ಒತ್ತಿ; ಹಳೆಯ ದಾಖಲೆ ಅಳಿಸಲಾಗುವುದಿಲ್ಲ.';
   }else{
    button.textContent='Enable Fingerprint Login';button.disabled=false;
    target.textContent='ಈ deviceನಲ್ಲಿ Fingerprint / Screen Lock Passkey ನೋಂದಾಯಿಸಲು Enable ಒತ್ತಿ.';
@@ -8141,7 +8141,7 @@ function openApplicatorPage(action,pushHistory=true){
     const authUser=window.NEOCURE_AUTH&&window.NEOCURE_AUTH.auth&&window.NEOCURE_AUTH.auth.currentUser;
     const refreshAppPasskeyStatus=async()=>{
       if(!account.uid||String(account.uid).startsWith('local-')||!authUser||authUser.uid!==account.uid){status.textContent='ಈ Login device-local account ಆಗಿದೆ. Fingerprintಗೆ Firebase account ಅಗತ್ಯ. MPIN Login ಮುಂದುವರಿಯುತ್ತದೆ.';btn.textContent='Firebase Account Required';btn.disabled=true;return;}
-      try{const check=await window.NEOCURE_AUTH.passkeyStatus(account.mobile,account.role);if(check.registered){status.textContent='ಈ accountಗೆ Passkey Firebaseನಲ್ಲಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ. ಈ ಪುಟದಿಂದ ಈ deviceನಲ್ಲಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಲಾಗುವುದಿಲ್ಲ. ಇದೇ deviceನಲ್ಲಿ Fingerprint Login ಪ್ರಯತ್ನಿಸಿ; ಬೇರೆ device ಸೇರಿಸಲು ಕೆಳಗಿನ ಬಟನ್ ಒತ್ತಿ.';btn.textContent='Register This Device';btn.disabled=false;}else{status.textContent='ಈ deviceಗೆ Fingerprint / Screen Lock Passkey ಸೇರಿಸಲು Enable ಒತ್ತಿ.';btn.disabled=false;}}
+      try{const check=await window.NEOCURE_AUTH.passkeyStatus(account.mobile,account.role);if(check.serverCredentialExists){status.textContent='Firebaseನಲ್ಲಿ ಹಿಂದಿನ Passkey ದಾಖಲೆ ಇದೆ; ಆದರೆ ಈ deviceನಲ್ಲಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಲಾಗುವುದಿಲ್ಲ. ಈ deviceಗೆ ಹೊಸ Passkey ಸೇರಿಸಲು ಕೆಳಗಿನ ಬಟನ್ ಒತ್ತಿ. ಹಳೆಯ ದಾಖಲೆ ಉಳಿಯುತ್ತದೆ.';btn.textContent='Register This Device';btn.disabled=false;}else{status.textContent='ಈ deviceಗೆ Fingerprint / Screen Lock Passkey ಸೇರಿಸಲು Enable ಒತ್ತಿ.';btn.disabled=false;}}
       catch(e){status.textContent=window.NEOCURE_AUTH.message(e);btn.disabled=false;}
     };
     btn.onclick=async()=>{
@@ -18088,6 +18088,8 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   const options=start.data&&start.data.options;
   if(!options||!options.challenge||!options.user||!options.user.id||!options.rp||!options.rp.id)
    throw new Error('Passkey registration options ಅಪೂರ್ಣವಾಗಿವೆ. Firebase Function ಪರಿಶೀಲಿಸಿ.');
+  if(options.rp.id!=='neocure-new.vercel.app'||location.hostname!=='neocure-new.vercel.app')
+   throw new Error('Passkey RP ID ಮತ್ತು ವೆಬ್‌ಸೈಟ್ ವಿಳಾಸ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ. NEOCURE domain ಪರಿಶೀಲಿಸಿ.');
   const publicKey={
    challenge:b64uToBytes(options.challenge),
    rp:options.rp,
@@ -18095,7 +18097,7 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
    pubKeyCredParams:Array.isArray(options.pubKeyCredParams)?options.pubKeyCredParams:[],
    timeout:Number(options.timeout)||60000,
    attestation:options.attestation||'none',
-   authenticatorSelection:options.authenticatorSelection||{authenticatorAttachment:'platform',userVerification:'required',residentKey:'preferred'}
+   authenticatorSelection:{...(options.authenticatorSelection||{}),authenticatorAttachment:'platform',userVerification:'required',residentKey:'required',requireResidentKey:true}
   };
   if(Array.isArray(options.excludeCredentials)){
    publicKey.excludeCredentials=options.excludeCredentials
@@ -18146,7 +18148,7 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   const requestOptions={
    challenge:b64uToBytes(options.challenge),
    timeout:Number(options.timeout)||60000,
-   userVerification:options.userVerification||'required'
+   userVerification:'required'
   };
   if(typeof options.rpId==='string'&&options.rpId)requestOptions.rpId=options.rpId;
   if(Array.isArray(options.allowCredentials)){
@@ -18202,7 +18204,8 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
     functions.httpsCallable('passkeyLoginOptions')({phone,role:portal}),
     new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Passkey ಸ್ಥಿತಿ ಪರಿಶೀಲನೆಗೆ ಸಮಯ ಮೀರಿದೆ. Internet ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.')),12000);})
    ]);
-   return {registered:!!(response&&response.data&&response.data.options&&response.data.options.challenge),canRegisterOnThisDevice:true};
+   const serverRegistered=!!(response&&response.data&&response.data.options&&response.data.options.challenge);
+   return {registered:false,serverCredentialExists:serverRegistered,serverRegistered,devicePresence:'unknown',canRegisterOnThisDevice:true};
   }catch(error){
    const code=String(error&&error.code||'').toLowerCase();
    const message=String(error&&error.message||'');
@@ -18211,7 +18214,7 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   }finally{if(timer)clearTimeout(timer);}
  }
  window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,resetMpinWithPhoneOtp,uploadUserFile,registerPasskey,passkeyLogin,passkeyStatus,message,auth,db,storage};
- window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V2203'};
+ window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V2204/1'};
 })();
 </script>
 <script id="V1728_SEVEN_LANGUAGE_UI">
