@@ -5423,7 +5423,7 @@ async function refreshFingerprintSettingsStatus(){
   const check=await window.NEOCURE_AUTH.passkeyStatus(mobile,role);
   if(check&&check.registered){
    button.textContent='Register This Device';button.disabled=false;
-   target.textContent='ಈ accountಗೆ Passkey Firebaseನಲ್ಲಿ ಇದೆ. ಆದರೆ ಈ ಮೊಬೈಲ್‌ನಲ್ಲಿ Passkey ಇಲ್ಲದಿರಬಹುದು. ಈ deviceಗೆ ಹೊಸ Passkey ಸೇರಿಸಲು Register This Device ಒತ್ತಿ.';
+   target.textContent='ಈ accountಗೆ Passkey Firebaseನಲ್ಲಿ ಯಶಸ್ವಿಯಾಗಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ. ಈ ಪುಟದಿಂದ ಈ ಫೋನ್‌ನಲ್ಲಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಲಾಗುವುದಿಲ್ಲ. Passkey ನೋಂದಾಯಿಸಿದ ಇದೇ ಫೋನ್‌ನಲ್ಲಿ Fingerprint Login ಪ್ರಯತ್ನಿಸಿ. ಬೇರೆ ಸಾಧನ ಸೇರಿಸಲು Register This Device ಒತ್ತಿ.';
   }else{
    button.textContent='Enable Fingerprint Login';button.disabled=false;
    target.textContent='ಈ deviceನಲ್ಲಿ Fingerprint / Screen Lock Passkey ನೋಂದಾಯಿಸಲು Enable ಒತ್ತಿ.';
@@ -5453,12 +5453,12 @@ async function requestFingerprintSetup(targetId){
   if(!available)throw new Error('ಈ device/browserನಲ್ಲಿ Fingerprint ಅಥವಾ Screen Lock authenticator ಲಭ್ಯವಿಲ್ಲ.');
   target.textContent='Fingerprint / Screen Lock ದೃಢೀಕರಣಕ್ಕಾಗಿ ಮುಂದುವರಿಯಿರಿ…';
   await window.NEOCURE_AUTH.registerPasskey();
-  target.textContent='ಈ deviceಗೆ Passkey ನೋಂದಣಿ ಪೂರ್ಣಗೊಂಡಿದೆ. ಈಗ ಇದೇ deviceನಲ್ಲಿ Fingerprint / Screen Lock Login ಪ್ರಯತ್ನಿಸಬಹುದು.';
-  await refreshFingerprintSettingsStatus();
+  target.textContent='ಯಶಸ್ವಿ: ಈ deviceನ Passkey Firebaseನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ. ಈಗ ಇದೇ browser ಮತ್ತು deviceನಲ್ಲಿ Fingerprint / Screen Lock Login ಪ್ರಯತ್ನಿಸಿ.';
+  if(button){button.textContent='Passkey Registered';button.disabled=true;}
  }catch(e){
   target.textContent=(window.NEOCURE_AUTH&&window.NEOCURE_AUTH.message)?window.NEOCURE_AUTH.message(e):(e&&e.message?e.message:'Fingerprint ನೋಂದಣಿ ವಿಫಲವಾಗಿದೆ.');
  }finally{
-  if(button&&button.textContent!=='Fingerprint Already Registered'&&button.textContent!=='Firebase Account Required')button.disabled=false;
+  if(button&&button.textContent!=='Fingerprint Already Registered'&&button.textContent!=='Firebase Account Required'&&button.textContent!=='Passkey Registered')button.disabled=false;
  }
 }
 $('fingerprintLoginBtnV2').onclick=async(event)=>{
@@ -8141,7 +8141,7 @@ function openApplicatorPage(action,pushHistory=true){
     const authUser=window.NEOCURE_AUTH&&window.NEOCURE_AUTH.auth&&window.NEOCURE_AUTH.auth.currentUser;
     const refreshAppPasskeyStatus=async()=>{
       if(!account.uid||String(account.uid).startsWith('local-')||!authUser||authUser.uid!==account.uid){status.textContent='ಈ Login device-local account ಆಗಿದೆ. Fingerprintಗೆ Firebase account ಅಗತ್ಯ. MPIN Login ಮುಂದುವರಿಯುತ್ತದೆ.';btn.textContent='Firebase Account Required';btn.disabled=true;return;}
-      try{const check=await window.NEOCURE_AUTH.passkeyStatus(account.mobile,account.role);if(check.registered){status.textContent='ಈ accountಗೆ Firebaseನಲ್ಲಿ Passkey ಇದೆ. ಈ deviceಗೆ ಬೇರೆ Passkey ಸೇರಿಸಲು ಕೆಳಗಿನ ಬಟನ್ ಒತ್ತಿ.';btn.textContent='Register This Device';btn.disabled=false;}else{status.textContent='ಈ deviceಗೆ Fingerprint / Screen Lock Passkey ಸೇರಿಸಲು Enable ಒತ್ತಿ.';btn.disabled=false;}}
+      try{const check=await window.NEOCURE_AUTH.passkeyStatus(account.mobile,account.role);if(check.registered){status.textContent='ಈ accountಗೆ Passkey Firebaseನಲ್ಲಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ. ಈ ಪುಟದಿಂದ ಈ deviceನಲ್ಲಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಲಾಗುವುದಿಲ್ಲ. ಇದೇ deviceನಲ್ಲಿ Fingerprint Login ಪ್ರಯತ್ನಿಸಿ; ಬೇರೆ device ಸೇರಿಸಲು ಕೆಳಗಿನ ಬಟನ್ ಒತ್ತಿ.';btn.textContent='Register This Device';btn.disabled=false;}else{status.textContent='ಈ deviceಗೆ Fingerprint / Screen Lock Passkey ಸೇರಿಸಲು Enable ಒತ್ತಿ.';btn.disabled=false;}}
       catch(e){status.textContent=window.NEOCURE_AUTH.message(e);btn.disabled=false;}
     };
     btn.onclick=async()=>{
@@ -8149,7 +8149,7 @@ function openApplicatorPage(action,pushHistory=true){
       const activeAuth=window.NEOCURE_AUTH&&window.NEOCURE_AUTH.auth&&window.NEOCURE_AUTH.auth.currentUser;
       if(!account.uid||!activeAuth||activeAuth.uid!==account.uid){status.textContent='ಸರಿಯಾದ Firebase accountಗೆ ಮತ್ತೆ MPIN ಮೂಲಕ Login ಮಾಡಿ.';return;}
       btn.disabled=true;status.textContent='Fingerprint registration ನಡೆಯುತ್ತಿದೆ…';
-      try{await window.NEOCURE_AUTH.registerPasskey();status.textContent='ಈ deviceಗೆ Passkey ನೋಂದಣಿ ಪೂರ್ಣಗೊಂಡಿದೆ. Fingerprint Login ಪ್ರಯತ್ನಿಸಬಹುದು.';btn.textContent='Register This Device';btn.disabled=false;}
+      try{await window.NEOCURE_AUTH.registerPasskey();status.textContent='ಯಶಸ್ವಿ: ಈ deviceನ Passkey Firebaseನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ. ಇದೇ deviceನಲ್ಲಿ Fingerprint Login ಪ್ರಯತ್ನಿಸಿ.';btn.textContent='Passkey Registered';btn.disabled=true;}
       catch(e){status.textContent=window.NEOCURE_AUTH.message(e);btn.disabled=false;}
     };
     refreshAppPasskeyStatus();
