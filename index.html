@@ -18070,14 +18070,20 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   if(!options.challenge)throw new Error('Passkey challenge ಸಿಗಲಿಲ್ಲ.');
   if(!['cure-new.vercel.app','neocure-new.vercel.app'].includes(location.hostname))
    throw new Error('ಈ website domainಗೆ Passkey login ಅನುಮತಿ ಇಲ್ಲ.');
-  options.challenge=b64uToBytes(options.challenge);
-  options.rpId=location.hostname;
-  if(options.allowCredentials)options.allowCredentials=options.allowCredentials.map(x=>({...x,id:b64uToBytes(x.id)}));
-  options.timeout=60000;
+  // This app registers discoverable passkeys, so Android discovers them by
+  // RP ID. Do not forward Firebase's allowCredentials value: callable
+  // serialization may turn an empty/non-array value into an invalid WebAuthn
+  // sequence and cause CredentialsContainer.get() to fail before prompting.
+  const requestOptions={
+   challenge:b64uToBytes(options.challenge),
+   rpId:location.hostname,
+   timeout:60000,
+   userVerification:'required'
+  };
   showStatus('Google Passkey / Fingerprint ದೃಢೀಕರಣ ತೆರೆಯಲಾಗುತ್ತಿದೆ…');
   let assertion;
   try{
-   assertion=await navigator.credentials.get({publicKey:options});
+   assertion=await navigator.credentials.get({publicKey:requestOptions});
   }catch(e){
    if(e&&e.name==='NotAllowedError')throw new Error('ಈ website domainಗೆ deviceನಲ್ಲಿ Passkey ಸಿಗಲಿಲ್ಲ ಅಥವಾ prompt ರದ್ದುಪಡಿಸಲಾಗಿದೆ. cure-new.vercel.app ಮತ್ತು neocure-new.vercel.app ಬೇರೆ domainಗಳು. MPIN ಮೂಲಕ Login ಮಾಡಿ, ಇದೇ linkನ Settingsನಲ್ಲಿ ಈ deviceಗೆ ಮತ್ತೆ Register ಮಾಡಿ.');
    if(e&&e.name==='NotSupportedError')throw new Error('ಈ deviceನಲ್ಲಿ ಈ Passkey ವಿಧಾನ ಬೆಂಬಲಿತವಿಲ್ಲ.');
