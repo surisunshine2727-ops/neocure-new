@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#ffffff" name="theme-color"/>
-<title>NEOCURE Dealer / Applicator V2200/2</title>
+<title>NEOCURE Dealer / Applicator V2203</title>
 <style>
 :root{--navy:#102f59;--navy2:#1b4778;--ink:#172334;--muted:#697586;--line:#d9dee6;--soft:#f6f8fb;--white:#fff;--danger:#b42318;--ok:#176b45}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#fff;color:var(--ink);font-family:Inter,Roboto,"Segoe UI",Arial,sans-serif}
@@ -5387,6 +5387,31 @@ $('mpinResetBack').onclick=()=>{
  mpinResetStopTimer();mpinResetSetStep('phone');
 };
 ['mpinResetMobile','mpinResetOtpAutofill','mpinResetNew','mpinResetConfirm'].forEach(id=>digits($(id),id==='mpinResetOtpAutofill'?6:(id==='mpinResetMobile'?10:4)));
+async function refreshPasskeyStatus(targetId){
+ const target=$(targetId);
+ if(!target)return false;
+ if(!window.NEOCURE_AUTH || !window.NEOCURE_AUTH.auth || !window.NEOCURE_AUTH.auth.currentUser){
+   target.textContent='Passkey ಸ್ಥಿತಿ ನೋಡಲು ಮೊದಲು MPIN ಮೂಲಕ Login ಮಾಡಿ.';
+   return false;
+ }
+ target.textContent='Firebaseನಲ್ಲಿ Passkey ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…';
+ try{
+   const data=await window.NEOCURE_AUTH.getPasskeyStatus();
+   if(data.registered){
+     target.textContent='✓ Passkey Firebaseನಲ್ಲಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ ('+Number(data.registeredCount||1)+'). ಈ device ಮತ್ತು Chromeನಲ್ಲಿ Login ಪರೀಕ್ಷಿಸಬಹುದು.';
+     target.dataset.passkeyRegistered='true';
+     return true;
+   }
+   target.dataset.passkeyRegistered='false';
+   target.textContent=Number(data.otherDomainCount||0)>0
+     ?'ಈ accountನಲ್ಲಿ ಬೇರೆ domainನ Passkey ಮಾತ್ರ ಇದೆ. ಈ domainಗೆ ಮತ್ತೆ Enable Fingerprint Login ಮಾಡಿ.'
+     :'Not configured yet. Enable Fingerprint Login ಒತ್ತಿ, Google Passkey save/confirm ಕೇಳಿದರೆ ಅದನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ.';
+   return false;
+ }catch(e){
+   target.textContent='Firebase Passkey status ಪರಿಶೀಲನೆ ವಿಫಲ: '+((e&&e.message)||'ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
+   return false;
+ }
+}
 async function requestFingerprintSetup(targetId){
  const target=$(targetId);
  const button=$('settingsFingerprintBtn');
@@ -5409,7 +5434,9 @@ async function requestFingerprintSetup(targetId){
    }
    target.textContent='Fingerprint / Screen Lock ದೃಢೀಕರಣಕ್ಕಾಗಿ ಮುಂದುವರಿಯಿರಿ…';
    await window.NEOCURE_AUTH.registerPasskey();
-   target.textContent='Fingerprint Login ಯಶಸ್ವಿಯಾಗಿ ಸಕ್ರಿಯವಾಗಿದೆ. ಮುಂದಿನ ಬಾರಿ Login screenನ Fingerprint ಆಯ್ಕೆ ಬಳಸಿ.';
+   const saved=await refreshPasskeyStatus(targetId);
+   if(!saved)throw new Error('Passkey browserನಲ್ಲಿ ಸೃಷ್ಟಿಯಾಗಿದೆ, ಆದರೆ Firebaseನಲ್ಲಿ ನೋಂದಣಿ ದೃಢೀಕರಿಸಲಾಗಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
+   target.textContent='✓ Fingerprint / Passkey Firebaseನಲ್ಲಿ ಯಶಸ್ವಿಯಾಗಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ. Logout ಮಾಡಿ Login ಪರೀಕ್ಷಿಸಿ.';
  }catch(e){
    target.textContent=(window.NEOCURE_AUTH && window.NEOCURE_AUTH.message)
      ? window.NEOCURE_AUTH.message(e)
@@ -8082,13 +8109,18 @@ function openApplicatorPage(action,pushHistory=true){
     $('genericContent').innerHTML=`<section class="app-combined-section"><h2>Fingerprint / Passkey</h2>
       <p style="color:#687789;line-height:1.55">ಈ ಸಾಧನದಲ್ಲಿ Fingerprint ಅಥವಾ Screen Lock ಬಳಸಿ ಮುಂದಿನ ಬಾರಿ NEOCUREಗೆ ಸುರಕ್ಷಿತವಾಗಿ Login ಆಗಬಹುದು. ಮೊದಲು MPIN ಮೂಲಕ Login ಆಗಿರಬೇಕು.</p>
       <button type="button" class="app-combined-save" id="appRegisterPasskey">Enable Fingerprint Login</button>
-      <p id="appPasskeyStatus" role="status" aria-live="polite" style="margin:10px 0 0;color:#687789"></p>
-      <p style="font-size:12px;color:#8792a0;line-height:1.5">Passkey ನಿಮ್ಮ device/browserನಲ್ಲಿ ಸಂಗ್ರಹವಾಗುತ್ತದೆ. Device support ಇಲ್ಲದಿದ್ದರೆ MPIN Login ಮುಂದುವರಿಯುತ್ತದೆ.</p>
+      <p id="appPasskeyStatus" role="status" aria-live="polite" style="margin:10px 0 0;color:#687789">Firebaseನಲ್ಲಿ Passkey ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…</p>
+      <p style="font-size:12px;color:#8792a0;line-height:1.5">Passkeyಯ private key ನಿಮ್ಮ Android / Google Password Managerನಲ್ಲಿ ಇರುತ್ತದೆ. ಅದರ public credential ಅನ್ನು NEOCURE Firebaseನಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿ ಉಳಿಸಲಾಗುತ್ತದೆ. Device support ಇಲ್ಲದಿದ್ದರೆ MPIN Login ಮುಂದುವರಿಯುತ್ತದೆ.</p>
     </section>`;
+    refreshPasskeyStatus('appPasskeyStatus');
     $('appRegisterPasskey').onclick=async()=>{
       const btn=$('appRegisterPasskey'),status=$('appPasskeyStatus');btn.disabled=true;status.textContent='Fingerprint registration ನಡೆಯುತ್ತಿದೆ…';
-      try{await window.NEOCURE_AUTH.registerPasskey();status.textContent='Fingerprint / Passkey ಯಶಸ್ವಿಯಾಗಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ.';}
-      catch(e){status.textContent=window.NEOCURE_AUTH.message(e);}
+      try{
+        await window.NEOCURE_AUTH.registerPasskey();
+        const saved=await refreshPasskeyStatus('appPasskeyStatus');
+        if(!saved)throw new Error('Firebaseನಲ್ಲಿ Passkey save ಆಗಿರುವುದು ದೃಢಪಟ್ಟಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
+        status.textContent='✓ Passkey Firebaseನಲ್ಲಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ. Logout ಮಾಡಿ Login ಪರೀಕ್ಷಿಸಿ.';
+      }catch(e){status.textContent=window.NEOCURE_AUTH.message(e);}
       finally{btn.disabled=false;}
     };
   }else if(action==='Coupon & Scan Help'){
@@ -8198,7 +8230,7 @@ const genericPageInfo={
  <button class="settings-tile" type="button" data-settings-page="About NEOCURE"><span class="settings-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-9h.01"/></svg></span><span class="settings-tile-copy"><strong>About NEOCURE</strong></span></button>
  </div>`},
  'Language Settings':{desc:'Select the language used across the app.',body:`<div class="settings-panel"><h2>Choose Language</h2><p>Your selection is saved on this device.</p><div id="settingsLanguageOptions"></div></div>`},
- 'Fingerprint Login':{desc:'Set up fingerprint or device screen-lock sign-in.',body:`<div class="settings-panel"><h2>Fingerprint Login</h2><p>ನಿಮ್ಮ ಸಾಧನದ Fingerprint ಅಥವಾ Screen Lock ಬಳಸಿ ಸುರಕ್ಷಿತವಾಗಿ Login ಮಾಡಲು ಇಲ್ಲಿ ಸಕ್ರಿಯಗೊಳಿಸಿ.</p><button class="settings-action" id="settingsFingerprintBtn" type="button">Enable Fingerprint Login</button><div class="settings-status" id="settingsFingerprintMsg" aria-live="polite">Not configured yet.</div></div>`},
+ 'Fingerprint Login':{desc:'Set up fingerprint or device screen-lock sign-in.',body:`<div class="settings-panel"><h2>Fingerprint Login</h2><p>ನಿಮ್ಮ ಸಾಧನದ Fingerprint ಅಥವಾ Screen Lock ಬಳಸಿ ಸುರಕ್ಷಿತವಾಗಿ Login ಮಾಡಲು ಇಲ್ಲಿ ಸಕ್ರಿಯಗೊಳಿಸಿ.</p><button class="settings-action" id="settingsFingerprintBtn" type="button">Enable Fingerprint Login</button><div class="settings-status" id="settingsFingerprintMsg" role="status" aria-live="polite">Firebaseನಲ್ಲಿ Passkey ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…</div></div>`},
  'Security Settings':{desc:'Update your four-digit account MPIN.',body:`<div class="settings-panel"><h2>Change MPIN</h2><p>Enter your current MPIN, then create and confirm a new 4-digit MPIN. Demo mode saves this change only on this device; connect the secured Firebase backend before production use.</p><label class="settings-field" for="settingsCurrentPin">Current MPIN</label><input class="settings-input" id="settingsCurrentPin" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" placeholder="Enter current MPIN"><label class="settings-field" for="settingsNewPin">New MPIN</label><input class="settings-input" id="settingsNewPin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" placeholder="Enter new 4-digit MPIN"><label class="settings-field" for="settingsConfirmPin">Confirm New MPIN</label><input class="settings-input" id="settingsConfirmPin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" placeholder="Re-enter new MPIN"><button class="settings-action" id="settingsSavePin" type="button">Save New MPIN</button><div class="settings-status" id="settingsPinMsg" role="status"></div><p style="margin-top:12px">Forgot your current MPIN? Use Forgot MPIN on the login screen. OTP reset requires the secure Firebase backend to be deployed.</p></div>`},
  'Notification Settings':{desc:'Choose which app notifications you want to receive.',body:`<div class="settings-panel"><h2>Notification Preferences</h2><label class="settings-switch-row">Order updates <input type="checkbox" id="notifyOrders" checked></label><label class="settings-switch-row">Payment updates <input type="checkbox" id="notifyPayments" checked></label><label class="settings-switch-row">Delivery updates <input type="checkbox" id="notifyDelivery" checked></label><button class="settings-action" id="saveNotifySettings" type="button">Save Preferences</button><div class="settings-status" id="notifySettingsMsg"></div></div>`},
  'Account Information':{desc:'Your registration details are protected and cannot be edited here.',body:`<div class="settings-panel"><h2>Registered Account</h2><label class="settings-field">Full Name</label><input class="settings-input settings-readonly" id="settingsAccountName" readonly><label class="settings-field">Mobile Number</label><input class="settings-input settings-readonly" id="settingsAccountMobile" readonly><label class="settings-field">Portal</label><input class="settings-input settings-readonly" id="settingsAccountRole" readonly><p style="margin-top:12px">Registered name and mobile number cannot be changed from the Dealer / Applicator app.</p></div>`},
@@ -8469,7 +8501,10 @@ function openGenericPage(action,pushHistory=true){
    const wrap=$('settingsLanguageOptions'),chosen=localStorage.getItem('neocure_v1007_language')||'English';
    ['English','Kannada','Hindi','Telugu','Tamil','Malayalam','Marathi'].forEach(lang=>{const b=document.createElement('button');b.type='button';b.className='settings-option'+(lang===chosen?' active':'');b.innerHTML='<span>'+lang+'</span><span>'+(lang===chosen?'✓':'')+'</span>';b.onclick=()=>{applyLanguage(lang);wrap.querySelectorAll('button').forEach(x=>{x.classList.toggle('active',x.dataset.lang===lang);x.lastElementChild.textContent=x.dataset.lang===lang?'✓':''});};b.dataset.lang=lang;wrap.appendChild(b);});
  }
- if(action==='Fingerprint Login')$('settingsFingerprintBtn').onclick=()=>requestFingerprintSetup('settingsFingerprintMsg');
+ if(action==='Fingerprint Login'){
+   $('settingsFingerprintBtn').onclick=()=>requestFingerprintSetup('settingsFingerprintMsg');
+   refreshPasskeyStatus('settingsFingerprintMsg');
+ }
  if(action==='Security Settings'){
    ['settingsCurrentPin','settingsNewPin','settingsConfirmPin'].forEach(id=>digits($(id),4));
    $('settingsSavePin').onclick=()=>{
@@ -18014,7 +18049,9 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   if(!options.rp||options.rp.id!==location.hostname)throw new Error('Passkey domain ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ. Page refresh ಮಾಡಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
   const credential=await navigator.credentials.create({publicKey:options});
   if(!credential)throw new Error('Fingerprint registration ರದ್ದುಪಡಿಸಲಾಗಿದೆ.');
-  await functions.httpsCallable('verifyPasskeyRegistration')({credential:credentialToJSON(credential)});
+  const verified=await functions.httpsCallable('verifyPasskeyRegistration')({credential:credentialToJSON(credential)});
+  if(!verified.data||verified.data.success!==true||verified.data.verified!==true)
+   throw new Error('Firebase Passkey Registration ದೃಢೀಕರಣ ಸಿಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
   return true;
  }
  async function passkeyLogin(mobile,role){
@@ -18085,7 +18122,12 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   return {name:profile.name||'',mobile:phone,role:portal==='applicator'?'Applicator':'Dealer',uid:cred.user.uid};
  }
 
- window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,resetMpinWithPhoneOtp,uploadUserFile,registerPasskey,passkeyLogin,message,auth,db,storage};
+ async function getPasskeyStatus(){
+  if(!auth||!auth.currentUser)throw new Error('ಮೊದಲು MPIN ಮೂಲಕ Login ಮಾಡಿ.');
+  const result=await functions.httpsCallable('getPasskeyStatus')({});
+  return result&&result.data||{};
+ }
+ window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,resetMpinWithPhoneOtp,uploadUserFile,registerPasskey,passkeyLogin,getPasskeyStatus,message,auth,db,storage};
  window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V1707'};
 })();
 </script>
@@ -20879,4 +20921,4 @@ window.NEOCURE_V2080={version:'V2080',base:'V2079',fixes:['Header and item rows 
 #loginScreen #fingerprintMsg{display:block!important;visibility:visible!important;opacity:1!important;min-height:0!important;margin:8px 2px 0!important;padding:0!important;color:#38566d!important;font-size:12px!important;font-weight:600!important;line-height:1.45!important;overflow-wrap:anywhere!important}
 </style>
 
-<!-- V2200/2: improve passkey missing-on-device diagnostics; discoverable login is handled by matching Cloud Functions. -->
+<!-- V2203: Firebase-backed passkey status on the Applicator settings page and exact credential-record updates. -->
