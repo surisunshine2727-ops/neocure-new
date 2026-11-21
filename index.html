@@ -18080,6 +18080,23 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
    timeout:60000,
    userVerification:'required'
   };
+  // Firebase callable data should preserve arrays, but normalize its
+  // serialization before passing the descriptors to WebAuthn.
+  let allowed=options.allowCredentials;
+  if(!Array.isArray(allowed)&&allowed&&typeof allowed==='object'){
+   const keys=Object.keys(allowed);
+   if(keys.length&&keys.every(key=>/^\d+$/.test(key)))
+    allowed=keys.sort((a,b)=>Number(a)-Number(b)).map(key=>allowed[key]);
+  }
+  if(Array.isArray(allowed)){
+   const descriptors=allowed.filter(item=>item&&typeof item.id==='string'&&item.id);
+   if(descriptors.length){
+    requestOptions.allowCredentials=descriptors.map(item=>({
+     type:'public-key',id:b64uToBytes(item.id),
+     ...(Array.isArray(item.transports)?{transports:item.transports.filter(x=>typeof x==='string')}: {})
+    }));
+   }
+  }
   showStatus('Google Passkey / Fingerprint ದೃಢೀಕರಣ ತೆರೆಯಲಾಗುತ್ತಿದೆ…');
   let assertion;
   try{
