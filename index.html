@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#ffffff" name="theme-color"/>
-<title>NEOCURE Dealer / Applicator V2200/1</title>
+<title>NEOCURE Dealer / Applicator V2200/2</title>
 <style>
 :root{--navy:#102f59;--navy2:#1b4778;--ink:#172334;--muted:#697586;--line:#d9dee6;--soft:#f6f8fb;--white:#fff;--danger:#b42318;--ok:#176b45}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#fff;color:var(--ink);font-family:Inter,Roboto,"Segoe UI",Arial,sans-serif}
@@ -18056,7 +18056,7 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   try{
    assertion=await navigator.credentials.get({publicKey:requestOptions});
   }catch(e){
-   if(e&&e.name==='NotAllowedError')throw new Error('Passkey prompt ರದ್ದುಪಡಿಸಲಾಗಿದೆ ಅಥವಾ ಸಮಯ ಮೀರಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
+   if(e&&e.name==='NotAllowedError')throw new Error('ಈ deviceನಲ್ಲಿ neocure-new.vercel.appಗೆ Passkey ಸಿಗಲಿಲ್ಲ ಅಥವಾ prompt ರದ್ದುಪಡಿಸಲಾಗಿದೆ. MPIN ಮೂಲಕ Login ಮಾಡಿ, ಇದೇ phone ಮತ್ತು Chrome browserನಲ್ಲಿ Fingerprint Login ಅನ್ನು ಮತ್ತೆ Enable ಮಾಡಿ.');
    if(e&&e.name==='NotSupportedError')throw new Error('ಈ deviceನಲ್ಲಿ ಈ Passkey ವಿಧಾನ ಬೆಂಬಲಿತವಿಲ್ಲ.');
    throw e;
   }
@@ -20879,4 +20879,4 @@ window.NEOCURE_V2080={version:'V2080',base:'V2079',fixes:['Header and item rows 
 #loginScreen #fingerprintMsg{display:block!important;visibility:visible!important;opacity:1!important;min-height:0!important;margin:8px 2px 0!important;padding:0!important;color:#38566d!important;font-size:12px!important;font-weight:600!important;line-height:1.45!important;overflow-wrap:anywhere!important}
 </style>
 
-<!-- V2200/1: align passkey post-login profile validation with backend role/phone aliases and custom token claim. -->
+<!-- V2200/2: improve passkey missing-on-device diagnostics; discoverable login is handled by matching Cloud Functions. -->
