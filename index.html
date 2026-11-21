@@ -4661,7 +4661,7 @@ button:disabled{opacity:.48!important;filter:saturate(.55);box-shadow:none!impor
 <span>Log In</span>
 </button>
 <button class="secondary" id="fingerprintLoginBtnV2" style="margin-top:10px" type="button">☝ Login with Fingerprint / Passkey</button>
-<p aria-live="polite" class="demo-note" id="fingerprintMsg">Fingerprint Login ಸಿದ್ಧವಾಗಿದೆ. Login ಮಾಡಲು Fingerprint ಬಟನ್ ಒತ್ತಿ.</p>
+<p aria-live="polite" class="fingerprint-status" id="fingerprintMsg">Fingerprint Login ಸಿದ್ಧವಾಗಿದೆ. Login ಮಾಡಲು Fingerprint ಬಟನ್ ಒತ್ತಿ.</p>
 <div class="bottom">New to NEOCURE? <button class="link" id="toRegister" type="button">Create Account</button></div>
 </section>
 </main>
@@ -5442,7 +5442,7 @@ $('fingerprintLoginBtnV2').onclick=async(event)=>{
  if(mobileField){mobileField.blur();mobileField.setAttribute('autocomplete','off');}
  try{if(window.getSelection)window.getSelection().removeAllRanges();}catch(_){}
  const mobile=$('loginMobile').value.trim(),role=selectedLoginRole||'Dealer';
- btn.disabled=true;btn.setAttribute('aria-busy','true');msg.style.display='block';msg.style.visibility='visible';msg.textContent='Fingerprint ಬಟನ್ ಕೆಲಸ ಮಾಡುತ್ತಿದೆ. Firebase Passkey ಪರಿಶೀಲನೆ ಪ್ರಾರಂಭಿಸಲಾಗಿದೆ…';
+ btn.disabled=true;btn.setAttribute('aria-busy','true');if(msg){msg.style.display='block';msg.style.visibility='visible';msg.textContent='Fingerprint ಬಟನ್ ಕೆಲಸ ಮಾಡುತ್ತಿದೆ. Firebase Passkey ಪರಿಶೀಲನೆ ಪ್ರಾರಂಭಿಸಲಾಗಿದೆ…';}
  try{
   const result=await window.NEOCURE_AUTH.passkeyLogin(mobile,role);
   currentAccount={name:result.name,mobile:result.mobile,role:result.role,uid:result.uid};
@@ -5457,7 +5457,7 @@ $('fingerprintLoginBtnV2').onclick=async(event)=>{
     ?window.NEOCURE_AUTH.message(e)
     :(e&&e.message?e.message:'Fingerprint Login ವಿಫಲವಾಗಿದೆ.');
   $('loginError').textContent=detail;
-  msg.textContent=detail;
+  if(msg)msg.textContent=detail;
  }
  finally{btn.disabled=false;btn.removeAttribute('aria-busy');}
 };
