@@ -13776,6 +13776,7 @@ window.NEOCURE_V1050_BUILD={revision:'V1050/1',basedOn:'V1049/8',fixes:['Removed
  const $=id=>document.getElementById(id);
  document.addEventListener('click',function(ev){
    const btn=ev.target && ev.target.closest ? ev.target.closest('#cmMakeQuote') : null;
+    if(!btn)return;
    ev.preventDefault();ev.stopPropagation();
    if(typeof ev.stopImmediatePropagation==='function')ev.stopImmediatePropagation();
    const detail=$('cmDetailBody');
