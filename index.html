@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#ffffff" name="theme-color"/>
-<title>NEOCURE Dealer / Applicator V2203</title>
+<title>NEOCURE Dealer / Applicator V2204/2</title>
 <style>
 :root{--navy:#102f59;--navy2:#1b4778;--ink:#172334;--muted:#697586;--line:#d9dee6;--soft:#f6f8fb;--white:#fff;--danger:#b42318;--ok:#176b45}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#fff;color:var(--ink);font-family:Inter,Roboto,"Segoe UI",Arial,sans-serif}
@@ -5453,12 +5453,12 @@ async function requestFingerprintSetup(targetId){
   if(!available)throw new Error('ಈ device/browserನಲ್ಲಿ Fingerprint ಅಥವಾ Screen Lock authenticator ಲಭ್ಯವಿಲ್ಲ.');
   target.textContent='Fingerprint / Screen Lock ದೃಢೀಕರಣಕ್ಕಾಗಿ ಮುಂದುವರಿಯಿರಿ…';
   await window.NEOCURE_AUTH.registerPasskey();
-  target.textContent='ಯಶಸ್ವಿ: ಈ deviceನ Passkey Firebaseನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ. ಈಗ ಇದೇ browser ಮತ್ತು deviceನಲ್ಲಿ Fingerprint / Screen Lock Login ಪ್ರಯತ್ನಿಸಿ.';
-  if(button){button.textContent='Passkey Registered';button.disabled=true;}
+  target.textContent='ಈ deviceನ Passkey ಅನ್ನು authenticator ರಚಿಸಿದೆ ಮತ್ತು Firebase ಪರಿಶೀಲಿಸಿ ಉಳಿಸಿದೆ. Google Password Managerನಲ್ಲಿ ಕಾಣಿಸುತ್ತಿದೆಯೇ ಎಂಬುದನ್ನು ಪ್ರತ್ಯೇಕವಾಗಿ ದೃಢಪಡಿಸಬೇಕು. ಈಗ Login ಪುಟದಲ್ಲಿ Fingerprint Login ಪರೀಕ್ಷಿಸಿ.';
+  if(button){button.textContent='Register This Device';button.disabled=false;}
  }catch(e){
   target.textContent=(window.NEOCURE_AUTH&&window.NEOCURE_AUTH.message)?window.NEOCURE_AUTH.message(e):(e&&e.message?e.message:'Fingerprint ನೋಂದಣಿ ವಿಫಲವಾಗಿದೆ.');
  }finally{
-  if(button&&button.textContent!=='Fingerprint Already Registered'&&button.textContent!=='Firebase Account Required'&&button.textContent!=='Passkey Registered')button.disabled=false;
+  if(button&&button.textContent!=='Fingerprint Already Registered'&&button.textContent!=='Firebase Account Required')button.disabled=false;
  }
 }
 $('fingerprintLoginBtnV2').onclick=async(event)=>{
@@ -8149,7 +8149,7 @@ function openApplicatorPage(action,pushHistory=true){
       const activeAuth=window.NEOCURE_AUTH&&window.NEOCURE_AUTH.auth&&window.NEOCURE_AUTH.auth.currentUser;
       if(!account.uid||!activeAuth||activeAuth.uid!==account.uid){status.textContent='ಸರಿಯಾದ Firebase accountಗೆ ಮತ್ತೆ MPIN ಮೂಲಕ Login ಮಾಡಿ.';return;}
       btn.disabled=true;status.textContent='Fingerprint registration ನಡೆಯುತ್ತಿದೆ…';
-      try{await window.NEOCURE_AUTH.registerPasskey();status.textContent='ಯಶಸ್ವಿ: ಈ deviceನ Passkey Firebaseನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ. ಇದೇ deviceನಲ್ಲಿ Fingerprint Login ಪ್ರಯತ್ನಿಸಿ.';btn.textContent='Passkey Registered';btn.disabled=true;}
+      try{await window.NEOCURE_AUTH.registerPasskey();status.textContent='ಈ deviceನ Passkey ಅನ್ನು authenticator ರಚಿಸಿದೆ ಮತ್ತು Firebase ಪರಿಶೀಲಿಸಿ ಉಳಿಸಿದೆ. Google Password Managerನಲ್ಲಿ ಕಾಣಿಸುತ್ತಿದೆಯೇ ಎಂಬುದನ್ನು ಪ್ರತ್ಯೇಕವಾಗಿ ದೃಢಪಡಿಸಬೇಕು. ಈಗ Login ಪುಟದಲ್ಲಿ Fingerprint Login ಪರೀಕ್ಷಿಸಿ.';btn.textContent='Register This Device';btn.disabled=false;}
       catch(e){status.textContent=window.NEOCURE_AUTH.message(e);btn.disabled=false;}
     };
     refreshAppPasskeyStatus();
@@ -18214,7 +18214,7 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   }finally{if(timer)clearTimeout(timer);}
  }
  window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,resetMpinWithPhoneOtp,uploadUserFile,registerPasskey,passkeyLogin,passkeyStatus,message,auth,db,storage};
- window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V2204/1'};
+ window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V2204/2'};
 })();
 </script>
 <script id="V1728_SEVEN_LANGUAGE_UI">
