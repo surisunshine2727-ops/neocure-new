@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#ffffff" name="theme-color"/>
-<title>NEOCURE Dealer / Applicator V2203</title>
+<title>NEOCURE Dealer / Applicator V2208</title>
 <style>
 :root{--navy:#102f59;--navy2:#1b4778;--ink:#172334;--muted:#697586;--line:#d9dee6;--soft:#f6f8fb;--white:#fff;--danger:#b42318;--ok:#176b45}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#fff;color:var(--ink);font-family:Inter,Roboto,"Segoe UI",Arial,sans-serif}
@@ -2064,7 +2064,7 @@ button{ -webkit-tap-highlight-color:transparent }
 /* V1388: keep only the item limit note; remove the long helper instruction */
 
 </style>
-<meta content="V1825 Remove Center N Logo and Change Welcome Back Color" name="neocure-version"/>
+<meta content="V2216/1 Login Hero Height Reduction" name="neocure-version"/>
 <style id="v1456-final-login-design">
 /* V1458: keep the background N watermark fully inside the login hero */
 #firebaseBuildNotice{display:none!important}
@@ -3648,7 +3648,7 @@ button:disabled{opacity:.48!important;filter:saturate(.55);box-shadow:none!impor
   }
 </style>
 <!-- V2140: Harmonized premium navy-teal login palette. Visual CSS only; auth behavior and markup unchanged. -->
-<meta content="V2140 Login Color Harmony" name="neocure-version"/>
+<meta content="V2218/2 Offline Only Subsequent Login" name="neocure-version"/>
 <style id="neocure-v2140-login-color-harmony">
   #loginScreen.login-screen.app{
     --login-navy:#17364f!important;
@@ -4439,6 +4439,93 @@ button:disabled{opacity:.48!important;filter:saturate(.55);box-shadow:none!impor
 
 
 
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="neocure-build" content="V2218/2 Offline Only Subsequent Login"/>
+
+<style id="v2216-final-login-hero-card-composition">
+/* V2216/1: reduce the oversized hero and bring the login card directly beneath it. */
+#loginScreen.login-screen.app{
+  display:flex!important;flex-direction:column!important;justify-content:flex-start!important;
+  align-items:stretch!important;gap:0!important;width:100%!important;max-width:560px!important;
+  min-height:100svh!important;height:auto!important;margin:0 auto!important;
+  padding:0 0 env(safe-area-inset-bottom)!important;overflow:hidden!important;
+  background:#edf8f7!important;
+}
+#loginScreen .login-hero{
+  position:relative!important;isolation:isolate!important;flex:0 0 215px!important;
+  height:215px!important;min-height:215px!important;width:100%!important;box-sizing:border-box!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;
+  gap:0!important;padding:40px 18px 24px!important;overflow:hidden!important;
+  color:#fff!important;border-radius:0 0 30px 30px!important;
+  background:radial-gradient(ellipse at 78% 18%,rgba(21,174,159,.48),transparent 48%),
+    linear-gradient(125deg,#073b55 0%,#075d68 52%,#079b87 100%)!important;
+}
+#loginScreen .login-hero .hero-ghost,#loginScreen .login-hero .hero-wave{display:none!important}
+#loginScreen .login-hero .hero-brand{
+  position:relative!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;
+  width:auto!important;max-width:100%!important;height:auto!important;margin:0 auto!important;padding:0!important;
+  color:#fff!important;font-family:Arial,"Segoe UI",sans-serif!important;font-size:clamp(42px,10vw,54px)!important;
+  font-weight:950!important;line-height:1.02!important;letter-spacing:-2.3px!important;text-shadow:none!important;
+}
+#loginScreen .login-hero .hero-brand>span{display:inline-block!important}
+#loginScreen .login-hero .hero-brand .hero-brand-accent{color:#61dfd0!important}
+#loginScreen .login-hero .hero-welcome{
+  position:relative!important;margin:10px 0 0!important;color:#fff!important;
+  font-size:clamp(20px,5.2vw,25px)!important;font-weight:800!important;line-height:1.2!important;letter-spacing:-.35px!important;
+}
+#loginScreen .login-hero .hero-glow{display:none!important}
+#loginScreen .login-panel{
+  position:relative!important;z-index:3!important;flex:0 0 auto!important;width:calc(100% - 28px)!important;
+  max-width:none!important;margin:-1px auto 24px!important;padding:24px 22px 18px!important;
+  box-sizing:border-box!important;background:#fff!important;border:1px solid #dce9e8!important;
+  border-radius:28px!important;box-shadow:0 12px 30px rgba(15,68,78,.10)!important;
+}
+#loginScreen .login-panel .login-mobile-portal-label-row{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;margin:0 2px 10px!important}
+#loginScreen .login-panel .label{display:block!important;margin:0 0 8px 2px!important;color:#30475a!important;font-size:16px!important;font-weight:750!important;line-height:1.25!important}
+#loginScreen .login-panel .login-mobile-portal-label-row .label{margin:0!important}
+#loginScreen .login-panel .welcome-name{margin:0!important;min-height:0!important;color:#1c5363!important;font-size:16px!important;font-weight:750!important}
+#loginScreen .login-panel .field{display:flex!important;align-items:center!important;width:100%!important;height:54px!important;min-height:54px!important;margin:0 0 14px!important;padding:0 15px!important;box-sizing:border-box!important;border:1.5px solid #d6e1e7!important;border-radius:17px!important;background:#f8fafc!important;box-shadow:none!important}
+#loginScreen .login-panel .field input{flex:1 1 auto!important;min-width:0!important;height:100%!important;padding:0!important;border:0!important;outline:0!important;background:transparent!important;color:#253c50!important;font-size:17px!important;font-weight:650!important}
+#loginScreen .login-field-icon{width:21px!important;height:21px!important;flex:0 0 21px!important;margin-right:13px!important;fill:none!important;stroke:#198d87!important;stroke-width:1.8!important}
+#loginScreen #loginPortals{display:flex!important;gap:8px!important;width:100%!important;margin:0 0 18px!important;padding:5px!important;box-sizing:border-box!important;border:1px solid #dce9e7!important;border-radius:18px!important;background:#f0f6f5!important}
+#loginScreen #loginPortals .portal{flex:1 1 50%!important;height:48px!important;min-height:48px!important;margin:0!important;border:1px solid transparent!important;border-radius:13px!important;background:transparent!important;color:#536474!important;font-size:16px!important;font-weight:750!important}
+#loginScreen #loginPortals .portal.active{border-color:#0a8d85!important;background:linear-gradient(110deg,#06475e,#078f82)!important;color:#fff!important;box-shadow:0 4px 10px rgba(6,100,104,.16)!important}
+#loginScreen .login-pin-field{gap:7px!important;padding-right:9px!important}
+#loginScreen .login-pin-field #loginPin{touch-action:manipulation!important;pointer-events:auto!important}
+#loginScreen .login-pin-field .eye{display:flex!important;flex:0 0 40px!important;width:40px!important;height:40px!important;align-items:center!important;justify-content:center!important;padding:7px!important;border:0!important;background:transparent!important;color:#183b5e!important}
+#loginScreen .login-pin-field .eye svg{width:24px!important;height:24px!important;fill:none!important;stroke:currentColor!important;stroke-width:2!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+#loginScreen .login-panel .row{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;margin:0 2px 16px!important}
+#loginScreen .login-panel .remember{display:flex!important;align-items:center!important;gap:8px!important;color:#687783!important;font-size:15px!important;font-weight:650!important}
+#loginScreen .login-panel .remember input{width:20px!important;height:20px!important;margin:0!important;accent-color:#087f79!important}
+#loginScreen .login-panel .link{color:#087c75!important;font-size:15px!important;font-weight:750!important}
+#loginScreen .nc-login-action-row{display:flex!important;flex-flow:row nowrap!important;align-items:stretch!important;gap:10px!important;width:100%!important;margin:0 0 12px!important}
+#loginScreen .nc-login-action-row #loginBtn.primary{display:flex!important;flex:4 1 0!important;min-width:0!important;width:auto!important;height:56px!important;min-height:56px!important;margin:0!important;align-items:center!important;justify-content:center!important;gap:10px!important;border:0!important;border-radius:16px!important;background:linear-gradient(110deg,#073f5c,#078c80)!important;color:#fff!important;font-size:19px!important;font-weight:800!important;box-shadow:0 7px 16px rgba(5,94,96,.16)!important}
+#loginScreen .nc-login-action-row #fingerprintLoginBtnV2.nc-bio-icon{display:flex!important;flex:1 1 0!important;min-width:58px!important;width:auto!important;height:56px!important;min-height:56px!important;max-height:56px!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;box-sizing:border-box!important;margin:0!important;padding:8px!important;border:1px solid #b9e6e1!important;border-radius:16px!important;background:linear-gradient(145deg,#e6faf7,#d2f2ed)!important;color:#087f78!important;box-shadow:0 5px 13px rgba(8,125,120,.10)!important}
+#loginScreen .nc-login-action-row #fingerprintLoginBtnV2.nc-bio-icon svg{display:block!important;position:static!important;flex:0 0 32px!important;width:32px!important;height:32px!important;min-width:32px!important;max-width:32px!important;min-height:32px!important;max-height:32px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+#loginScreen .nc-fingerprint-status{display:none!important;height:0!important;min-height:0!important;margin:0!important;padding:0!important}
+#loginScreen .login-panel .inline-error{margin:0!important}
+#loginScreen .login-panel .bottom{display:flex!important;align-items:center!important;justify-content:center!important;flex-wrap:wrap!important;gap:7px!important;margin:12px 0 0!important;color:#87939c!important;font-size:14px!important;line-height:1.3!important}
+#loginScreen .login-panel .bottom .link{font-size:14px!important}
+@media(max-width:390px){
+ #loginScreen .login-hero{flex-basis:180px!important;height:180px!important;min-height:180px!important;padding-top:34px!important;padding-bottom:18px!important}
+ #loginScreen .login-panel{width:calc(100% - 24px)!important;margin-top:-1px!important;padding:21px 16px 16px!important;border-radius:25px!important}
+ #loginScreen .login-panel .field{height:51px!important;min-height:51px!important;margin-bottom:12px!important}
+ #loginScreen #loginPortals{margin-bottom:15px!important}
+ #loginScreen #loginPortals .portal{height:45px!important;min-height:45px!important}
+ #loginScreen .login-panel .row{margin-bottom:14px!important}
+ #loginScreen .nc-login-action-row #loginBtn.primary,#loginScreen .nc-login-action-row #fingerprintLoginBtnV2.nc-bio-icon{height:53px!important;min-height:53px!important;max-height:53px!important}
+}
+@media(max-height:700px){
+ #loginScreen .login-hero{flex-basis:170px!important;height:170px!important;min-height:170px!important;padding-top:28px!important}
+ #loginScreen .login-panel{margin-top:-1px!important;padding-top:18px!important;padding-bottom:14px!important}
+ #loginScreen .login-panel .field{height:47px!important;min-height:47px!important;margin-bottom:9px!important}
+ #loginScreen #loginPortals{margin-bottom:11px!important}
+ #loginScreen #loginPortals .portal{height:40px!important;min-height:40px!important}
+ #loginScreen .login-panel .row{margin-bottom:10px!important}
+ #loginScreen .nc-login-action-row #loginBtn.primary,#loginScreen .nc-login-action-row #fingerprintLoginBtnV2.nc-bio-icon{height:48px!important;min-height:48px!important;max-height:48px!important}
+ #loginScreen .login-panel .bottom{margin-top:8px!important}
+}
+</style>
 </head>
 <body>
 <div class="firebase-build-notice" id="firebaseBuildNotice">NEOCURE V2153/2.3: Dealer Business Details registration step.</div>
@@ -4573,7 +4660,8 @@ button:disabled{opacity:.48!important;filter:saturate(.55);box-shadow:none!impor
 <div class="field login-field login-pin-field">
 <svg aria-hidden="true" class="login-field-icon" focusable="false" viewbox="0 0 24 24"><rect height="11" rx="2" width="14" x="5" y="10"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"></path></svg>
 <input autocomplete="current-password" enterkeyhint="go" id="loginPin" inputmode="numeric" maxlength="4" placeholder="Enter 4-digit MPIN" type="password"/>
-<button class="eye" data-eye="loginPin" type="button">Show</button>
+<button aria-label="Show MPIN" class="eye" data-eye="loginPin" type="button" title="Show MPIN"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg></button>
+
 </div>
 <div class="row"><label class="remember"><input id="remember" type="checkbox"/> Remember Me</label><button class="link" id="forgot" type="button">Forgot MPIN?</button></div>
 <p aria-live="polite" class="inline-error" id="loginError"></p>
@@ -4654,17 +4742,49 @@ button:disabled{opacity:.48!important;filter:saturate(.55);box-shadow:none!impor
 </div>
 </div>
 </section>
+<div class="nc-login-action-row">
 <button class="primary" id="loginBtn" type="button">
-<svg aria-hidden="true" class="login-action-icon" focusable="false" height="22" viewbox="0 0 24 24" width="22">
-<path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
-</svg>
-<span>Log In</span>
+<svg aria-hidden="true" class="login-action-icon" focusable="false" height="22" viewbox="0 0 24 24" width="22"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg><span>Log In</span>
 </button>
-<button class="secondary" id="fingerprintLoginBtnV2" style="margin-top:10px" type="button">☝ Login with Fingerprint / Passkey</button>
-<p aria-live="polite" class="fingerprint-status" id="fingerprintMsg">Fingerprint Login ಸಿದ್ಧವಾಗಿದೆ. Login ಮಾಡಲು Fingerprint ಬಟನ್ ಒತ್ತಿ.</p>
+<button aria-label="Use Fingerprint or Face ID" class="nc-bio-icon" id="fingerprintLoginBtnV2" title="Fingerprint / Face ID" type="button">
+<svg aria-hidden="true" width="42" height="42" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+ <path d="M24 5.5c-10.2 0-18.5 8.3-18.5 18.5"/>
+ <path d="M24 11c-7.2 0-13 5.8-13 13 0 6.1-.8 11.2-3.1 15.8"/>
+ <path d="M24 16.5c-4.1 0-7.5 3.4-7.5 7.5 0 8.1-.8 13.6-3.2 18.5"/>
+ <path d="M24 22c-1.1 0-2 .9-2 2 0 8.5-.7 14.5-2.6 19"/>
+ <path d="M24 5.5c10.2 0 18.5 8.3 18.5 18.5 0 8.1-1.1 14.4-4 19"/>
+ <path d="M24 11c7.2 0 13 5.8 13 13 0 6.8-.8 12.1-3.2 16.8"/>
+ <path d="M24 16.5c4.1 0 7.5 3.4 7.5 7.5 0 7.8-.8 13.1-3.1 17.8"/>
+</svg>
+</button>
+</div>
+
+<p aria-live="polite" class="demo-note nc-fingerprint-status" id="fingerprintMsg"></p>
 <div class="bottom">New to NEOCURE? <button class="link" id="toRegister" type="button">Create Account</button></div>
 </section>
 </main>
+<style id="v2210-login-input-biometric-fix">
+#loginScreen .login-pin-field{position:relative;display:flex!important;align-items:center!important;gap:0!important;padding:0 8px 0 15px!important;overflow:hidden!important}
+#loginScreen .login-pin-field #loginPin{flex:1 1 auto!important;width:1px!important;min-width:0!important;touch-action:manipulation!important;pointer-events:auto!important;z-index:1}
+#loginScreen .login-pin-field .eye{flex:0 0 auto!important;position:relative!important;z-index:2}
+#loginScreen .login-pin-field .nc-bio-icon{width:54px!important;height:100%!important;min-height:54px!important;flex:0 0 54px!important;border:0!important;border-left:1px solid #cbd7dc!important;border-radius:0!important;background:transparent!important;color:#087d78!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:8px!important;margin:0 0 0 8px!important;box-sizing:border-box!important}
+#loginScreen .login-pin-field .nc-bio-icon svg{width:25px!important;height:25px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.65!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+#loginScreen .login-pin-field .nc-bio-icon:active{background:#edf6f5!important}
+#loginScreen .nc-fingerprint-status{font-size:11px;line-height:1.35;margin:3px 2px 0;min-height:0;color:#526579}
+.nc-bio-notice{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translate(-50%,18px);z-index:100500;max-width:calc(100vw - 36px);width:max-content;padding:13px 18px;border-radius:14px;background:#183d50;color:#fff;font-size:14px;line-height:1.45;text-align:center;box-shadow:0 8px 28px rgba(0,0,0,.24);opacity:0;visibility:hidden;transition:opacity .2s ease,transform .2s ease}
+.nc-bio-notice.show{opacity:1;visibility:visible;transform:translate(-50%,0)}
+</style>
+<script>
+(function ncFixMpinTapFocus(){
+ const field=document.querySelector('#loginScreen .login-pin-field');
+ const input=document.getElementById('loginPin');
+ if(!field||!input)return;
+ field.addEventListener('click',function(event){
+  if(event.target.closest('button'))return;
+  input.focus({preventScroll:true});
+ });
+})();
+</script>
 <!-- Shared visible Firebase Phone Auth reCAPTCHA host for registration and MPIN reset. -->
 <div id="recaptcha-home-anchor"></div><div aria-live="polite" id="recaptcha-container" style="margin:10px 0"></div>
 <header class="app-topbar hidden" id="homeHeader">
@@ -5034,7 +5154,7 @@ document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('cl
  if(['GST Bill','Estimate','Quotation'].includes(action)){openSavedDocCustomers(action);return;}
  openGenericPage(action);
 }));
-document.querySelectorAll('[data-eye]').forEach(btn=>btn.addEventListener('click',()=>{const el=$(btn.dataset.eye);el.type=el.type==='password'?'text':'password';btn.textContent=el.type==='password'?'Show':'Hide'}));
+document.querySelectorAll('[data-eye]').forEach(btn=>btn.addEventListener('click',()=>{const el=$(btn.dataset.eye),visible=el.type==='password';el.type=visible?'text':'password';btn.setAttribute('aria-label',visible?'Hide MPIN':'Show MPIN');btn.title=visible?'Hide MPIN':'Show MPIN';btn.innerHTML=visible?'<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.3A10.8 10.8 0 0 1 12 5c6.1 0 9.5 7 9.5 7a16 16 0 0 1-3.1 3.8M6.2 6.2C3.8 7.8 2.5 12 2.5 12s3.4 7 9.5 7a10 10 0 0 0 3-.5"/></svg>':'<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg>'}));
 function openLogin(mobile='',role=''){show('loginScreen');$('loginMobile').value=mobile;$('loginPin').value='';$('loginError').textContent='';refreshPortals(role)}
 function refreshPortals(preferred=''){
  const mobile=$('loginMobile').value.trim(), wrap=$('loginPortals');
@@ -5237,10 +5357,84 @@ function renderDashboardCredit(){
 }
 // V1735: V1496-compatible on-device login first; Firebase remains the
 // production fallback for accounts registered through the live OTP flow.
+
+// V2208 Offline MPIN foundation: local-only login cache, 90-day expiry, browser-installation scoped.
+const NC_OFFLINE_DB='neocure_offline_v2208',NC_OFFLINE_STORE='accounts',NC_OFFLINE_DAYS=90;
+function ncOfflineDb(){return new Promise((resolve,reject)=>{const q=indexedDB.open(NC_OFFLINE_DB,1);q.onupgradeneeded=()=>q.result.createObjectStore(NC_OFFLINE_STORE,{keyPath:'key'});q.onsuccess=()=>resolve(q.result);q.onerror=()=>reject(q.error);});}
+async function ncOfflinePut(value){const db=await ncOfflineDb();return new Promise((resolve,reject)=>{const tx=db.transaction(NC_OFFLINE_STORE,'readwrite');tx.objectStore(NC_OFFLINE_STORE).put(value);tx.oncomplete=()=>resolve(true);tx.onerror=()=>reject(tx.error);});}
+async function ncOfflineGet(key){const db=await ncOfflineDb();return new Promise((resolve,reject)=>{const q=db.transaction(NC_OFFLINE_STORE).objectStore(NC_OFFLINE_STORE).get(key);q.onsuccess=()=>resolve(q.result||null);q.onerror=()=>reject(q.error);});}
+function ncB64(bytes){return btoa(String.fromCharCode(...new Uint8Array(bytes)));}
+function ncB64Url(bytes){return ncB64(bytes).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function ncUnB64(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0));}
+async function ncPinHash(pin,salt){const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(pin),'PBKDF2',false,['deriveBits']);const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt: ncUnB64(salt),iterations:180000,hash:'SHA-256'},key,256);return ncB64(bits);}
+async function ncSaveOfflineAccount(record,pin,role,mobile){
+ if(!crypto?.subtle||!indexedDB||!isSecureContext)throw new Error('ಈ deviceನಲ್ಲಿ ಸುರಕ್ಷಿತ Offline MPIN storage support ಇಲ್ಲ. HTTPS ಮತ್ತು IndexedDB support ಪರಿಶೀಲಿಸಿ.');
+ const salt=crypto.getRandomValues(new Uint8Array(16)),salt64=ncB64(salt),hash=await ncPinHash(pin,salt64);
+ const deviceKey='nc-device-'+location.hostname;
+ let deviceId=localStorage.getItem(deviceKey);if(!deviceId){deviceId=ncB64(crypto.getRandomValues(new Uint8Array(18)));localStorage.setItem(deviceKey,deviceId);}
+ await ncOfflinePut({key:mobile+'|'+role,mobile,role,name:record.name||'',uid:record.uid||'',salt:salt64,hash,deviceId,lastOnlineAt:Date.now(),expiresAt:Date.now()+NC_OFFLINE_DAYS*86400000,biometric:null});
+}
+async function ncOfflineMpinLogin(mobile,role,pin){
+ const rec=await ncOfflineGet(mobile+'|'+role);
+ if(!rec||Date.now()>rec.expiresAt)throw new Error('Offline Login ಅವಧಿ ಮುಗಿದಿದೆ. Internet ಸಂಪರ್ಕಿಸಿ ಮತ್ತೆ Login ಮಾಡಿ.');
+ const did=localStorage.getItem('nc-device-'+location.hostname);
+ if(!did||did!==rec.deviceId)throw new Error('ಈ ಮೊಬೈಲ್‌ನಲ್ಲಿ Offline Login ಅನುಮತಿ ಇಲ್ಲ.');
+ if(await ncPinHash(pin,rec.salt)!==rec.hash)throw new Error('ತಪ್ಪಾದ Offline MPIN.');
+ const account={mobile,role,name:rec.name,uid:rec.uid,offline:true,offlineLoginAt:Date.now()};
+ currentAccount=account;
+ $('loginError').textContent='';
+ if(String(role).toLowerCase()==='applicator'){$('applicatorWelcome').textContent='Welcome, '+(rec.name||'');$('applicatorAvatar').textContent=(rec.name||'A').trim().charAt(0).toUpperCase();show('applicatorDashboard');}
+ else{$('homeWelcome').textContent='Welcome, '+(rec.name||'');$('homePortal').textContent=role+' Portal';show('homeScreen');}
+ if($('dashMessage'))$('dashMessage').textContent='Offline Mode – Your data will sync when internet is available.';
+}
+async function ncEnableOfflineBiometric(pin){
+ if(!window.PublicKeyCredential||!navigator.credentials||!isSecureContext)throw new Error('ಈ Browserನಲ್ಲಿ Offline Biometric support ಲಭ್ಯವಿಲ್ಲ.');
+ if(!PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable||!await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())throw new Error('ಈ ಸಾಧನದ Browser Platform Biometric ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.');
+ const mobile=String((currentAccount&&currentAccount.mobile)||'').trim(),role=String((currentAccount&&currentAccount.role)||'Dealer'),cleanPin=String(pin||'');
+ if(!/^\d{10}$/.test(mobile)||!/^\d{4}$/.test(cleanPin))throw new Error('ನಿಮ್ಮ 4 ಅಂಕಿಯ MPIN ನಮೂದಿಸಿ.');
+ const rec=await ncOfflineGet(mobile+'|'+role);
+ if(!rec||await ncPinHash(cleanPin,rec.salt)!==rec.hash)throw new Error('MPIN ಸರಿಯಾಗಿಲ್ಲ ಅಥವಾ ಈ deviceಗೆ Offline Registration ಇಲ್ಲ. ಮೊದಲು Online Registration ಪೂರ್ಣಗೊಳಿಸಿ.');
+ if(rec.biometric)throw new Error('ಈ deviceನಲ್ಲಿ Offline Fingerprint ಈಗಾಗಲೇ enable ಆಗಿದೆ.');
+ const challenge=crypto.getRandomValues(new Uint8Array(32)),uid=crypto.getRandomValues(new Uint8Array(16));
+ const credential=await navigator.credentials.create({publicKey:{challenge,rp:{name:'NEOCURE',id:location.hostname},user:{id:uid,name:mobile,displayName:rec.name||'NEOCURE User'},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',residentKey:'preferred',userVerification:'required'},attestation:'none',timeout:60000}});
+ if(!credential)throw new Error('Biometric setup cancelled.');
+ const response=credential.response;
+ if(!response.getPublicKey)throw new Error('ಈ Browser offline biometric public-key export ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.');
+ const pub=response.getPublicKey(),alg=response.getPublicKeyAlgorithm();
+ if(!pub)throw new Error('Biometric key ಓದಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.');
+ rec.biometric={id:ncB64(credential.rawId),publicKey:ncB64(pub),algorithm:alg,createdAt:Date.now()};
+ await ncOfflinePut(rec);
+ return 'Offline Fingerprint / Face ID enabled.';
+}
+async function ncOfflineBiometricLogin(){
+ const mobile=$('loginMobile').value.trim(),role=selectedLoginRole,rec=await ncOfflineGet(mobile+'|'+role);
+ if(!rec||!rec.biometric||Date.now()>rec.expiresAt)throw new Error('Offline Biometric enable ಆಗಿಲ್ಲ. MPIN ಬಳಸಿ ಅಥವಾ Internet ಸಂಪರ್ಕಿಸಿ.');
+ const challenge=crypto.getRandomValues(new Uint8Array(32));
+ const assertion=await navigator.credentials.get({publicKey:{challenge,rpId:location.hostname,allowCredentials:[{type:'public-key',id:ncUnB64(rec.biometric.id)}],userVerification:'required',timeout:60000}});
+ if(!assertion)throw new Error('Biometric verification cancelled.');
+ // Validate challenge, origin, RP ID and local user-verification flags before signature verification.
+ const client=JSON.parse(new TextDecoder().decode(assertion.response.clientDataJSON));
+ const authData=new Uint8Array(assertion.response.authenticatorData),rpHash=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(location.hostname)));
+ if(client.type!=='webauthn.get'||client.origin!==location.origin||client.challenge!==ncB64Url(challenge)||!rpHash.every((v,i)=>v===authData[i])||(authData[32]&5)!==5)throw new Error('Offline Biometric validation failed.');
+ const key=await crypto.subtle.importKey('spki',ncUnB64(rec.biometric.publicKey),rec.biometric.algorithm===-7?{name:'ECDSA',namedCurve:'P-256'}:{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['verify']);
+ const sigAlg=rec.biometric.algorithm===-7?{name:'ECDSA',hash:'SHA-256'}:{name:'RSASSA-PKCS1-v1_5'};
+ const signed=new Uint8Array([...authData,...new Uint8Array(await crypto.subtle.digest('SHA-256',assertion.response.clientDataJSON))]);
+ if(!await crypto.subtle.verify(sigAlg,key,assertion.response.signature,signed))throw new Error('Offline Biometric signature invalid.');
+ currentAccount={mobile,role,name:rec.name,uid:rec.uid,offline:true,offlineBiometric:true};
+ if(String(role).toLowerCase()==='applicator'){ $('applicatorWelcome').textContent='Welcome, '+(rec.name||'');$('applicatorAvatar').textContent=(rec.name||'A').trim().charAt(0).toUpperCase();show('applicatorDashboard');}
+ else{$('homeWelcome').textContent='Welcome, '+(rec.name||'');$('homePortal').textContent=role+' Portal';show('homeScreen');}
+ if($('dashMessage'))$('dashMessage').textContent='Offline Mode – Your data will sync when internet is available.';
+}
+
 $('loginBtn').onclick=async()=>{
  const mobile=$('loginMobile').value.trim(),pin=$('loginPin').value,role=selectedLoginRole;
  if(!/^\d{10}$/.test(mobile)||!/^\d{4}$/.test(pin)){$('loginError').textContent='Enter a valid mobile number and 4-digit MPIN.';return}
- const enterAccount=(record,uid='')=>{
+ // First successful sign-in is verified online and cached on this device.
+ // Later MPIN sign-ins use the device-local verifier, even when internet is available.
+ let cachedOffline=null;try{cachedOffline=await ncOfflineGet(mobile+'|'+role);}catch(_offlineReadError){}
+ if(cachedOffline){try{await ncOfflineMpinLogin(mobile,role,pin);}catch(offlineError){$('loginError').textContent=offlineError.message||'Offline Login failed.';}return}
+ if(!navigator.onLine){$('loginError').textContent='ಈ ಸಾಧನದಲ್ಲಿ ಮೊದಲ Online Verification ಇನ್ನೂ ಆಗಿಲ್ಲ. ಮೊದಲ Login ಮಾಡಲು Internet ಸಂಪರ್ಕಿಸಿ.';return}
+ const enterAccount=async(record,uid='')=>{
   // Clear the pending login status before switching screens.
   $('loginError').textContent='';
   if($('remember').checked)localStorage.setItem('neocure_v1497_remember',mobile);
@@ -5254,19 +5448,16 @@ $('loginBtn').onclick=async()=>{
    show('applicatorDashboard');syncApplicatorDashboardReward();
   }else{show('homeScreen');renderDashboardCredit();renderDashboardProfilePhoto();}
   applyLanguage(localStorage.getItem('neocure_v1007_language')||'English');
+  try{await ncSaveOfflineAccount(record,pin,role,mobile);}catch(offlineSaveError){console.warn('Offline MPIN cache unavailable',offlineSaveError);$('dashMessage').textContent='ಎಚ್ಚರಿಕೆ: ಈ deviceನಲ್ಲಿ Offline Login ಸಿದ್ಧವಾಗಿಲ್ಲ. ಮತ್ತೆ Login ಮಾಡುವ ಮೊದಲು ಸುರಕ್ಷಿತ storage support ಪರಿಶೀಲಿಸಿ.';}
  };
  $('loginError').textContent='Checking login…';
  try{
-  let localData={};try{localData=JSON.parse(localStorage.getItem('neocure_v1002_accounts')||'{}')}catch(_){localData={}}
-  const localRecord=localData[mobile]&&localData[mobile][role];
-  if(localRecord&&String(localRecord.pin)===pin){enterAccount(localRecord,'local-'+mobile);return;}
-  if(localRecord&&String(localRecord.pin)!==pin){$('loginError').textContent='Incorrect MPIN.';return;}
   $('loginError').textContent='Connecting securely…';
   const record=await Promise.race([
    window.NEOCURE_AUTH.signIn(mobile,role,pin),
    new Promise((_,reject)=>setTimeout(()=>reject(new Error('LOGIN_TIMEOUT')),15000))
   ]);
-  enterAccount(record,record.uid||'');
+  await enterAccount(record,record.uid||'');
  }catch(e){
   const code=String(e&& (e.code||e.message)||'');
   if(code==='LOGIN_TIMEOUT')$('loginError').textContent='Login server response timed out. Internet ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
@@ -5387,93 +5578,91 @@ $('mpinResetBack').onclick=()=>{
  mpinResetStopTimer();mpinResetSetStep('phone');
 };
 ['mpinResetMobile','mpinResetOtpAutofill','mpinResetNew','mpinResetConfirm'].forEach(id=>digits($(id),id==='mpinResetOtpAutofill'?6:(id==='mpinResetMobile'?10:4)));
-async function refreshPasskeyStatus(targetId){
- const target=$(targetId);
- if(!target)return false;
- if(!window.NEOCURE_AUTH || !window.NEOCURE_AUTH.auth || !window.NEOCURE_AUTH.auth.currentUser){
-   target.textContent='Passkey ಸ್ಥಿತಿ ನೋಡಲು ಮೊದಲು MPIN ಮೂಲಕ Login ಮಾಡಿ.';
-   return false;
- }
- target.textContent='Firebaseನಲ್ಲಿ Passkey ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…';
+async function refreshFingerprintSettingsStatus(){
+ const target=$('settingsFingerprintMsg'),button=$('settingsFingerprintBtn');
+ if(!target||!button)return;
+ const account=currentAccount||{},mobile=String(account.mobile||'').replace(/\D/g,'').slice(-10),role=String(account.role||'Dealer');
+ if(!/^\d{10}$/.test(mobile)){target.textContent='ಮೊದಲು ಮೊದಲ Online Registration ಪೂರ್ಣಗೊಳಿಸಿ.';button.disabled=true;return;}
  try{
-   const data=await window.NEOCURE_AUTH.getPasskeyStatus();
-   if(data.registered){
-     target.textContent='✓ Passkey Firebaseನಲ್ಲಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ ('+Number(data.registeredCount||1)+'). ಈ device ಮತ್ತು Chromeನಲ್ಲಿ Login ಪರೀಕ್ಷಿಸಬಹುದು.';
-     target.dataset.passkeyRegistered='true';
-     return true;
-   }
-   target.dataset.passkeyRegistered='false';
-   target.textContent=Number(data.otherDomainCount||0)>0
-     ?'ಈ accountನಲ್ಲಿ ಬೇರೆ domainನ Passkey ಮಾತ್ರ ಇದೆ. ಈ domainಗೆ ಮತ್ತೆ Enable Fingerprint Login ಮಾಡಿ.'
-     :'Not configured yet. Enable Fingerprint Login ಒತ್ತಿ, Google Passkey save/confirm ಕೇಳಿದರೆ ಅದನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ.';
-   return false;
- }catch(e){
-   target.textContent='Firebase Passkey status ಪರಿಶೀಲನೆ ವಿಫಲ: '+((e&&e.message)||'ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
-   return false;
- }
+  const rec=await ncOfflineGet(mobile+'|'+role);
+  if(!rec){target.textContent='ಈ deviceನಲ್ಲಿ Offline MPIN Registration ಇಲ್ಲ. ಮೊದಲ Online Login ಮಾಡಿ.';button.disabled=true;return;}
+  if(rec.biometric){target.textContent='ಈ deviceನಲ್ಲಿ Offline Fingerprint / Face ID ಈಗಾಗಲೇ enable ಆಗಿದೆ.';button.textContent='Fingerprint Already Enabled';button.disabled=true;return;}
+  target.textContent='ನಿಮ್ಮ MPIN ನಮೂದಿಸಿ ನಂತರ ಈ deviceನಲ್ಲಿ Offline Fingerprint enable ಮಾಡಿ.';button.textContent='Enable Offline Fingerprint';button.disabled=false;
+ }catch(e){target.textContent='Offline Registration ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಲಾಗಲಿಲ್ಲ: '+(e.message||e);button.disabled=true;}
 }
-async function requestFingerprintSetup(targetId){
- const target=$(targetId);
- const button=$('settingsFingerprintBtn');
- if(!target)return;
- if(!window.isSecureContext || !window.PublicKeyCredential || !navigator.credentials){
-   target.textContent='Fingerprintಗೆ HTTPS ಮತ್ತು ಬೆಂಬಲಿತ Android browser ಅಗತ್ಯವಿದೆ.';
-   return;
- }
- if(!window.NEOCURE_AUTH || typeof window.NEOCURE_AUTH.registerPasskey!=='function'){
-   target.textContent='Firebase Passkey service ಲಭ್ಯವಿಲ್ಲ. Functions deployment ಪರಿಶೀಲಿಸಿ.';
-   return;
- }
- if(button)button.disabled=true;
- target.textContent='Fingerprint ಸಾಧನ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…';
+async function requestFingerprintSetup(targetId,pinInputId){
+ const target=$(targetId),button=$('settingsFingerprintBtn');if(!target||!button)return;
+ const pin=$(pinInputId)?.value||'';button.disabled=true;target.textContent='ಈ deviceನಲ್ಲಿ Offline Biometric ನೋಂದಣಿ ನಡೆಯುತ್ತಿದೆ…';
  try{
-   const available=await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-   if(!available){
-     target.textContent='ಈ device/browserನಲ್ಲಿ Fingerprint ಅಥವಾ Screen Lock authenticator ಲಭ್ಯವಿಲ್ಲ.';
-     return;
-   }
-   target.textContent='Fingerprint / Screen Lock ದೃಢೀಕರಣಕ್ಕಾಗಿ ಮುಂದುವರಿಯಿರಿ…';
-   await window.NEOCURE_AUTH.registerPasskey();
-   const saved=await refreshPasskeyStatus(targetId);
-   if(!saved)throw new Error('Passkey browserನಲ್ಲಿ ಸೃಷ್ಟಿಯಾಗಿದೆ, ಆದರೆ Firebaseನಲ್ಲಿ ನೋಂದಣಿ ದೃಢೀಕರಿಸಲಾಗಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
-   target.textContent='✓ Fingerprint / Passkey Firebaseನಲ್ಲಿ ಯಶಸ್ವಿಯಾಗಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ. Logout ಮಾಡಿ Login ಪರೀಕ್ಷಿಸಿ.';
- }catch(e){
-   target.textContent=(window.NEOCURE_AUTH && window.NEOCURE_AUTH.message)
-     ? window.NEOCURE_AUTH.message(e)
-     : (e && e.message ? e.message : 'Fingerprint ನೋಂದಣಿ ವಿಫಲವಾಗಿದೆ.');
- }finally{
-   if(button)button.disabled=false;
- }
+  const message=await ncEnableOfflineBiometric(pin);
+  target.textContent=message;
+  const input=$(pinInputId);if(input)input.value='';
+  await refreshFingerprintSettingsStatus();
+ }catch(e){target.textContent=e&&e.message?e.message:'Offline Fingerprint ನೋಂದಣಿ ವಿಫಲವಾಗಿದೆ.';button.disabled=false;}
 }
+function ncBindOfflineFingerprintSetup(buttonId,statusId,pinId){
+ const button=$(buttonId),status=$(statusId);if(!button||!status)return;
+ const account=currentAccount||{};const mobile=String(account.mobile||'').replace(/\D/g,'').slice(-10),role=String(account.role||'Dealer');
+ const refresh=async()=>{
+  try{const rec=await ncOfflineGet(mobile+'|'+role);if(rec&&rec.biometric){status.textContent='ಈ deviceನಲ್ಲಿ Offline Fingerprint / Face ID enable ಆಗಿದೆ.';button.textContent='Fingerprint Already Enabled';button.disabled=true;}else if(rec){status.textContent='MPIN ನಮೂದಿಸಿ Offline Fingerprint enable ಮಾಡಿ.';button.textContent='Enable Offline Fingerprint';button.disabled=false;}else{status.textContent='ಮೊದಲು Online Registration ಮಾಡಿ; ನಂತರ Offline Fingerprint enable ಮಾಡಬಹುದು.';button.disabled=true;}}
+  catch(e){status.textContent='ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.';button.disabled=true;}
+ };
+ button.onclick=async()=>{button.disabled=true;status.textContent='Offline Fingerprint ನೋಂದಣಿ ನಡೆಯುತ್ತಿದೆ…';try{status.textContent=await ncEnableOfflineBiometric($(pinId)?.value||'');$(pinId).value='';await refresh();}catch(e){status.textContent=e.message||'Fingerprint ನೋಂದಣಿ ವಿಫಲವಾಗಿದೆ.';button.disabled=false;}};
+ refresh();
+}
+
+
+function ncShowBiometricNotice(message){
+ let popup=document.getElementById('ncBioNoticePopup');
+ if(!popup){
+  popup=document.createElement('div');popup.id='ncBioNoticePopup';popup.className='nc-bio-notice';
+  popup.setAttribute('role','status');popup.setAttribute('aria-live','polite');
+  document.body.appendChild(popup);
+ }
+ popup.textContent=message;
+ popup.classList.add('show');
+ clearTimeout(popup._hideTimer);
+ popup._hideTimer=setTimeout(()=>popup.classList.remove('show'),3200);
+}
+
 $('fingerprintLoginBtnV2').onclick=async(event)=>{
  if(event){event.preventDefault();event.stopPropagation();}
- const btn=$('fingerprintLoginBtnV2'),msg=$('fingerprintMsg');
- // Remove focus/selection from the phone field before invoking WebAuthn.
- const mobileField=$('loginMobile');
- if(mobileField){mobileField.blur();mobileField.setAttribute('autocomplete','off');}
- try{if(window.getSelection)window.getSelection().removeAllRanges();}catch(_){}
- const mobile=$('loginMobile').value.trim(),role=selectedLoginRole||'Dealer';
-  btn.disabled=true;if(msg){msg.style.display='block';msg.style.visibility='visible';msg.textContent='Fingerprint ಪರಿಶೀಲನೆ ನಡೆಯುತ್ತಿದೆ…';}
+ const btn=$('fingerprintLoginBtnV2'),msg=$('fingerprintMsg'),error=$('loginError');
+ if(!btn||btn.dataset.busy==='1')return;
+ btn.dataset.busy='1';btn.disabled=true;
+ if(error)error.textContent='';
+ if(msg){msg.style.display='block';msg.style.visibility='visible';msg.textContent='Fingerprint Login ಆರಂಭಿಸಲಾಗುತ್ತಿದೆ…';}
  try{
-  const result=await window.NEOCURE_AUTH.passkeyLogin(mobile,role);
-  currentAccount={name:result.name,mobile:result.mobile,role:result.role,uid:result.uid};
-   if(msg){msg.style.display='block';msg.style.visibility='visible';msg.textContent='Fingerprint Login ಯಶಸ್ವಿಯಾಗಿದೆ.';}
-  if(String(result.role).toLowerCase()==='applicator'){
-   $('applicatorWelcome').textContent='Welcome, '+(result.name||'');
-   $('applicatorAvatar').textContent=(result.name||'A').trim().charAt(0).toUpperCase();try{const ap=JSON.parse(localStorage.getItem('neocure_applicator_profile_'+String(result.mobile||''))||'{}');if(ap.profilePhoto)$('applicatorAvatar').innerHTML=`<img src="${ap.profilePhoto}" alt="Profile photo">`;}catch(e){}
-   show('applicatorDashboard');
-  }else{show('homeScreen');renderDashboardCredit();renderDashboardProfilePhoto();}
+  const mobile=String($('loginMobile')&&$('loginMobile').value||'').trim();
+  const role=String(selectedLoginRole||'Dealer');
+  if(!/^\d{10}$/.test(mobile))throw new Error('ಮೊದಲು ನೋಂದಾಯಿತ 10 ಅಂಕಿಯ Mobile Number ನಮೂದಿಸಿ.');
+  // Subsequent fingerprint login is strictly local. Never fall back to Firebase Passkey Login.
+  const localBio=await ncOfflineGet(mobile+'|'+role);
+  if(!localBio||!localBio.biometric){
+   ncShowBiometricNotice('ಈ deviceನಲ್ಲಿ Offline Fingerprint enable ಆಗಿಲ್ಲ. MPIN ಬಳಸಿ Login ಮಾಡಿ; ನಂತರ Settingsನಲ್ಲಿ enable ಮಾಡಿ.');
+   if(msg){msg.style.display='none';msg.textContent='';}
+   return;
+  }
+  await ncOfflineBiometricLogin();
+  if(msg)msg.textContent='Offline Fingerprint Login ಯಶಸ್ವಿಯಾಗಿದೆ.';
+  return;
  }catch(e){
-  const detail=(window.NEOCURE_AUTH&&window.NEOCURE_AUTH.message)
-    ?window.NEOCURE_AUTH.message(e)
-    :(e&&e.message?e.message:'Fingerprint Login ವಿಫಲವಾಗಿದೆ.');
-   $('loginError').textContent='';
-   if(msg)msg.textContent=detail;
+  const detail=(window.NEOCURE_AUTH&&window.NEOCURE_AUTH.message)?window.NEOCURE_AUTH.message(e):(e&&e.message?e.message:'Fingerprint Login ವಿಫಲವಾಗಿದೆ.');
+  const bioNotReady=/not registered|not enabled|register.*biometric|biometric.*(setup|register|enable)|offline biometric.*(missing|not found)|offline biometric enable ಆಗಿಲ್ಲ|no passkey|passkey.*not found/i.test(detail);
+  if(bioNotReady){
+   ncShowBiometricNotice('ಈ ಸಾಧನದಲ್ಲಿ Fingerprint / Face ID ನೋಂದಾಯಿಸಿಲ್ಲ. Login ಆದ ನಂತರ Profile & Settings ಒಳಗೆ enable ಮಾಡಿ.');
+   if(error)error.textContent='';
+   if(msg){msg.style.display='none';msg.textContent='';}
+  }else{
+   if(error)error.textContent=detail;
+   if(msg){msg.style.display='block';msg.style.visibility='visible';msg.textContent=detail;}
+  }
+ }finally{
+  btn.disabled=false;delete btn.dataset.busy;
  }
- finally{btn.disabled=false;}
 };
 
-$('headerLogout').onclick=()=>{stopDealerApprovalWatch();currentAccount=null;history.replaceState({screen:'loginScreen'},'', '#loginScreen');openLogin();};
+$('headerLogout').onclick=async()=>{stopDealerApprovalWatch();currentAccount=null;try{if(window.NEOCURE_AUTH&&window.NEOCURE_AUTH.auth)await window.NEOCURE_AUTH.auth.signOut();}catch(_logoutError){}history.replaceState({screen:'loginScreen'},'', '#loginScreen');openLogin();};
 
 
 // Every dashboard module opens as a separate full page.
@@ -7656,6 +7845,19 @@ body:has(#homeScreen)::after,body:has(#applicatorDashboard)::after{display:none!
 #loginScreen.login-screen.app.hidden{display:none!important}
 </style>
 
+
+<style id="v2212-final-offline-login-ui">
+#loginScreen .login-pin-field{display:flex!important;align-items:center!important;gap:8px!important}
+#loginScreen .login-pin-field .eye{width:42px!important;height:42px!important;flex:0 0 42px!important;display:flex!important;align-items:center!important;justify-content:center!important;border:0!important;background:transparent!important;color:#173b5b!important;padding:8px!important;margin:0!important;font-size:0!important}
+#loginScreen .login-pin-field .eye svg{width:24px!important;height:24px!important;fill:none!important;stroke:currentColor!important;stroke-width:2!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+#loginScreen .login-pin-field .nc-bio-icon{display:none!important}
+#loginScreen .nc-login-action-row{display:flex!important;align-items:stretch!important;gap:10px!important;width:100%!important;margin:2px 0 10px!important}
+#loginScreen .nc-login-action-row #loginBtn.primary{flex:4 1 0!important;width:auto!important;min-width:0!important;margin:0!important;height:54px!important}
+#loginScreen .nc-login-action-row .nc-bio-icon{flex:1 1 0!important;min-width:0!important;width:auto!important;height:54px!important;min-height:54px!important;display:flex!important;align-items:center!important;justify-content:center!important;border:1px solid #bfe5e1!important;border-radius:15px!important;background:linear-gradient(145deg,#e7f8f6,#d5f0ed)!important;color:#087d78!important;box-shadow:0 4px 12px rgba(8,125,120,.10)!important;padding:10px!important;margin:0!important}
+#loginScreen .nc-login-action-row .nc-bio-icon svg{width:30px!important;height:30px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+#loginScreen .nc-login-action-row .nc-bio-icon:disabled{opacity:.55!important}
+</style>
+
 </body>
 <!-- V1402: applied inset-shadow dividers to every Bill Item Entry grid cell; preserves existing workflows. -->
 </html>`;
@@ -8098,7 +8300,8 @@ function openApplicatorPage(action,pushHistory=true){
     const appProfileKey='neocure_applicator_profile_'+String(a.mobile||'guest');
     const appPhoto=saved.profilePhoto||'';
     const settingIcon=(kind)=>({language:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>',fingerprint:'<svg viewBox="0 0 24 24"><path d="M12 11v3M8.5 12a3.5 3.5 0 0 1 7 0v3.5M5.5 12a6.5 6.5 0 0 1 13 0v2M3 12a9 9 0 0 1 18 0v1M8 17c.4 1.5 1.2 2.7 2.4 3.5M16 17c-.2 1.1-.6 2-1.2 2.8"/></svg>',security:'<svg viewBox="0 0 24 24"><path d="M12 3 20 6v5.5c0 4.6-3.2 7.8-8 9.5-4.8-1.7-8-4.9-8-9.5V6z"/><path d="m8.5 12 2.3 2.3 4.8-5"/></svg>',notifications:'<svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>',account:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>',about:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg>'})[kind];
-    $('genericContent').innerHTML=`<section class="app-combined-section"><h2>My Profile</h2><div class="app-profile-photo-editor"><div class="app-profile-photo-frame"><img id="appProfilePhotoPreview" alt="Applicator profile photo" ${appPhoto?'':'hidden'} src="${appPhoto}"><span id="appProfilePhotoFallback" ${appPhoto?'hidden':''}>${safeText((a.name||'A').trim().charAt(0).toUpperCase())}</span></div><div class="app-profile-photo-actions"><strong>Profile Photo</strong><small>Your photo will also appear on the Applicator Dashboard.</small><label for="appProfilePhotoInput" class="app-profile-photo-pick">Choose Photo</label><input id="appProfilePhotoInput" type="file" accept="image/*" hidden><button type="button" id="appProfilePhotoRemove" class="app-profile-photo-remove">Remove Photo</button></div></div><div class="app-profile-fields"><label>Registered Name<input id="appProfileName" value="${safeText(a.name||'')}" readonly></label><label>Mobile Number<input value="${safeText(a.mobile||'')}" readonly></label><label>Portal<input value="Applicator" readonly></label><label>Work / Business Name<input id="appProfileWork" value="${safeText(saved.work||a.businessName||'')}" placeholder="Enter work / business name"></label><label>Address<textarea id="appProfileAddress" rows="2" placeholder="Enter address">${safeText(saved.address||a.address||'')}</textarea></label><button type="button" class="app-combined-save" id="appProfileSave">Save Profile</button><p id="appProfileMsg" role="status"></p></div></section><section class="app-combined-section"><h2>Settings</h2><div class="settings-grid"><button class="settings-tile" type="button" data-app-setting="Language Settings"><span class="app-setting-icon">${settingIcon('language')}</span><span><strong>Language Settings</strong></span></button><button class="settings-tile" type="button" data-app-setting="Fingerprint Login"><span class="app-setting-icon">${settingIcon('fingerprint')}</span><span><strong>Fingerprint Login</strong></span></button><button class="settings-tile" type="button" data-app-setting="Security Settings"><span class="app-setting-icon">${settingIcon('security')}</span><span><strong>Security Settings</strong></span></button><button class="settings-tile" type="button" data-app-setting="Notification Settings"><span class="app-setting-icon">${settingIcon('notifications')}</span><span><strong>Notification Settings</strong></span></button><button class="settings-tile" type="button" data-app-setting="Account Information"><span class="app-setting-icon">${settingIcon('account')}</span><span><strong>Account Information</strong></span></button><button class="settings-tile" type="button" data-app-setting="About NEOCURE"><span class="app-setting-icon">${settingIcon('about')}</span><span><strong>About NEOCURE</strong></span></button></div></section>`;
+    $('genericContent').innerHTML=`<section class="app-combined-section"><h2>My Profile</h2><div class="app-profile-photo-editor"><div class="app-profile-photo-frame"><img id="appProfilePhotoPreview" alt="Applicator profile photo" ${appPhoto?'':'hidden'} src="${appPhoto}"><span id="appProfilePhotoFallback" ${appPhoto?'hidden':''}>${safeText((a.name||'A').trim().charAt(0).toUpperCase())}</span></div><div class="app-profile-photo-actions"><strong>Profile Photo</strong><small>Your photo will also appear on the Applicator Dashboard.</small><label for="appProfilePhotoInput" class="app-profile-photo-pick">Choose Photo</label><input id="appProfilePhotoInput" type="file" accept="image/*" hidden><button type="button" id="appProfilePhotoRemove" class="app-profile-photo-remove">Remove Photo</button></div></div><div class="app-profile-fields"><label>Registered Name<input id="appProfileName" value="${safeText(a.name||'')}" readonly></label><label>Mobile Number<input value="${safeText(a.mobile||'')}" readonly></label><label>Portal<input value="Applicator" readonly></label><label>Work / Business Name<input id="appProfileWork" value="${safeText(saved.work||a.businessName||'')}" placeholder="Enter work / business name"></label><label>Address<textarea id="appProfileAddress" rows="2" placeholder="Enter address">${safeText(saved.address||a.address||'')}</textarea></label><button type="button" class="app-combined-save" id="appProfileSave">Save Profile</button><p id="appProfileMsg" role="status"></p></div></section><section class="app-combined-section"><h2>Offline Fingerprint Login</h2><p style="color:#687789;line-height:1.5">ಈ deviceನಲ್ಲಿ offline Fingerprint / Face ID enable ಮಾಡಲು ನಿಮ್ಮ 4 ಅಂಕಿಯ MPIN ನಮೂದಿಸಿ.</p><label style="display:block;margin:10px 0 6px;font-weight:700" for="profileOfflineBioPin">4-digit MPIN</label><input id="profileOfflineBioPin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Enter MPIN" style="width:100%;height:44px;padding:0 12px;border:1px solid #d7e1ea;border-radius:10px;box-sizing:border-box"><button type="button" class="app-combined-save" id="profileOfflineBioBtn" style="margin-top:10px">Enable Offline Fingerprint</button><p id="profileOfflineBioStatus" role="status" aria-live="polite" style="margin:8px 0 0;color:#687789">Offline biometric status checking…</p></section><section class="app-combined-section"><h2>Settings</h2><div class="settings-grid"><button class="settings-tile" type="button" data-app-setting="Language Settings"><span class="app-setting-icon">${settingIcon('language')}</span><span><strong>Language Settings</strong></span></button><button class="settings-tile" type="button" data-app-setting="Fingerprint Login"><span class="app-setting-icon">${settingIcon('fingerprint')}</span><span><strong>Fingerprint Login</strong></span></button><button class="settings-tile" type="button" data-app-setting="Security Settings"><span class="app-setting-icon">${settingIcon('security')}</span><span><strong>Security Settings</strong></span></button><button class="settings-tile" type="button" data-app-setting="Notification Settings"><span class="app-setting-icon">${settingIcon('notifications')}</span><span><strong>Notification Settings</strong></span></button><button class="settings-tile" type="button" data-app-setting="Account Information"><span class="app-setting-icon">${settingIcon('account')}</span><span><strong>Account Information</strong></span></button><button class="settings-tile" type="button" data-app-setting="About NEOCURE"><span class="app-setting-icon">${settingIcon('about')}</span><span><strong>About NEOCURE</strong></span></button></div></section>`;
+    ncBindOfflineFingerprintSetup('profileOfflineBioBtn','profileOfflineBioStatus','profileOfflineBioPin');
     const setAppPhoto=(src)=>{const img=$('appProfilePhotoPreview'),fallback=$('appProfilePhotoFallback');if(img){if(src){img.src=src;img.hidden=false;}else{img.removeAttribute('src');img.hidden=true;}}if(fallback)fallback.hidden=!!src;const avatar=$('applicatorAvatar');if(avatar){avatar.innerHTML=src?`<img src="${src}" alt="Profile photo">`:safeText((a.name||'A').trim().charAt(0).toUpperCase());}};
     setAppPhoto(appPhoto);
     $('appProfilePhotoInput').addEventListener('change',async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;if(!file.type.startsWith('image/')){alert('Please choose an image file.');e.target.value='';return;}if(file.size>8*1024*1024){alert('Please choose a photo smaller than 8 MB.');e.target.value='';return;}try{const data=await compressProfilePhoto(file);const current=JSON.parse(localStorage.getItem(appProfileKey)||'{}');current.profilePhoto=data;localStorage.setItem(appProfileKey,JSON.stringify(current));saved.profilePhoto=data;setAppPhoto(data);$('appProfileMsg').textContent='Profile photo saved on this device.';}catch(err){alert('Unable to save this photo. Please try another image.');}e.target.value='';});
@@ -8107,22 +8310,14 @@ function openApplicatorPage(action,pushHistory=true){
     $('genericContent').querySelectorAll('[data-app-setting]').forEach(b=>b.addEventListener('click',()=>b.dataset.appSetting==='Fingerprint Login'?openApplicatorPage('Fingerprint Login',true):openGenericPage(b.dataset.appSetting,true)));
   }else if(action==='Fingerprint Login'){
     $('genericContent').innerHTML=`<section class="app-combined-section"><h2>Fingerprint / Passkey</h2>
-      <p style="color:#687789;line-height:1.55">ಈ ಸಾಧನದಲ್ಲಿ Fingerprint ಅಥವಾ Screen Lock ಬಳಸಿ ಮುಂದಿನ ಬಾರಿ NEOCUREಗೆ ಸುರಕ್ಷಿತವಾಗಿ Login ಆಗಬಹುದು. ಮೊದಲು MPIN ಮೂಲಕ Login ಆಗಿರಬೇಕು.</p>
-      <button type="button" class="app-combined-save" id="appRegisterPasskey">Enable Fingerprint Login</button>
-      <p id="appPasskeyStatus" role="status" aria-live="polite" style="margin:10px 0 0;color:#687789">Firebaseನಲ್ಲಿ Passkey ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…</p>
-      <p style="font-size:12px;color:#8792a0;line-height:1.5">Passkeyಯ private key ನಿಮ್ಮ Android / Google Password Managerನಲ್ಲಿ ಇರುತ್ತದೆ. ಅದರ public credential ಅನ್ನು NEOCURE Firebaseನಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿ ಉಳಿಸಲಾಗುತ್ತದೆ. Device support ಇಲ್ಲದಿದ್ದರೆ MPIN Login ಮುಂದುವರಿಯುತ್ತದೆ.</p>
+      <p style="color:#687789;line-height:1.55">ಮೊದಲ Online Registration ನಂತರ ಈ deviceನಲ್ಲಿ MPIN ದೃಢೀಕರಿಸಿ Fingerprint / Face ID ಅನ್ನು Offline Login‌ಗಾಗಿ enable ಮಾಡಿ.</p>
+      <label style="display:block;margin:12px 0 6px;font-weight:700" for="appOfflineBioPin">ನಿಮ್ಮ 4 ಅಂಕಿಯ MPIN</label>
+      <input id="appOfflineBioPin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Enter MPIN" style="width:100%;height:48px;padding:0 14px;border:1px solid #d7e1ea;border-radius:12px;box-sizing:border-box">
+      <button type="button" class="app-combined-save" id="appRegisterPasskey">Enable Offline Fingerprint</button>
+      <p id="appPasskeyStatus" role="status" aria-live="polite" style="margin:10px 0 0;color:#687789">Offline Biometric ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…</p>
+      <p style="font-size:12px;color:#8792a0;line-height:1.5">ಈ ನೋಂದಣಿ device-local. ಮುಂದಿನ Fingerprint Login‌ಗೆ Firebase Online Login ಬಳಸುವುದಿಲ್ಲ.</p>
     </section>`;
-    refreshPasskeyStatus('appPasskeyStatus');
-    $('appRegisterPasskey').onclick=async()=>{
-      const btn=$('appRegisterPasskey'),status=$('appPasskeyStatus');btn.disabled=true;status.textContent='Fingerprint registration ನಡೆಯುತ್ತಿದೆ…';
-      try{
-        await window.NEOCURE_AUTH.registerPasskey();
-        const saved=await refreshPasskeyStatus('appPasskeyStatus');
-        if(!saved)throw new Error('Firebaseನಲ್ಲಿ Passkey save ಆಗಿರುವುದು ದೃಢಪಟ್ಟಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
-        status.textContent='✓ Passkey Firebaseನಲ್ಲಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ. Logout ಮಾಡಿ Login ಪರೀಕ್ಷಿಸಿ.';
-      }catch(e){status.textContent=window.NEOCURE_AUTH.message(e);}
-      finally{btn.disabled=false;}
-    };
+    ncBindOfflineFingerprintSetup('appRegisterPasskey','appPasskeyStatus','appOfflineBioPin');
   }else if(action==='Coupon & Scan Help'){
     $('genericContent').innerHTML=`<section class="app-combined-section"><h2>Coupon & Scan Help</h2><div class="app-help-detail"><h3>1. Scan only NEOCURE coupons</h3><p>Use the Scan Coupon option in the Applicator Portal and keep the complete QR code visible inside the camera frame.</p><h3>2. Wait for secure verification</h3><p>Reading a QR code does not redeem the coupon. The system must verify that the coupon was generated by NEOCURE and is valid for use.</p><h3>3. Check the result</h3><p>Follow the on-screen result after verification. A coupon that is already redeemed, cancelled or invalid cannot be claimed again.</p><h3>4. If scanning does not work</h3><p>Clean the camera lens, improve the lighting, hold the phone steady and try again. If the issue continues, return to Help & Support and submit a problem report with the details.</p></section>`;
   }else if(action==='Rewards Help'){
@@ -8219,7 +8414,7 @@ const genericPageInfo={
  'Payment History':{desc:'View NEOCURE payments confirmed by Admin, outstanding balance and receipts.',body:'<section id="dealerPaymentHistory" class="dealer-payment-history"></section>'},
  'Khata Book':{desc:'Private ledger between you and your customers. Not connected to NEOCURE orders or payments.',body:'<section id="khataApp" class="khata-app"></section>'},
  'My Profile':{desc:'',body:'<section class="profile-flat" id="profileDetails"></section>'},
- 'Profile & Settings':{desc:'Manage your Dealer profile and app preferences.',body:'<div class="profile-settings-combined">\n <section class="profile-combined-section"><h2>My Profile</h2><section class="profile-flat" id="profileDetails"></section></section>\n <section class="settings-combined-section"><h2>Settings</h2><p class="settings-intro">Account & App Settings</p><div class="settings-grid">\n <button class="settings-tile" type="button" data-settings-page="Language Settings"><span class="settings-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M12 4v2m-5 0c0 6-2 9-4 11m4-6c1 2 3 4 6 5M14 7h6m-3-1v12m-3-4h6"/></svg></span><span class="settings-tile-copy"><strong>Language Settings</strong></span></button>\n <button class="settings-tile" type="button" data-settings-page="Fingerprint Login"><span class="settings-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 12V6a2 2 0 0 1 4 0v6-3a2 2 0 0 1 4 0v4-2a2 2 0 0 1 4 0v4c0 4-3 7-7 7h-1c-3 0-5-2-6-4l-2-3a2 2 0 0 1 3-2l1 1"/></svg></span><span class="settings-tile-copy"><strong>Fingerprint Login</strong></span></button>\n <button class="settings-tile" type="button" data-settings-page="Security Settings"><span class="settings-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="settings-tile-copy"><strong>Security Settings</strong></span></button>\n <button class="settings-tile" type="button" data-settings-page="Notification Settings"><span class="settings-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></span><span class="settings-tile-copy"><strong>Notifications</strong></span></button>\n <button class="settings-tile" type="button" data-settings-page="Account Information"><span class="settings-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span class="settings-tile-copy"><strong>Account Information</strong></span></button>\n <button class="settings-tile" type="button" data-settings-page="About NEOCURE"><span class="settings-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-9h.01"/></svg></span><span class="settings-tile-copy"><strong>About NEOCURE</strong></span></button>\n </div></section>\n </div>'},
+ 'Profile & Settings':{desc:'Manage your Dealer profile and app preferences.',body:'<div class="profile-settings-combined">\n <section class="profile-combined-section"><h2>My Profile</h2><section class="profile-flat" id="profileDetails"></section></section>\n <section class="profile-combined-section"><h2>Offline Fingerprint Login</h2><p>ಈ deviceನಲ್ಲಿ offline Fingerprint / Face ID enable ಮಾಡಲು ನಿಮ್ಮ 4 ಅಂಕಿಯ MPIN ನಮೂದಿಸಿ.</p><label class="settings-field" for="profileOfflineBioPin">4-digit MPIN</label><input class="settings-input" id="profileOfflineBioPin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Enter MPIN"><button class="settings-action" id="profileOfflineBioBtn" type="button">Enable Offline Fingerprint</button><div class="settings-status" id="profileOfflineBioStatus" aria-live="polite">Offline biometric status checking…</div></section>\n <section class="settings-combined-section"><h2>Settings</h2><p class="settings-intro">Account & App Settings</p><div class="settings-grid">\n <button class="settings-tile" type="button" data-settings-page="Language Settings"><span class="settings-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M12 4v2m-5 0c0 6-2 9-4 11m4-6c1 2 3 4 6 5M14 7h6m-3-1v12m-3-4h6"/></svg></span><span class="settings-tile-copy"><strong>Language Settings</strong></span></button>\n <button class="settings-tile" type="button" data-settings-page="Fingerprint Login"><span class="settings-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 12V6a2 2 0 0 1 4 0v6-3a2 2 0 0 1 4 0v4-2a2 2 0 0 1 4 0v4c0 4-3 7-7 7h-1c-3 0-5-2-6-4l-2-3a2 2 0 0 1 3-2l1 1"/></svg></span><span class="settings-tile-copy"><strong>Fingerprint Login</strong></span></button>\n <button class="settings-tile" type="button" data-settings-page="Security Settings"><span class="settings-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="settings-tile-copy"><strong>Security Settings</strong></span></button>\n <button class="settings-tile" type="button" data-settings-page="Notification Settings"><span class="settings-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></span><span class="settings-tile-copy"><strong>Notifications</strong></span></button>\n <button class="settings-tile" type="button" data-settings-page="Account Information"><span class="settings-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span class="settings-tile-copy"><strong>Account Information</strong></span></button>\n <button class="settings-tile" type="button" data-settings-page="About NEOCURE"><span class="settings-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-9h.01"/></svg></span><span class="settings-tile-copy"><strong>About NEOCURE</strong></span></button>\n </div></section>\n </div>'},
  'My Saved Items':{desc:'',body:`<section class="pi-new-form" id="piAddPanel" hidden><h2>Add New Item</h2><input id="piName" class="q-field" placeholder="Item Name" maxlength="120"><input id="piHsn" class="q-field" placeholder="HSN Code" maxlength="20"><input id="piRate" class="q-field" type="number" min="0" step="0.01" placeholder="Rate (₹)"><div class="pi-form-actions"><button type="button" id="piSave">Save Item</button><button type="button" id="piCancel">Cancel</button></div></section><section class="pi-list-wrap"><div class="pi-list-head"><h2>My Saved Items</h2><strong id="piTotal">0 / 1000</strong></div><input id="piSearch" class="q-field" type="search" placeholder="Search item name / HSN code" hidden><div id="piList"></div><input id="piImportInput" type="file" accept=".csv,text/csv" hidden></section><div id="piDetail" class="pi-detail" hidden></div>`}, // V1219 rebuilt list
  'Settings':{desc:'Manage your account, language and security preferences.',body:`<p class="settings-intro">Account & App Settings</p><div class="settings-grid">
  <button class="settings-tile" type="button" data-settings-page="Language Settings"><span class="settings-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M12 4v2m-5 0c0 6-2 9-4 11m4-6c1 2 3 4 6 5M14 7h6m-3-1v12m-3-4h6"/></svg></span><span class="settings-tile-copy"><strong>Language Settings</strong></span></button>
@@ -8230,11 +8425,11 @@ const genericPageInfo={
  <button class="settings-tile" type="button" data-settings-page="About NEOCURE"><span class="settings-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-9h.01"/></svg></span><span class="settings-tile-copy"><strong>About NEOCURE</strong></span></button>
  </div>`},
  'Language Settings':{desc:'Select the language used across the app.',body:`<div class="settings-panel"><h2>Choose Language</h2><p>Your selection is saved on this device.</p><div id="settingsLanguageOptions"></div></div>`},
- 'Fingerprint Login':{desc:'Set up fingerprint or device screen-lock sign-in.',body:`<div class="settings-panel"><h2>Fingerprint Login</h2><p>ನಿಮ್ಮ ಸಾಧನದ Fingerprint ಅಥವಾ Screen Lock ಬಳಸಿ ಸುರಕ್ಷಿತವಾಗಿ Login ಮಾಡಲು ಇಲ್ಲಿ ಸಕ್ರಿಯಗೊಳಿಸಿ.</p><button class="settings-action" id="settingsFingerprintBtn" type="button">Enable Fingerprint Login</button><div class="settings-status" id="settingsFingerprintMsg" role="status" aria-live="polite">Firebaseನಲ್ಲಿ Passkey ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…</div></div>`},
+ 'Fingerprint Login':{desc:'Set up offline fingerprint or device screen-lock sign-in.',body:`<div class="settings-panel"><h2>Offline Fingerprint Login</h2><p>ಮೊದಲ Online Registration ನಂತರ ನಿಮ್ಮ MPIN ದೃಢೀಕರಿಸಿ ಈ deviceನಲ್ಲಿ Fingerprint / Face ID enable ಮಾಡಿ. ಮುಂದಿನ biometric Login ಸ್ಥಳೀಯವಾಗಿ ನಡೆಯುತ್ತದೆ.</p><label class="settings-field" for="settingsFingerprintMpin">4-digit MPIN</label><input class="settings-input" id="settingsFingerprintMpin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Enter MPIN"><button class="settings-action" id="settingsFingerprintBtn" type="button">Enable Offline Fingerprint</button><div class="settings-status" id="settingsFingerprintMsg" aria-live="polite">Offline Biometric status checking…</div></div>`},
  'Security Settings':{desc:'Update your four-digit account MPIN.',body:`<div class="settings-panel"><h2>Change MPIN</h2><p>Enter your current MPIN, then create and confirm a new 4-digit MPIN. Demo mode saves this change only on this device; connect the secured Firebase backend before production use.</p><label class="settings-field" for="settingsCurrentPin">Current MPIN</label><input class="settings-input" id="settingsCurrentPin" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" placeholder="Enter current MPIN"><label class="settings-field" for="settingsNewPin">New MPIN</label><input class="settings-input" id="settingsNewPin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" placeholder="Enter new 4-digit MPIN"><label class="settings-field" for="settingsConfirmPin">Confirm New MPIN</label><input class="settings-input" id="settingsConfirmPin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" placeholder="Re-enter new MPIN"><button class="settings-action" id="settingsSavePin" type="button">Save New MPIN</button><div class="settings-status" id="settingsPinMsg" role="status"></div><p style="margin-top:12px">Forgot your current MPIN? Use Forgot MPIN on the login screen. OTP reset requires the secure Firebase backend to be deployed.</p></div>`},
  'Notification Settings':{desc:'Choose which app notifications you want to receive.',body:`<div class="settings-panel"><h2>Notification Preferences</h2><label class="settings-switch-row">Order updates <input type="checkbox" id="notifyOrders" checked></label><label class="settings-switch-row">Payment updates <input type="checkbox" id="notifyPayments" checked></label><label class="settings-switch-row">Delivery updates <input type="checkbox" id="notifyDelivery" checked></label><button class="settings-action" id="saveNotifySettings" type="button">Save Preferences</button><div class="settings-status" id="notifySettingsMsg"></div></div>`},
  'Account Information':{desc:'Your registration details are protected and cannot be edited here.',body:`<div class="settings-panel"><h2>Registered Account</h2><label class="settings-field">Full Name</label><input class="settings-input settings-readonly" id="settingsAccountName" readonly><label class="settings-field">Mobile Number</label><input class="settings-input settings-readonly" id="settingsAccountMobile" readonly><label class="settings-field">Portal</label><input class="settings-input settings-readonly" id="settingsAccountRole" readonly><p style="margin-top:12px">Registered name and mobile number cannot be changed from the Dealer / Applicator app.</p></div>`},
- 'About NEOCURE':{desc:'Application information and support.',body:`<div class="settings-panel"><h2>NEOCURE</h2><p>Dealer & Applicator Portal</p><label class="settings-field">App Version</label><input class="settings-input settings-readonly" value="V2152" readonly><p style="margin-top:12px">For account, order or payment assistance, contact NEOCURE support.</p></div>`},
+ 'About NEOCURE':{desc:'Application information and support.',body:`<div class="settings-panel"><h2>NEOCURE</h2><p>Dealer & Applicator Portal</p><label class="settings-field">App Version</label><input class="settings-input settings-readonly" value="V2203" readonly><p style="margin-top:12px">For account, order or payment assistance, contact NEOCURE support.</p></div>`},
  'Coupon & Scan Help':{desc:'Step-by-step guidance for scanning and verifying NEOCURE coupons.',body:`<section class="app-combined-section app-help-detail"><h2>Coupon & Scan Help</h2><h3>1. Scan only NEOCURE coupons</h3><p>Open Scan Coupon from the Applicator Portal. Allow camera access and keep the complete NEOCURE QR code inside the scan frame.</p><h3>2. Wait for secure verification</h3><p>A QR code being read does not mean the coupon is redeemed. NEOCURE must verify that the coupon was generated by the system and is valid.</p><h3>3. Understand the scan result</h3><p>A successful verification will show the coupon result. Already redeemed, cancelled, expired or invalid coupons cannot be claimed again.</p><h3>4. If scanning does not work</h3><p>Clean the camera lens, improve the lighting, hold the phone steady and try again. You can also use Upload QR Image if that option is available.</p><h3>5. Still facing a problem?</h3><p>Return to Help & Support, choose the correct Problem Type, describe what happened and submit the problem report.</p></section>`},
  'Rewards Help':{desc:'Understand reward verification, Admin approval and wallet balance.',body:`<section class="app-combined-section app-help-detail"><h2>Rewards Help</h2><h3>1. Scan an eligible coupon</h3><p>Scan a valid NEOCURE coupon using Scan Coupon. Only eligible and successfully verified coupons can be considered for rewards.</p><h3>2. Verification status</h3><p>After scanning, the coupon must pass secure verification. A scan alone does not immediately add money to your wallet.</p><h3>3. Pending Admin approval</h3><p>Eligible rewards may remain Pending while the required Admin review and approval are in progress.</p><h3>4. Reward added to Wallet</h3><p>After approval and posting, the reward amount appears in Rewards & Wallet. Check the reward history to review available status details.</p><h3>5. Pending rewards</h3><p>Pending rewards are not withdrawable. Only the amount made available after the required approval can be treated as an approved wallet reward.</p><h3>6. Reward not showing?</h3><p>Check Scan History and Rewards & Wallet first. If the reward is still missing, submit a problem report with the coupon details.</p></section>`},
  'Account Help':{desc:'Open the relevant account setting directly from here.',body:`<section class="app-combined-section account-help-actions">
@@ -8494,6 +8689,7 @@ function openGenericPage(action,pushHistory=true){
  if(action==='Order Status')orderRenderStatusPage();
  if(action==='Order Tracking')orderTrackingRender();
  if(action==='My Profile'||action==='Profile & Settings'){renderProfile();$('profileSaveBtn')?.addEventListener('click',saveProfile);}
+ if(action==='Profile & Settings'){ncBindOfflineFingerprintSetup('profileOfflineBioBtn','profileOfflineBioStatus','profileOfflineBioPin');}
  if(action==='Settings'||action==='Profile & Settings'){
    genericContent.querySelectorAll('[data-settings-page]').forEach(btn=>btn.addEventListener('click',()=>openGenericPage(btn.dataset.settingsPage,true)));
  }
@@ -8501,10 +8697,7 @@ function openGenericPage(action,pushHistory=true){
    const wrap=$('settingsLanguageOptions'),chosen=localStorage.getItem('neocure_v1007_language')||'English';
    ['English','Kannada','Hindi','Telugu','Tamil','Malayalam','Marathi'].forEach(lang=>{const b=document.createElement('button');b.type='button';b.className='settings-option'+(lang===chosen?' active':'');b.innerHTML='<span>'+lang+'</span><span>'+(lang===chosen?'✓':'')+'</span>';b.onclick=()=>{applyLanguage(lang);wrap.querySelectorAll('button').forEach(x=>{x.classList.toggle('active',x.dataset.lang===lang);x.lastElementChild.textContent=x.dataset.lang===lang?'✓':''});};b.dataset.lang=lang;wrap.appendChild(b);});
  }
- if(action==='Fingerprint Login'){
-   $('settingsFingerprintBtn').onclick=()=>requestFingerprintSetup('settingsFingerprintMsg');
-   refreshPasskeyStatus('settingsFingerprintMsg');
- }
+ if(action==='Fingerprint Login'){ $('settingsFingerprintBtn').onclick=()=>requestFingerprintSetup('settingsFingerprintMsg','settingsFingerprintMpin'); refreshFingerprintSettingsStatus(); }
  if(action==='Security Settings'){
    ['settingsCurrentPin','settingsNewPin','settingsConfirmPin'].forEach(id=>digits($(id),4));
    $('settingsSavePin').onclick=()=>{
@@ -11748,6 +11941,8 @@ body:has(#homeScreen)::after,body:has(#applicatorDashboard)::after{display:none!
 })();
 
 
+
+if('serviceWorker' in navigator && location.protocol==='https:'){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(e=>console.warn('NEOCURE offline shell unavailable',e)));}
 </script>
 <script>
 /* NEOCURE V1049/6 — customer, terms, history and data tools for quotation frontend demo. */
@@ -13811,7 +14006,7 @@ window.NEOCURE_V1050_BUILD={revision:'V1050/1',basedOn:'V1049/8',fixes:['Removed
  const $=id=>document.getElementById(id);
  document.addEventListener('click',function(ev){
    const btn=ev.target && ev.target.closest ? ev.target.closest('#cmMakeQuote') : null;
-    if(!btn)return;
+   if(!btn)return;
    ev.preventDefault();ev.stopPropagation();
    if(typeof ev.stopImmediatePropagation==='function')ev.stopImmediatePropagation();
    const detail=$('cmDetailBody');
@@ -18033,25 +18228,59 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   if(typeof r.getTransports==='function')out.response.transports=r.getTransports();
   return out;
  }
+ // V2200/2: one stable random identifier per browser installation. This is not a physical handset ID.
+ function getPasskeyDeviceId(){
+  const storageKey='neocure_passkey_device_id_v1';
+  try{
+   let deviceId=localStorage.getItem(storageKey)||'';
+   if(/^[A-Za-z0-9_-]{20,100}$/.test(deviceId))return deviceId;
+   if(!window.crypto||typeof window.crypto.getRandomValues!=='function')
+    throw new Error('Secure random generator is unavailable.');
+   const bytes=new Uint8Array(32);
+   window.crypto.getRandomValues(bytes);
+   deviceId=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
+   localStorage.setItem(storageKey,deviceId);
+   return deviceId;
+  }catch(error){
+   throw new Error('ಈ browserನಲ್ಲಿ Passkey device ಗುರುತನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. Browser storage ಅನುಮತಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
+  }
+ }
  async function registerPasskey(){
   if(!auth||!auth.currentUser)throw new Error('ಮೊದಲು MPIN ಮೂಲಕ Login ಮಾಡಿ.');
   if(!window.isSecureContext||!window.PublicKeyCredential||!navigator.credentials)
    throw new Error('Fingerprint/Passkeyಗೆ HTTPS ಮತ್ತು ಬೆಂಬಲಿತ Android browser ಅಗತ್ಯ.');
   const available=await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
   if(!available)throw new Error('ಈ deviceನಲ್ಲಿ fingerprint ಅಥವಾ screen-lock authenticator ಲಭ್ಯವಿಲ್ಲ.');
-  const start=await functions.httpsCallable('passkeyRegistrationOptions')({});
+  const deviceId=getPasskeyDeviceId();
+  const start=await functions.httpsCallable('passkeyRegistrationOptions')({deviceId});
   const options=start.data&&start.data.options;
-  if(!options)throw new Error('Passkey registration options ಸಿಗಲಿಲ್ಲ.');
-  options.challenge=b64uToBytes(options.challenge);
-  if(options.user&&options.user.id)options.user.id=b64uToBytes(options.user.id);
-  if(options.excludeCredentials)options.excludeCredentials=options.excludeCredentials.map(x=>({...x,id:b64uToBytes(x.id)}));
-  if(location.hostname!=='neocure-new.vercel.app')throw new Error('Passkeyಗಾಗಿ neocure-new.vercel.app ಇದೇ domain ಬಳಸಿ.');
-  if(!options.rp||options.rp.id!==location.hostname)throw new Error('Passkey domain ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ. Page refresh ಮಾಡಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
-  const credential=await navigator.credentials.create({publicKey:options});
+  if(!options||!options.challenge||!options.user||!options.user.id||!options.rp||!options.rp.id)
+   throw new Error('Passkey registration options ಅಪೂರ್ಣವಾಗಿವೆ. Firebase Function ಪರಿಶೀಲಿಸಿ.');
+  const publicKey={
+   challenge:b64uToBytes(options.challenge),
+   rp:options.rp,
+   user:{...options.user,id:b64uToBytes(options.user.id)},
+   pubKeyCredParams:Array.isArray(options.pubKeyCredParams)?options.pubKeyCredParams:[],
+   timeout:Number(options.timeout)||60000,
+   attestation:options.attestation||'none',
+   authenticatorSelection:options.authenticatorSelection||{authenticatorAttachment:'platform',userVerification:'required',residentKey:'preferred'}
+  };
+  if(Array.isArray(options.excludeCredentials)){
+   publicKey.excludeCredentials=options.excludeCredentials
+    .filter(x=>x&&typeof x.id==='string')
+    .map(x=>({...x,id:b64uToBytes(x.id)}));
+  }
+  if(options.extensions&&typeof options.extensions==='object'&&!Array.isArray(options.extensions))
+   publicKey.extensions=options.extensions;
+  let credential;
+  try{credential=await navigator.credentials.create({publicKey});}
+  catch(e){
+   if(e&&e.name==='InvalidStateError')throw new Error('ಈ deviceನಲ್ಲಿ ಈ Passkey ಈಗಾಗಲೇ ಇರಬಹುದು. Login ಪುಟದಲ್ಲಿ Fingerprint Login ಪ್ರಯತ್ನಿಸಿ.');
+   if(e&&e.name==='NotAllowedError')throw new Error('Passkey ನೋಂದಣಿ ರದ್ದುಪಡಿಸಲಾಗಿದೆ ಅಥವಾ ಸಮಯ ಮೀರಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
+   throw e;
+  }
   if(!credential)throw new Error('Fingerprint registration ರದ್ದುಪಡಿಸಲಾಗಿದೆ.');
-  const verified=await functions.httpsCallable('verifyPasskeyRegistration')({credential:credentialToJSON(credential)});
-  if(!verified.data||verified.data.success!==true||verified.data.verified!==true)
-   throw new Error('Firebase Passkey Registration ದೃಢೀಕರಣ ಸಿಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
+  await functions.httpsCallable('verifyPasskeyRegistration')({deviceId,credential:credentialToJSON(credential)});
   return true;
  }
  async function passkeyLogin(mobile,role){
@@ -18077,23 +18306,31 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   const options=start.data&&start.data.options;
   if(!options)throw new Error('passkeyLoginOptions ಪ್ರತಿಕ್ರಿಯೆಯಲ್ಲಿ options ಸಿಗಲಿಲ್ಲ.');
   if(!options.challenge)throw new Error('Passkey challenge ಸಿಗಲಿಲ್ಲ.');
-   if(location.hostname!=='neocure-new.vercel.app')throw new Error('Passkeyಗಾಗಿ neocure-new.vercel.app ಇದೇ domain ಬಳಸಿ.');
-   const requestOptions={challenge:b64uToBytes(options.challenge),rpId:location.hostname,timeout:60000,userVerification:'required'};
-   let allowed=options.allowCredentials;
-   if(!Array.isArray(allowed)&&allowed&&typeof allowed==='object'){
-    const keys=Object.keys(allowed);
-    if(keys.length&&keys.every(k=>/^\d+$/.test(k)))allowed=keys.sort((a,b)=>Number(a)-Number(b)).map(k=>allowed[k]);
-   }
-   if(Array.isArray(allowed)){
-    const descriptors=allowed.filter(x=>x&&typeof x.id==='string'&&x.id);
-    if(descriptors.length)requestOptions.allowCredentials=descriptors.map(x=>({type:'public-key',id:b64uToBytes(x.id),...(Array.isArray(x.transports)?{transports:x.transports.filter(t=>typeof t==='string')}: {})}));
-   }
+  // Build a fresh allow-listed WebAuthn request object. Do not pass the
+  // callable response object directly to the browser: this prevents malformed,
+  // inherited, null, or non-sequence allowCredentials values from reaching
+  // CredentialsContainer.get(). Discoverable credentials intentionally omit
+  // allowCredentials; include it only when the server returns a real array.
+  const requestOptions={
+   challenge:b64uToBytes(options.challenge),
+   timeout:Number(options.timeout)||60000,
+   userVerification:options.userVerification||'required'
+  };
+  if(typeof options.rpId==='string'&&options.rpId)requestOptions.rpId=options.rpId;
+  if(Array.isArray(options.allowCredentials)){
+   requestOptions.allowCredentials=options.allowCredentials
+    .filter(x=>x&&typeof x.id==='string')
+    .map(x=>({...x,id:b64uToBytes(x.id)}));
+  }
+  if(options.extensions&&typeof options.extensions==='object'&&!Array.isArray(options.extensions)){
+   requestOptions.extensions=options.extensions;
+  }
   showStatus('Google Passkey / Fingerprint ದೃಢೀಕರಣ ತೆರೆಯಲಾಗುತ್ತಿದೆ…');
   let assertion;
   try{
    assertion=await navigator.credentials.get({publicKey:requestOptions});
   }catch(e){
-   if(e&&e.name==='NotAllowedError')throw new Error('ಈ deviceನಲ್ಲಿ neocure-new.vercel.appಗೆ Passkey ಸಿಗಲಿಲ್ಲ ಅಥವಾ prompt ರದ್ದುಪಡಿಸಲಾಗಿದೆ. MPIN ಮೂಲಕ Login ಮಾಡಿ, ಇದೇ phone ಮತ್ತು Chrome browserನಲ್ಲಿ Fingerprint Login ಅನ್ನು ಮತ್ತೆ Enable ಮಾಡಿ.');
+   if(e&&e.name==='NotAllowedError')throw new Error('Passkey prompt ರದ್ದುಪಡಿಸಲಾಗಿದೆ ಅಥವಾ ಸಮಯ ಮೀರಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.');
    if(e&&e.name==='NotSupportedError')throw new Error('ಈ deviceನಲ್ಲಿ ಈ Passkey ವಿಧಾನ ಬೆಂಬಲಿತವಿಲ್ಲ.');
    throw e;
   }
@@ -18122,13 +18359,27 @@ window.NEOCURE_V1441_BACK_NAVIGATION={version:'V1441',removedForcedDashboardBack
   return {name:profile.name||'',mobile:phone,role:portal==='applicator'?'Applicator':'Dealer',uid:cred.user.uid};
  }
 
- async function getPasskeyStatus(){
-  if(!auth||!auth.currentUser)throw new Error('ಮೊದಲು MPIN ಮೂಲಕ Login ಮಾಡಿ.');
-  const result=await functions.httpsCallable('getPasskeyStatus')({});
-  return result&&result.data||{};
+ async function passkeyStatus(mobile,role){
+  const phone=String(mobile||'').replace(/\D/g,'').slice(-10);
+  const portal=String(role||'Dealer').toLowerCase();
+  if(!/^\d{10}$/.test(phone))throw new Error('ಸರಿಯಾದ 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಅಗತ್ಯವಿದೆ.');
+  if(!['dealer','applicator'].includes(portal))throw new Error('Dealer ಅಥವಾ Applicator Portal ಆಯ್ಕೆಮಾಡಿ.');
+  let timer;
+  try{
+   const response=await Promise.race([
+    functions.httpsCallable('passkeyLoginOptions')({phone,role:portal}),
+    new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Passkey ಸ್ಥಿತಿ ಪರಿಶೀಲನೆಗೆ ಸಮಯ ಮೀರಿದೆ. Internet ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.')),12000);})
+   ]);
+   return {registered:!!(response&&response.data&&response.data.options&&response.data.options.challenge),canRegisterOnThisDevice:true};
+  }catch(error){
+   const code=String(error&&error.code||'').toLowerCase();
+   const message=String(error&&error.message||'');
+   if(code.includes('failed-precondition')&&/Fingerprint register ಆಗಿಲ್ಲ|register ಆಗಿಲ್ಲ/i.test(message))return {registered:false};
+   throw error;
+  }finally{if(timer)clearTimeout(timer);}
  }
- window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,resetMpinWithPhoneOtp,uploadUserFile,registerPasskey,passkeyLogin,getPasskeyStatus,message,auth,db,storage};
- window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V1707'};
+ window.NEOCURE_AUTH={startPhoneOtp,verifyPhoneOtp,finishRegistration,signIn,resetMpinWithPhoneOtp,uploadUserFile,registerPasskey,passkeyLogin,passkeyStatus,message,auth,db,storage};
+ window.NEOCURE_FIREBASE={projectId:firebaseConfig.projectId,region:'asia-southeast1',version:'V2203'};
 })();
 </script>
 <script id="V1728_SEVEN_LANGUAGE_UI">
@@ -19170,6 +19421,17 @@ body:has(#homeScreen)::after,body:has(#applicatorDashboard)::after{display:none!
 <style id="v2155-login-register-single-screen-fix">
 #loginScreen.login-screen.app.hidden{display:none!important}
 </style>
+
+<style id="v2213-final-login-layout-fix">
+#loginScreen .nc-login-action-row{display:flex!important;flex-flow:row nowrap!important;align-items:stretch!important;gap:10px!important;width:100%!important;margin:2px 0 10px!important;}
+#loginScreen .nc-login-action-row #loginBtn.primary{display:flex!important;flex:4 1 0!important;width:auto!important;max-width:none!important;min-width:0!important;height:54px!important;margin:0!important;box-sizing:border-box!important;}
+#loginScreen .nc-login-action-row #fingerprintLoginBtnV2.nc-bio-icon{display:flex!important;flex:1 1 0!important;width:auto!important;max-width:none!important;min-width:52px!important;height:54px!important;min-height:54px!important;max-height:54px!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;box-sizing:border-box!important;border:1px solid #bfe5e1!important;border-radius:15px!important;background:linear-gradient(145deg,#e7f8f6,#d5f0ed)!important;color:#087d78!important;box-shadow:0 4px 12px rgba(8,125,120,.10)!important;padding:8px!important;margin:0!important;}
+#loginScreen .nc-login-action-row #fingerprintLoginBtnV2.nc-bio-icon svg{display:block!important;position:static!important;width:34px!important;height:34px!important;min-width:34px!important;max-width:34px!important;min-height:34px!important;max-height:34px!important;flex:0 0 34px!important;fill:none!important;stroke:#087d78!important;stroke-width:2.8!important;stroke-linecap:round!important;stroke-linejoin:round!important;overflow:visible!important;}
+#loginScreen .nc-login-action-row #fingerprintLoginBtnV2.nc-bio-icon svg path{fill:none!important;stroke:currentColor!important;}
+#loginScreen .nc-fingerprint-status{display:none!important;min-height:0!important;height:0!important;margin:0!important;padding:0!important;}
+#loginScreen .login-pin-field .eye svg,#loginScreen .login-pin-field button svg{fill:none!important;}
+@media(max-width:380px){#loginScreen .nc-login-action-row{gap:7px!important}#loginScreen .nc-login-action-row #fingerprintLoginBtnV2.nc-bio-icon{min-width:48px!important}}
+</style>
 </body>
 <!-- V1402: applied inset-shadow dividers to every Bill Item Entry grid cell; preserves existing workflows. -->
 <!-- V1403: draw dividers as an overlay across each complete row; avoids child/input border resets. -->
@@ -19356,6 +19618,63 @@ body:has(#homeScreen)::after,body:has(#applicatorDashboard)::after{display:none!
 }
 @media(hover:hover){#applicatorDashboard .app-actions>.app-action:hover{transform:translateY(-2px)!important;box-shadow:0 9px 20px rgba(24,49,68,.10)!important;border-color:var(--app-card-accent,#168b80)!important}}
 </style>
+
+<!-- NEOCURE V2211: floating transparent login errors; compact login action; taller role switch. -->
+<meta name="neocure-version" content="V2211 Floating Error Popup + Compact Login Controls"/>
+<style id="neocure-v2211-floating-error-compact-controls">
+/* Error/status text no longer occupies a permanent row in the login card. */
+#loginScreen #loginError,
+#loginScreen #fingerprintMsg{
+  display:none!important;visibility:hidden!important;opacity:0!important;
+  height:0!important;min-height:0!important;max-height:0!important;
+  margin:0!important;padding:0!important;border:0!important;overflow:hidden!important;
+}
+/* Reclaim the former diagnostic-message area and slightly enlarge role selector. */
+#loginScreen #loginPortals{margin-bottom:19px!important}
+#loginScreen #loginPortals .portal{height:54px!important;min-height:54px!important}
+#loginScreen #loginBtn.primary{height:49px!important;min-height:49px!important}
+/* Frosted translucent floating error card. */
+#ncBioNoticePopup.nc-bio-notice{
+  background:rgba(20,48,62,.82)!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.28)!important;
+  -webkit-backdrop-filter:blur(14px) saturate(145%)!important;
+  backdrop-filter:blur(14px) saturate(145%)!important;
+  box-shadow:0 10px 30px rgba(12,35,48,.24)!important;
+  border-radius:16px!important;
+  max-width:calc(100vw - 32px)!important;
+  padding:12px 17px!important;
+}
+</style>
+<script id="neocure-v2211-floating-login-errors">
+(function(){
+  function install(){
+    const login=document.getElementById('loginScreen');
+    if(!login || login.dataset.v2211ErrorPopup==='1') return;
+    login.dataset.v2211ErrorPopup='1';
+    const showPopup=(message)=>{
+      const text=String(message||'').trim();
+      if(!text) return;
+      if(typeof window.ncShowBiometricNotice==='function') window.ncShowBiometricNotice(text);
+      else {
+        let popup=document.getElementById('ncBioNoticePopup');
+        if(!popup){popup=document.createElement('div');popup.id='ncBioNoticePopup';popup.className='nc-bio-notice';popup.setAttribute('role','alert');document.body.appendChild(popup);}
+        popup.textContent=text;popup.classList.add('show');
+        clearTimeout(popup._v2211Timer);popup._v2211Timer=setTimeout(()=>popup.classList.remove('show'),3600);
+      }
+    };
+    const isError=(text)=>/(error|failed|fail|ವಿಫಲ|ದೋಷ|ಲಭ್ಯವಿಲ್ಲ|ಸಿಗಲಿಲ್ಲ|ತಪ್ಪು|ಅಗತ್ಯ|timeout|timed out|not registered|not enabled|ಅನುಮತಿ)/i.test(text);
+    ['loginError','fingerprintMsg'].forEach(id=>{
+      const node=document.getElementById(id); if(!node) return;
+      const deliver=()=>{const message=(node.textContent||'').trim();if(message && isError(message)){showPopup(message);node.textContent='';}};
+      new MutationObserver(deliver).observe(node,{childList:true,subtree:true,characterData:true});
+      deliver();
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',install,{once:true}); else install();
+})();
+</script>
+
 </html>
 <!-- V1264: fixes single-transaction deletion; retains V1263 Login/Register and private Khata improvements. -->
 <!-- V1273: global compact navy/white design; existing workflows and handlers retained. -->
@@ -20921,4 +21240,12 @@ window.NEOCURE_V2080={version:'V2080',base:'V2079',fixes:['Header and item rows 
 #loginScreen #fingerprintMsg{display:block!important;visibility:visible!important;opacity:1!important;min-height:0!important;margin:8px 2px 0!important;padding:0!important;color:#38566d!important;font-size:12px!important;font-weight:600!important;line-height:1.45!important;overflow-wrap:anywhere!important}
 </style>
 
-<!-- V2203: Firebase-backed passkey status on the Applicator settings page and exact credential-record updates. -->
+<!-- V2200/2: stable browser-installation deviceId is sent to both passkey registration endpoints; retains V2200/1 profile validation. -->
+
+<!-- NEOCURE Dealer / Applicator V2209: correct Firebase session binding for local-MPIN fallback, single Passkey login handler, logout session cleanup, and persistent status checks. -->
+
+<!-- NEOCURE V2207 structural recovery: restored from pristine V2203 source; no nested script injection. -->
+
+<!-- V2218/2: after first Firebase MPIN verification, subsequent MPIN and biometric login are local-only; removed Firebase passkey login fallback; Settings enrolls local WebAuthn credential. -->
+
+<!-- V2219: Make Offline Fingerprint setup directly visible on Dealer and Applicator Profile & Settings; bind local setup controls. -->
