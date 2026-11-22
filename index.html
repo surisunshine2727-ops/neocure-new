@@ -5389,7 +5389,7 @@ async function ncOfflineMpinLogin(mobile,role,pin){
 }
 async function ncEnableOfflineBiometric(pin){
  if(!window.PublicKeyCredential||!navigator.credentials||!isSecureContext)throw new Error('ಈ Browserನಲ್ಲಿ Offline Biometric support ಲಭ್ಯವಿಲ್ಲ.');
- if(!PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable||!await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())throw new Error('ಈ ಸಾಧನದ Browser Platform Biometric ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.');
+ if(PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable && !(await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()))throw new Error('ಈ ಸಾಧನದಲ್ಲಿ Fingerprint / Face ID ಲಭ್ಯವಿಲ್ಲ ಅಥವಾ Browser ಅನುಮತಿ ನೀಡಿಲ್ಲ.');
  const mobile=String((currentAccount&&currentAccount.mobile)||'').trim(),role=String((currentAccount&&currentAccount.role)||'Dealer'),cleanPin=String(pin||'');
  if(!/^\d{10}$/.test(mobile)||!/^\d{4}$/.test(cleanPin))throw new Error('ನಿಮ್ಮ 4 ಅಂಕಿಯ MPIN ನಮೂದಿಸಿ.');
  const rec=await ncOfflineGet(mobile+'|'+role);
@@ -5399,12 +5399,31 @@ async function ncEnableOfflineBiometric(pin){
  const credential=await navigator.credentials.create({publicKey:{challenge,rp:{name:'NEOCURE',id:location.hostname},user:{id:uid,name:mobile,displayName:rec.name||'NEOCURE User'},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',residentKey:'preferred',userVerification:'required'},attestation:'none',timeout:60000}});
  if(!credential)throw new Error('Biometric setup cancelled.');
  const response=credential.response;
- if(!response.getPublicKey)throw new Error('ಈ Browser offline biometric public-key export ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.');
- const pub=response.getPublicKey(),alg=response.getPublicKeyAlgorithm();
- if(!pub)throw new Error('Biometric key ಓದಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.');
- rec.biometric={id:ncB64(credential.rawId),publicKey:ncB64(pub),algorithm:alg,createdAt:Date.now()};
+ // Chromium exposes the credential public key for full local signature verification.
+ // Safari/iOS versions without getPublicKey still return a platform-verified assertion;
+ // keep that credential and require fresh UV + origin/RP/challenge checks at every login.
+ let pub=null,alg=null;
+ try{if(typeof response.getPublicKey==='function'){const exported=response.getPublicKey();if(exported){pub=ncB64(exported);alg=response.getPublicKeyAlgorithm();}}}catch(_publicKeyExportError){}
+ rec.biometric={id:ncB64(credential.rawId),publicKey:pub,algorithm:alg,verifyMode:pub?'local-signature':'platform-uv',createdAt:Date.now(),platform:navigator.userAgent};
  await ncOfflinePut(rec);
- return 'Offline Fingerprint / Face ID enabled.';
+ return pub?'Offline Fingerprint / Face ID enabled (local signature verification).':'Offline Fingerprint / Face ID enabled (device biometric verification).';
+}
+function ncWebAuthnEcdsaToRaw(signature){
+ const sig=new Uint8Array(signature);
+ if(sig.length===64)return sig;
+ // WebAuthn returns ASN.1 DER ECDSA (SEQUENCE(INTEGER r, INTEGER s));
+ if(sig.length<8||sig[0]!==0x30)throw new Error('ECDSA signature format unsupported.');
+ let p=2;
+ if(sig[1]&0x80){const n=sig[1]&0x7f;p=2+n;}
+ if(sig[p++]!==0x02)throw new Error('ECDSA signature r missing.');
+ const rLen=sig[p++],r=sig.slice(p,p+rLen);p+=rLen;
+ if(sig[p++]!==0x02)throw new Error('ECDSA signature s missing.');
+ const sLen=sig[p++],ss=sig.slice(p,p+sLen);
+ const out=new Uint8Array(64);
+ const rr=r[0]===0?r.slice(1):r,sv=ss[0]===0?ss.slice(1):ss;
+ if(rr.length>32||sv.length>32)throw new Error('ECDSA signature length invalid.');
+ out.set(rr,32-rr.length);out.set(sv,64-sv.length);
+ return out;
 }
 async function ncOfflineBiometricLogin(){
  const mobile=$('loginMobile').value.trim(),role=selectedLoginRole,rec=await ncOfflineGet(mobile+'|'+role);
@@ -5416,10 +5435,15 @@ async function ncOfflineBiometricLogin(){
  const client=JSON.parse(new TextDecoder().decode(assertion.response.clientDataJSON));
  const authData=new Uint8Array(assertion.response.authenticatorData),rpHash=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(location.hostname)));
  if(client.type!=='webauthn.get'||client.origin!==location.origin||client.challenge!==ncB64Url(challenge)||!rpHash.every((v,i)=>v===authData[i])||(authData[32]&5)!==5)throw new Error('Offline Biometric validation failed.');
- const key=await crypto.subtle.importKey('spki',ncUnB64(rec.biometric.publicKey),rec.biometric.algorithm===-7?{name:'ECDSA',namedCurve:'P-256'}:{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['verify']);
- const sigAlg=rec.biometric.algorithm===-7?{name:'ECDSA',hash:'SHA-256'}:{name:'RSASSA-PKCS1-v1_5'};
- const signed=new Uint8Array([...authData,...new Uint8Array(await crypto.subtle.digest('SHA-256',assertion.response.clientDataJSON))]);
- if(!await crypto.subtle.verify(sigAlg,key,assertion.response.signature,signed))throw new Error('Offline Biometric signature invalid.');
+ if(rec.biometric.publicKey){
+  const key=await crypto.subtle.importKey('spki',ncUnB64(rec.biometric.publicKey),rec.biometric.algorithm===-7?{name:'ECDSA',namedCurve:'P-256'}:{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['verify']);
+  const sigAlg=rec.biometric.algorithm===-7?{name:'ECDSA',hash:'SHA-256'}:{name:'RSASSA-PKCS1-v1_5'};
+  const signed=new Uint8Array([...authData,...new Uint8Array(await crypto.subtle.digest('SHA-256',assertion.response.clientDataJSON))]);
+  const signature=rec.biometric.algorithm===-7?ncWebAuthnEcdsaToRaw(assertion.response.signature):assertion.response.signature;
+  if(!await crypto.subtle.verify(sigAlg,key,signature,signed))throw new Error('Offline Biometric signature invalid.');
+ }else if(rec.biometric.verifyMode!=='platform-uv'){
+  throw new Error('ಈ browserನ biometric verification ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ. Settingsನಲ್ಲಿ Fingerprint ಮತ್ತೆ enable ಮಾಡಿ.');
+ }
  currentAccount={mobile,role,name:rec.name,uid:rec.uid,offline:true,offlineBiometric:true};
  if(String(role).toLowerCase()==='applicator'){ $('applicatorWelcome').textContent='Welcome, '+(rec.name||'');$('applicatorAvatar').textContent=(rec.name||'A').trim().charAt(0).toUpperCase();show('applicatorDashboard');}
  else{$('homeWelcome').textContent='Welcome, '+(rec.name||'');$('homePortal').textContent=role+' Portal';show('homeScreen');}
@@ -21292,3 +21316,4 @@ window.NEOCURE_V2080={version:'V2080',base:'V2079',fixes:['Header and item rows 
 <!-- V2218/2: after first Firebase MPIN verification, subsequent MPIN and biometric login are local-only; removed Firebase passkey login fallback; Settings enrolls local WebAuthn credential. -->
 
 <!-- V2219: Make Offline Fingerprint setup directly visible on Dealer and Applicator Profile & Settings; bind local setup controls. -->
+<!-- V2223: Cross-browser WebAuthn compatibility: use exported-key signature verification when available; Safari/iOS fallback requires platform UV, fresh challenge, origin and RP-ID checks. -->
